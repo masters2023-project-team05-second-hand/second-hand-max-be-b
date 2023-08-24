@@ -1,4 +1,0 @@
-jasypt:
-  encryptor:
-    iv-generator-classname: org.jasypt.iv.NoIvGenerator
-    algorithm: PBEWithMD5AndTripleDES
