@@ -43,15 +43,10 @@ public class MemberService {
         );
 
         if (findMember.isEmpty()) {
-            Long memberId = signUp(member);
+            memberRepository.save(member);
             return signIn(member);
         }
         return signIn(findMember.get());
-    }
-
-    private Long signUp(Member member) {
-        Long memberId = memberRepository.save(member);
-        return memberId;
     }
 
     private OAuthSignInResponse signIn(Member member) {
