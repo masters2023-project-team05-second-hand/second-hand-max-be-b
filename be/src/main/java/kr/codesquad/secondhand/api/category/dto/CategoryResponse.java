@@ -7,13 +7,15 @@ import lombok.Getter;
 public class CategoryResponse {
     private Long id;
     private String name;
+    private String imgUrl;
 
-    public CategoryResponse(Long id, String name) {
+    public CategoryResponse(Long id, String name, String imgUrl) {
         this.id = id;
         this.name = name;
+        this.imgUrl = imgUrl;
     }
 
     public static CategoryResponse from(Category category) {
-        return new CategoryResponse(category.getId(), category.getName());
+        return new CategoryResponse(category.getId(), category.getName(), category.getImgUrl());
     }
 }
