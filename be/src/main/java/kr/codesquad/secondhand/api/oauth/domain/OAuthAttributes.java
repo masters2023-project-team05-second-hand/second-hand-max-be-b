@@ -37,4 +37,8 @@ public enum OAuthAttributes {
     public final String providerName;
 
     public abstract OAuthProfile of(Map<String, Object> attributes);
+
+    public static boolean isGithub(String providerName){
+        return GITHUB.providerName.equals(providerName);
+    }
 }

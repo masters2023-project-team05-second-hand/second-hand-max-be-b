@@ -4,6 +4,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import kr.codesquad.secondhand.api.oauth.domain.OAuthAttributes;
 import kr.codesquad.secondhand.api.oauth.domain.OAuthProfile;
 import kr.codesquad.secondhand.api.oauth.domain.OAuthRegistration;
 import kr.codesquad.secondhand.api.oauth.dto.OAuthTokenResponse;
@@ -21,6 +22,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 public class OAuthService {
 
     private final OAuthRegistrationRepository oauthRegistrationRepository;
+    private final String GITHUB_REQUEST_PRIVATE_EMAIL_URI = "https://api.github.com/user/emails";
 
     public OAuthProfile requestOauthProfile(String providerName, String authorizationCode) {
         // repository에서 providerName과 일치하는 registration 가져오기
@@ -32,8 +34,7 @@ public class OAuthService {
         // Oauth 리소스 서버에 유저 정보 요청
         Map<String, Object> attributes = requestOauthAttributes(registration, tokenResponse);
 
-        // TODO github의 경우, Private email을 받아오기 위한 메소드 추가 필요
-        if (providerName.equals("github")) {
+        if (OAuthAttributes.isGithub(providerName) && attributes.get("email") == null) {
             attributes.put("email", getGithubPrivateEmail(tokenResponse).get(0).get("email"));
         }
         return OAuthProfile.of(providerName, attributes);
@@ -85,7 +86,7 @@ public class OAuthService {
     public List<Map<String, Object>> getGithubPrivateEmail(OAuthTokenResponse tokenResponse) {
         return WebClient.create()
                 .get()
-                .uri("https://api.github.com/user/emails")
+                .uri(GITHUB_REQUEST_PRIVATE_EMAIL_URI)
                 .headers(header -> header.setBearerAuth(tokenResponse.getAccessToken()))
                 .retrieve()
                 .bodyToMono(new ParameterizedTypeReference<List<Map<String, Object>>>() {
