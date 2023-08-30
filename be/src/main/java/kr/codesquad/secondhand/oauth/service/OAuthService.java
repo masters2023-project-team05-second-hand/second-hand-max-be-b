@@ -33,7 +33,7 @@ public class OAuthService {
         Map<String, Object> attributes = requestOauthAttributes(registration, tokenResponse);
 
         // TODO github의 경우, Private email을 받아오기 위한 메소드 추가 필요
-        if(providerName.equals("github")){
+        if (providerName.equals("github")) {
             attributes.put("email", getGithubPrivateEmail(tokenResponse).get(0).get("email"));
         }
         return OAuthProfile.of(providerName, attributes);
@@ -77,18 +77,19 @@ public class OAuthService {
                 .uri(registration.getUserInfoRequestUri())
                 .headers(header -> header.setBearerAuth(tokenResponse.getAccessToken()))
                 .retrieve()
-                .bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {})
+                .bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {
+                })
                 .block();
     }
 
     public List<Map<String, Object>> getGithubPrivateEmail(OAuthTokenResponse tokenResponse) {
         return WebClient.create()
-            .get()
-            .uri("https://api.github.com/user/emails")
-            .headers(header -> header.setBearerAuth(tokenResponse.getAccessToken()))
-            .retrieve()
-            .bodyToMono(new ParameterizedTypeReference<List<Map<String, Object>>>() {
-            })
-            .block();
+                .get()
+                .uri("https://api.github.com/user/emails")
+                .headers(header -> header.setBearerAuth(tokenResponse.getAccessToken()))
+                .retrieve()
+                .bodyToMono(new ParameterizedTypeReference<List<Map<String, Object>>>() {
+                })
+                .block();
     }
 }

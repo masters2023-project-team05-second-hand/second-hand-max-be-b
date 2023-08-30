@@ -8,8 +8,8 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 @SpringBootApplication
 public class SecondHandApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(SecondHandApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(SecondHandApplication.class, args);
+    }
 
 }
