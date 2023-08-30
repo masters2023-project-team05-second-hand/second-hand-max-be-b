@@ -1,0 +1,5 @@
+jwt:
+  secret-key: ENC(2V+i23yEKttxVNk9aU/j85sHewoKx0LQyToDI0bW6l5b+WP3+shZYNMN0ZhKguVv)
+  access-token-expiration-time: 3600000
+  refresh-token-expiration-time: 5184000000
+
