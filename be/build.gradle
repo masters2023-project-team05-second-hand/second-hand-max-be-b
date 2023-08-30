@@ -30,7 +30,16 @@ dependencies {
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
+	// Jasypt
 	implementation 'com.github.ulisesbocchio:jasypt-spring-boot-starter:3.0.5'
+
+	// Oauth 통신에 필요한 WebClient
+	implementation 'org.springframework.boot:spring-boot-starter-webflux'
+
+	// jwt 라이브러리
+	implementation group: 'io.jsonwebtoken', name: 'jjwt-api', version: '0.11.2'
+	runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-impl', version: '0.11.2'
+	runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-jackson', version: '0.11.2'
 }
 
 tasks.named('test') {
