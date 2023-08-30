@@ -1,7 +1,24 @@
 spring:
   profiles:
     group:
-      stage: stageDB, jasypt
+      stage: stageDB, jasypt, oauth2, jwt
       prod:
       test:
     active: stage
+  jpa:
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+        use_sql_comments: true
+
+# JPA Log
+logging:
+  level:
+    org:
+      hibernate:
+        sql: DEBUG
+        type:
+          descriptor:
+            sql:
+              BasicBinder: TRACE
