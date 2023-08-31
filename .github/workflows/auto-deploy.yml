@@ -1,0 +1,105 @@
+name: second-hand auto-deploy
+
+on:
+  push:
+    branches: [ "cicd-test" ]
+
+permissions:
+  contents: read
+
+env:
+  WAS_WORKING_DIR: ./be
+  APPLICATION_PROPERTIES_FILE_PATH: ./src/main/resources/application.yml
+  S3_PROPERTIES_FILE_PATH: ./src/main/resources/application-s3.yml
+
+  WEB_WORKING_DIR: ./fe
+  ENV_FILE_PATH: ./.env
+
+jobs:
+
+  was-deploy:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ${{ env.WAS_WORKING_DIR }}
+    steps:
+
+      # 1. Source 단계
+      - name: Checkout Source Code
+        uses: actions/checkout@v3
+
+      - name: Set up JDK 11
+        uses: actions/setup-java@v3
+        with:
+          java-version: '11'
+          distribution: 'temurin'
+
+      # 2. yml 파일 변경
+      - name: Change Spring Active Profile
+        run: |
+          touch '${{ env.APPLICATION_PROPERTIES_FILE_PATH }}'
+          echo '${{ secrets.APPLICATION_PROPERTIES }}' > '${{ env.APPLICATION_PROPERTIES_FILE_PATH }}'
+          touch '${{ env.S3_PROPERTIES_FILE_PATH }}'
+          echo '${{ secrets.S3_PROPERTIES }}' > '${{ env.S3_PROPERTIES_FILE_PATH }}'
+
+      # 3. build 단계
+      - name: Grant Execute Permission For Gradlew
+        run: chmod +x ./gradlew
+
+      - name: Build With Gradle
+        run: ./gradlew clean build -x test
+
+      # 4. docker hub로 build & push (태그 변수 처라)
+      - name: Docker Build And Push
+        run: |
+          docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+          docker build -f Dockerfile -t ${{ secrets.DOCKER_USERNAME }}/second-hand-was:latest .
+          docker push ${{ secrets.DOCKER_USERNAME }}/second-hand-was:latest
+
+  fe-deploy:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ${{ env.WEB_WORKING_DIR }}
+    steps:
+
+      # 1. Source 단계
+      - name: Checkout Source Code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "16"
+
+      # 2. 환경 변수 파일 생성
+      - name: Set .env file
+        run: |
+          touch '${{ env.ENV_FILE_PATH }}'
+          echo '${{ secrets.ENV_FILE }}' > '${{ env.ENV_FILE_PATH }}'
+
+      # 3. docker hub로 build & push
+      - name: Docker Build and Push
+        run: |
+          docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+          docker build -f Dockerfile -t ${{ secrets.DOCKER_USERNAME }}/second-hand-web:latest .
+          docker push ${{ secrets.DOCKER_USERNAME }}/second-hand-web:latest
+
+  SSH-Transfer:
+    needs: [was-deploy, web-deploy]
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: SSH Transfer
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ubuntu
+          key: ${{ secrets.KEY }}
+          script: |
+            sudo docker-compose down -v
+            sudo docker rm -f $(docker ps -qa)
+            sudo docker pull ${{ secrets.DOCKER_USERNAME }}/second-hand-was:latest
+            sudo docker pull ${{ secrets.DOCKER_USERNAME }}/second-hand-web:latest
+            sudo docker-compose up -d
+            sudo docker image prune -a -f

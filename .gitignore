@@ -47,3 +47,9 @@ replay_pid*
 *.sw?
 
 .env
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+out/
