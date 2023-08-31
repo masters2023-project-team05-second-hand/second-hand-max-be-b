@@ -50,7 +50,6 @@ public class ProductService {
         Address address = addressRepository.getReferenceById(productCreateRequest.getAddressId());
         Category category = categoryRepository.getReferenceById(productCreateRequest.getCategoryId());
         Product product = productCreateRequest.toEntity(seller, status, address, category, thumbnailImgUrl);
-        System.out.println(product);
         productRepository.save(product);
         return new ProductCreateResponse(product.getId());
     }
