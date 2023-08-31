@@ -1,4 +1,4 @@
-import { CategoryInfo } from "@customTypes/index";
+import { CategoryInfo } from "api/type";
 import { ListItem, ListPanel } from "../Modal.style";
 
 type CategoryModalContentProps = {

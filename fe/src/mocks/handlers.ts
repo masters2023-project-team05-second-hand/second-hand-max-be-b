@@ -55,7 +55,9 @@ export const handlers = [
           refreshToken:
             "eyJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2OTcxMDMwMDN9.FgoFySrenum985OrDzwwtaEhu1Iz7IVJtz5M6H8lzX8",
         },
-        addresses: [],
+        addresses: [
+          { id: 1, name: "서울시 강남구 역삼1동", isLastVisited: true },
+        ],
         member: {
           nickname: "jjinbbang",
           profileImgUrl:

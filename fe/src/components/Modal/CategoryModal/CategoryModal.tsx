@@ -21,6 +21,7 @@ export default function CategoryModal() {
           {...{ categories, selectedCategoryId, onClickCategory }}
         />
       }
+      closeHandler={() => console.log("카테고리 모달 닫기")}
     />
   );
 }
