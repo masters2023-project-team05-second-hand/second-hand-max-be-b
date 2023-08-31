@@ -1,7 +1,7 @@
 import Chat from "@pages/Chat";
 import Category from "@pages/Home/Category";
 import Home from "@pages/Home/Home";
-import NewProduct from "@pages/Home/NewProduct";
+import NewProduct from "@pages/Home/NewProduct/NewProduct";
 import { Auth } from "@pages/MyAccount/Auth";
 import Login from "@pages/MyAccount/Login";
 import MyAccount from "@pages/MyAccount/MyAccount";

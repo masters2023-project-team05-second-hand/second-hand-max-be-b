@@ -4,7 +4,7 @@ import { ReactComponent as MessageIcon } from "@assets/icon/message.svg";
 import { ReactComponent as NewsIcon } from "@assets/icon/news.svg";
 import { ReactComponent as UserIcon } from "@assets/icon/user-circle.svg";
 import { ROUTE_PATH } from "@router/constants";
-import { HEIGHT } from "@styles/constants";
+import { HEIGHT, WIDTH } from "@styles/constants";
 import { NavLink } from "react-router-dom";
 import styled from "styled-components";
 
@@ -54,7 +54,7 @@ const NAVIGATION = [
 ];
 
 const StyledNavigationBar = styled.ul`
-  width: 393px;
+  width: ${WIDTH.app}px;
   position: fixed;
   bottom: 0;
   display: flex;

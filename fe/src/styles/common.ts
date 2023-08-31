@@ -1,10 +1,10 @@
 import styled from "styled-components";
-import { HEIGHT } from "./constants";
+import { HEIGHT, WIDTH } from "./constants";
 
 export const Page = styled.div`
   position: relative;
   margin: 0 auto;
-  max-width: 393px;
+  max-width: ${WIDTH.app}px;
   min-height: 100vh;
   height: 100vh;
   overflow: scroll;
