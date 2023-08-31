@@ -1,0 +1,23 @@
+version: '3'
+services:
+
+  was:
+    container_name: was
+    image: aladinjinny/second-hand-was:latest
+    expose:
+      - 8080
+    ports:
+      - 8080:8080
+    environment:
+      - JASYPT_PASSWORD=$JASYPT_PASSWORD
+
+#  was:
+#
+#
+#  nginx:
+#    container_name: nginx
+#    image: aladinjinny/second-hand-web
+#    ports:
+#      - 80:80
+#    depends_on:
+#      - web
