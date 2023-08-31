@@ -1,7 +1,12 @@
 package kr.codesquad.secondhand.api.product.dto;
 
-public class ProductCreateResponse {
+import lombok.Getter;
 
+@Getter
+public class ProductCreateResponse {
     Long productId;
 
+    public ProductCreateResponse(Long productId) {
+        this.productId = productId;
+    }
 }

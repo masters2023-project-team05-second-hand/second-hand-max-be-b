@@ -6,11 +6,11 @@ import kr.codesquad.secondhand.api.product.dto.ProductCreateResponse;
 import kr.codesquad.secondhand.api.product.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-@Controller
+@RestController
 @RequiredArgsConstructor
 public class ProductController {
 
@@ -19,7 +19,8 @@ public class ProductController {
     @PostMapping("/api/products")
     public ResponseEntity<ProductCreateResponse> uploads3(@ModelAttribute ProductCreateRequest productCreateRequest)
             throws IOException {
-        ProductCreateResponse productCreateResponse = productService.save(productCreateRequest);
-        return ResponseEntity.ok(productCreateResponse);
+        Long memberId = 1L;
+        ProductCreateResponse productCreateResponse = productService.save(productCreateRequest, memberId);
+        return ResponseEntity.ok().body(productCreateResponse);
     }
 }
