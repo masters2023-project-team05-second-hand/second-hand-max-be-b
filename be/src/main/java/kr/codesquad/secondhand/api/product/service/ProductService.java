@@ -7,6 +7,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import kr.codesquad.secondhand.api.product.dto.ProductCreateRequest;
+import kr.codesquad.secondhand.api.product.dto.ProductCreateResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -20,6 +22,11 @@ public class ProductService {
 
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
+
+    public ProductCreateResponse save(ProductCreateRequest productCreateRequest) throws IOException {
+        //  TODO 썸네일 리사이징 기능 구현, 디비 저장 기능 구현
+        return null;
+    }
 
     // TODO: 예외 처리: 파일 없을 때, 파일 확장자가 이미지가 아닐 때(처리하면 for문 stream으로 수정)
     private List<URL> uploadMultiImagesToS3(List<MultipartFile> multipartFiles) throws IOException {
