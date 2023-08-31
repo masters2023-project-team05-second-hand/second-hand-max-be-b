@@ -11,7 +11,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Entity
+@Entity(name = "product_image")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Image {
@@ -25,4 +25,9 @@ public class Image {
     private Product product;
 
     private String url;
+
+    public Image(Product product, String url) {
+        this.product = product;
+        this.url = url;
+    }
 }
