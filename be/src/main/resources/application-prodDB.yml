@@ -3,4 +3,4 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: ENC(RI9JXqG9+smAWixcK8PDMiBtiU0AYwpCg/QLuFOL++1L5z+l1Iv9XknU1hWSJd+zcb/5KEhYMblJ90CZbeO4vfI3VrouoBBxmUYdx2CMKnQZDC98awOmaheu+JZujVh6XqEiaayP2zk=)
     username: ENC(K0uE1ed3fhkSVZn7pwU8zA==)
-    password: ENC(Yu63cOM97WHoDKyV6UHtltr4e+6OGf+0)
+    password: ENC(KDIESpDxQIwie1FjaOVqs3mtuKLV2UYV)
