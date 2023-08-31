@@ -18,7 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ${{ env.BE_WORKING_DIR }}
+        working-directory: ${{ env.WAS_WORKING_DIR }}
     steps:
 
       # 1. Source 단계
@@ -54,6 +54,7 @@ jobs:
           docker push ${{ secrets.DOCKER_USERNAME }}/second-hand-was:latest
 
   SSH-Transfer:
+    needs: was-deploy
     runs-on: ubuntu-latest
     steps:
 
