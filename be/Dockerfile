@@ -12,4 +12,4 @@ ARG JAR_FILE=./build/libs/second-hand-0.0.1-SNAPSHOT.jar
 COPY ${JAR_FILE} second-hand.jar
 
 # 컨테이너가 실행될 때 실행할 명령어
-ENTRYPOINT ["java", "-jar", "-Djasypt.encryptor.password=JASYPT_PASSWORD", "/app/second-hand.jar"]
+ENTRYPOINT ["java", "-jar", "-Djasypt.encryptor.password=${JASYPT_PASSWORD}", "/app/second-hand.jar"]
