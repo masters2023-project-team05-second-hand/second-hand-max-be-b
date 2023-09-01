@@ -46,8 +46,8 @@ public class ProductService {
     public ProductCreateResponse save(ProductCreateRequest productCreateRequest, Long memberId) throws IOException {
         //  TODO 썸네일 리사이징 기능 구현
         // 임시 썸네일 이미지
-        List<String> imageUrls = uploadMultiImagesToS3(productCreateRequest.getImages());
-        String thumbnailImgUrl = imageUrls.get(0).toString();
+        List<URL> imageUrls = uploadMultiImagesToS3(productCreateRequest.getImages());
+        URL thumbnailImgUrl = imageUrls.get(0);
         Member seller = memberService.getMemberReferenceById(memberId);
 //        id가 아닌 type으로 조회할 경우 쿼리가 발생한다. (쿼리 메소드가 아닌 인터페이스에 추가한 메소드라서?)
 //        signInType 처럼 인메모리에 캐싱할 수 있게 리팩토링 필요
@@ -63,10 +63,10 @@ public class ProductService {
 
 
     // TODO: 예외 처리: 파일 없을 때, 파일 확장자가 이미지가 아닐 때(처리하면 for문 stream으로 수정)
-    private List<String> uploadMultiImagesToS3(List<MultipartFile> multipartFiles) throws IOException {
-        List<String> urls = new ArrayList<>();
+    private List<URL> uploadMultiImagesToS3(List<MultipartFile> multipartFiles) throws IOException {
+        List<URL> urls = new ArrayList<>();
         for (MultipartFile multipartFile : multipartFiles) {
-            urls.add(uploadSingleImageToS3(multipartFile).toString());
+            urls.add(uploadSingleImageToS3(multipartFile));
         }
         return urls;
     }
@@ -80,7 +80,7 @@ public class ProductService {
         return amazonS3.getUrl(bucket, uuid);
     }
 
-    private List<Image> imageUrlsToImage(List<String> imageUrls, Product product) {
+    private List<Image> imageUrlsToImage(List<URL> imageUrls, Product product) {
         return imageUrls.stream()
                 .map(imageUrl -> new Image(product, imageUrl))
                 .collect(Collectors.toUnmodifiableList());

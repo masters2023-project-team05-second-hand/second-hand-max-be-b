@@ -1,5 +1,6 @@
 package kr.codesquad.secondhand.api.product.domain;
 
+import java.net.URL;
 import java.util.Date;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
@@ -51,12 +52,12 @@ public class Product {
 
     @CreationTimestamp
     private Date createdTime;
-    private String thumbnailImgUrl;
+    private URL thumbnailImgUrl;
 
     @Builder
     public Product(Member seller, ProductStatus status, Address address, Category category, String title,
                    String content,
-                   Long price, Date createdTime, String thumbnailImgUrl) {
+                   Long price, Date createdTime, URL thumbnailImgUrl) {
         this.seller = seller;
         this.status = status;
         this.address = address;

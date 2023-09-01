@@ -1,5 +1,6 @@
 package kr.codesquad.secondhand.api.product.domain;
 
+import java.net.URL;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -24,9 +25,9 @@ public class Image {
     @JoinColumn(name = "product_id")
     private Product product;
 
-    private String url;
+    private URL url;
 
-    public Image(Product product, String url) {
+    public Image(Product product, URL url) {
         this.product = product;
         this.url = url;
     }

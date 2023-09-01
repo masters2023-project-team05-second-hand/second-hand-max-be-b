@@ -1,5 +1,6 @@
 package kr.codesquad.secondhand.api.product.dto;
 
+import java.net.URL;
 import java.util.List;
 import kr.codesquad.secondhand.api.category.domain.Category;
 import kr.codesquad.secondhand.api.member.domain.Address;
@@ -22,7 +23,7 @@ public class ProductCreateRequest {
     private final List<MultipartFile> images;
 
     public Product toEntity(Member seller, ProductStatus status, Address address, Category category,
-                            String thumbnailImgUrl) {
+                            URL thumbnailImgUrl) {
         return Product.builder()
                 .seller(seller)
                 .thumbnailImgUrl(thumbnailImgUrl)
