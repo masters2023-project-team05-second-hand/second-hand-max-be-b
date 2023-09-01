@@ -32,7 +32,7 @@ public class ProductController {
     @PatchMapping("/api/products/{productId}")
     public ResponseEntity modifyProduct(@PathVariable Long productId, @ModelAttribute
     ProductModifyRequest productModifyRequest) throws IOException {
-        productService.modify(productId, productModifyRequest);
+        productService.modifyProduct(productId, productModifyRequest);
         return new ResponseEntity(HttpStatus.OK);
     }
 }
