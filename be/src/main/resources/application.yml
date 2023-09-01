@@ -1,7 +1,29 @@
 spring:
   profiles:
     group:
-      stage: stageDB, jasypt
-      prod:
+      stage: stageDB, jasypt, oauth2, jwt, s3
+      prod: prodDB, jasypt, oauth2, jwt, s3
       test:
     active: stage
+  jpa:
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+        use_sql_comments: true
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 30MB
+      max-request-size: 10MB
+
+# JPA Log
+logging:
+  level:
+    org:
+      hibernate:
+        sql: DEBUG
+        type:
+          descriptor:
+            sql:
+              BasicBinder: TRACE
