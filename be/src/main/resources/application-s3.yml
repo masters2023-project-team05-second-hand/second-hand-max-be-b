@@ -1,0 +1,12 @@
+cloud:
+  aws:
+    region:
+      static: ap-northeast-2
+      auto: false
+    s3:
+      bucket: gamgyul-bucket/public
+    credentials:
+      access-key: # Github Actions에서 추가
+      secret-key: # Github Actions에서 추가
+    stack:
+      auto: false
