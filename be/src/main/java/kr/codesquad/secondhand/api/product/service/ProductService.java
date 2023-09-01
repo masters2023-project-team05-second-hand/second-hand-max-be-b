@@ -16,11 +16,9 @@ import kr.codesquad.secondhand.api.member.repository.AddressRepositoryImpl;
 import kr.codesquad.secondhand.api.member.service.MemberService;
 import kr.codesquad.secondhand.api.product.domain.Image;
 import kr.codesquad.secondhand.api.product.domain.Product;
-import kr.codesquad.secondhand.api.product.domain.Status;
+import kr.codesquad.secondhand.api.product.domain.ProductStatus;
 import kr.codesquad.secondhand.api.product.dto.ProductCreateRequest;
 import kr.codesquad.secondhand.api.product.dto.ProductCreateResponse;
-import kr.codesquad.secondhand.api.product.dto.ProductModifyRequest;
-import kr.codesquad.secondhand.api.product.dto.ProductModifyResponse;
 import kr.codesquad.secondhand.api.product.repository.ImageRepository;
 import kr.codesquad.secondhand.api.product.repository.ProductRepository;
 import kr.codesquad.secondhand.api.product.repository.StatusRepository;
@@ -46,14 +44,14 @@ public class ProductService {
 
     @Transactional
     public ProductCreateResponse save(ProductCreateRequest productCreateRequest, Long memberId) throws IOException {
-        //  TODO 썸네일 리사이징 기능 구현, 디비 저장 기능 구현
+        //  TODO 썸네일 리사이징 기능 구현
         // 임시 썸네일 이미지
         List<String> imageUrls = uploadMultiImagesToS3(productCreateRequest.getImages());
         String thumbnailImgUrl = imageUrls.get(0).toString();
         Member seller = memberService.getMemberReferenceById(memberId);
 //        id가 아닌 type으로 조회할 경우 쿼리가 발생한다. (쿼리 메소드가 아닌 인터페이스에 추가한 메소드라서?)
 //        signInType 처럼 인메모리에 캐싱할 수 있게 리팩토링 필요
-        Status status = statusRepository.getReferenceByType("판매중");
+        ProductStatus status = statusRepository.getReferenceByType("판매중");
         Address address = addressRepository.getReferenceById(productCreateRequest.getAddressId());
         Category category = categoryRepository.getReferenceById(productCreateRequest.getCategoryId());
         Product product = productCreateRequest.toEntity(seller, status, address, category, thumbnailImgUrl);

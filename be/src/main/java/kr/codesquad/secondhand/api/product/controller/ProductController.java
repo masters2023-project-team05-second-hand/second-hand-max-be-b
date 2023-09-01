@@ -19,6 +19,7 @@ public class ProductController {
     @PostMapping("/api/products")
     public ResponseEntity<ProductCreateResponse> uploads3(@ModelAttribute ProductCreateRequest productCreateRequest)
             throws IOException {
+        //TODO 인증 필터 구현 시 토큰에서 memberId 받아올 예정
         Long memberId = 1L;
         ProductCreateResponse productCreateResponse = productService.save(productCreateRequest, memberId);
         return ResponseEntity.ok().body(productCreateResponse);

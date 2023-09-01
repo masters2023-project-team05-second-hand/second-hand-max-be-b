@@ -31,11 +31,11 @@ public class Product {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "seller_id")
-    private Member member;
+    private Member seller;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "status_id")
-    private Status status;
+    private ProductStatus status;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "address_id")
@@ -48,15 +48,16 @@ public class Product {
     private String title;
     private String content;
     private Long price;
+
     @CreationTimestamp
     private Date createdTime;
     private String thumbnailImgUrl;
 
     @Builder
-    public Product(Member member, Status status, Address address, Category category, String title,
+    public Product(Member seller, ProductStatus status, Address address, Category category, String title,
                    String content,
                    Long price, Date createdTime, String thumbnailImgUrl) {
-        this.member = member;
+        this.seller = seller;
         this.status = status;
         this.address = address;
         this.category = category;

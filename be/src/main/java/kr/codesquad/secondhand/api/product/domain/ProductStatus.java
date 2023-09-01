@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Entity(name = "product_status")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Status {
+public class ProductStatus {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
