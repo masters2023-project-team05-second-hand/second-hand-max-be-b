@@ -55,7 +55,7 @@ public class ProductService {
     }
 
     @Transactional
-    public void modify(Long productId, ProductModifyRequest productModifyRequest) throws IOException {
+    public void modifyProduct(Long productId, ProductModifyRequest productModifyRequest) throws IOException {
         Product product = productRepository.findById(productId).orElseThrow();
         URL thumbnailImgUrl = imageService.updateImageUrls(product, productModifyRequest.getNewImages(),
                 productModifyRequest.getDeletedImgIds());
