@@ -2,7 +2,7 @@ spring:
   profiles:
     group:
       stage: stageDB, jasypt, oauth2, jwt, s3
-      prod:
+      prod: prodDB, jasypt, oauth2, jwt, s3
       test:
     active: stage
   jpa:
