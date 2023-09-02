@@ -57,4 +57,8 @@ public class MemberService {
         }
         return OAuthSignInResponse.of(jwt, new ArrayList<>(), member);
     }
+
+    public Member getMemberReferenceById(Long memberId){
+        return memberRepository.getReferenceById(memberId);
+    }
 }

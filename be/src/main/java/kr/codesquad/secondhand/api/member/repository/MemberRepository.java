@@ -9,4 +9,5 @@ public interface MemberRepository {
 
     Optional<Member> findBySignInTypeIdAndEmail(Long signInTypeId, String email);
 
+    Member getReferenceById(Long id);
 }
