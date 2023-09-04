@@ -51,11 +51,7 @@ public class MemberService {
 
     private OAuthSignInResponse signIn(Member member) {
         Jwt jwt = jwtService.issueJwt(member.getId());
-        Optional<List<MemberAddress>> memberAddress = memberAddressRepository.findAllByMemberId(member.getId());
-        if (memberAddress.isPresent()) {
-            return OAuthSignInResponse.of(jwt, memberAddress.get(), member);
-        }
-        return OAuthSignInResponse.of(jwt, new ArrayList<>(), member);
+        return OAuthSignInResponse.from(jwt);
     }
 
     public Member getMemberReferenceById(Long memberId){
