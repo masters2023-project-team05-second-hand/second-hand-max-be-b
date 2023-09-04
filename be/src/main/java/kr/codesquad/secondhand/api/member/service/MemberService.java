@@ -88,4 +88,13 @@ public class MemberService {
     public Member getMemberReferenceById(Long memberId) {
         return memberRepository.getReferenceById(memberId);
     }
+
+    @Transactional
+    public void setLastVisitedAddress(Long memberId, Long lastVisitedAddressId) {
+        MemberAddress memberAddress = memberAddressRepository.findByMemberIdAndIsLastVisited(memberId, true)
+                .orElseThrow();
+        memberAddress.updateLastVisited(false);
+        MemberAddress lastVisitedAddress = memberAddressRepository.findByAddressId(lastVisitedAddressId).orElseThrow();
+        lastVisitedAddress.updateLastVisited(true);
+    }
 }

@@ -35,4 +35,8 @@ public class MemberAddress {
         this.address = address;
         this.isLastVisited = isLastVisited;
     }
+
+    public void updateLastVisited(boolean isLastVisited) {
+        this.isLastVisited = isLastVisited;
+    }
 }

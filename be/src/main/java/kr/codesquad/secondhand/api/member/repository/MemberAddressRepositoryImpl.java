@@ -12,4 +12,8 @@ public interface MemberAddressRepositoryImpl extends JpaRepository<MemberAddress
     Long deleteByMemberId(Long MemberId);
 
     Optional<List<MemberAddress>> findAllByMemberId(Long memberId);
+
+    Optional<MemberAddress> findByMemberIdAndIsLastVisited(Long memberId, Boolean isLastVisited);
+
+    Optional<MemberAddress> findByAddressId(Long addressId);
 }
