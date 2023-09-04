@@ -1,6 +1,6 @@
 package kr.codesquad.secondhand.api.member.controller;
 
-import kr.codesquad.secondhand.api.member.dto.FindAddressesResponse;
+import kr.codesquad.secondhand.api.member.dto.AddressSliceResponse;
 import kr.codesquad.secondhand.api.member.dto.OAuthSignInRequest;
 import kr.codesquad.secondhand.api.member.dto.OAuthSignInResponse;
 import kr.codesquad.secondhand.api.member.service.AddressService;
@@ -33,9 +33,9 @@ public class MemberController {
     }
 
     @GetMapping("/api/addresses")
-    private ResponseEntity<FindAddressesResponse> getAddresses(@RequestParam int page, @RequestParam int size) {
-        FindAddressesResponse findAddressesResponse = addressService.getAddresses(page, size);
-        return ResponseEntity.ok().body(findAddressesResponse);
+    private ResponseEntity<AddressSliceResponse> getAddresses(@RequestParam int page, @RequestParam int size) {
+        AddressSliceResponse addressSliceResponse = addressService.getAddresses(page, size);
+        return ResponseEntity.ok().body(addressSliceResponse);
     }
 
 }

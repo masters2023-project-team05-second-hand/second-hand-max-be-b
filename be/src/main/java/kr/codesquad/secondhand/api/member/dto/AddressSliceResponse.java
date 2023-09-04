@@ -4,27 +4,26 @@ import java.util.List;
 import java.util.stream.Collectors;
 import kr.codesquad.secondhand.api.member.domain.Address;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 @Getter
-@NoArgsConstructor
-public class FindAddressesResponse {
+public class AddressSliceResponse {
     public List<AddressesResponse> addresses;
     public Boolean hasNext;
 
-    public FindAddressesResponse(List<AddressesResponse> addresses, Boolean hasNext) {
+    public AddressSliceResponse(List<AddressesResponse> addresses, Boolean hasNext) {
         this.addresses = addresses;
         this.hasNext = hasNext;
     }
 
-    public static FindAddressesResponse of(List<Address> addresses, Boolean hasNext) {
-        return new FindAddressesResponse(addresses.stream()
+    public static AddressSliceResponse of(List<Address> addresses, Boolean hasNext) {
+        return new AddressSliceResponse(addresses.stream()
                 .map(AddressesResponse::from)
                 .collect(Collectors.toUnmodifiableList()), hasNext);
     }
 
     @Getter
     public static class AddressesResponse {
+
         private Long id;
         private String name;
 
