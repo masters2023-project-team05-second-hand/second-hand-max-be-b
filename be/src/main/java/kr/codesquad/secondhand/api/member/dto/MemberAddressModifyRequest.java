@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class MemberAddressModifyRequest {
+
     private List<Long> addressIds;
 
     public MemberAddressModifyRequest(List<Long> addressIds) {
