@@ -1,12 +1,9 @@
 package kr.codesquad.secondhand.api.member.service;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 import kr.codesquad.secondhand.api.jwt.domain.Jwt;
 import kr.codesquad.secondhand.api.jwt.service.JwtService;
 import kr.codesquad.secondhand.api.member.domain.Member;
-import kr.codesquad.secondhand.api.member.domain.MemberAddress;
 import kr.codesquad.secondhand.api.member.domain.SignInType;
 import kr.codesquad.secondhand.api.member.dto.OAuthSignInResponse;
 import kr.codesquad.secondhand.api.member.repository.MemberAddressRepositoryImpl;
@@ -51,14 +48,10 @@ public class MemberService {
 
     private OAuthSignInResponse signIn(Member member) {
         Jwt jwt = jwtService.issueJwt(member.getId());
-        Optional<List<MemberAddress>> memberAddress = memberAddressRepository.findAllByMemberId(member.getId());
-        if (memberAddress.isPresent()) {
-            return OAuthSignInResponse.of(jwt, memberAddress.get(), member);
-        }
-        return OAuthSignInResponse.of(jwt, new ArrayList<>(), member);
+        return OAuthSignInResponse.from(jwt);
     }
 
-    public Member getMemberReferenceById(Long memberId){
+    public Member getMemberReferenceById(Long memberId) {
         return memberRepository.getReferenceById(memberId);
     }
 }
