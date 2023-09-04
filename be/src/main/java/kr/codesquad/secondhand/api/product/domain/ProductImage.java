@@ -12,10 +12,10 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Entity(name = "product_image")
+@Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Image {
+public class ProductImage {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,7 +27,7 @@ public class Image {
 
     private URL url;
 
-    public Image(Product product, URL url) {
+    public ProductImage(Product product, URL url) {
         this.product = product;
         this.url = url;
     }

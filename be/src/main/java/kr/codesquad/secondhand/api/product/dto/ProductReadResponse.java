@@ -4,8 +4,8 @@ import java.net.URL;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
-import kr.codesquad.secondhand.api.product.domain.Image;
 import kr.codesquad.secondhand.api.product.domain.Product;
+import kr.codesquad.secondhand.api.product.domain.ProductImage;
 import kr.codesquad.secondhand.api.product.domain.ProductStatus;
 import lombok.Builder;
 import lombok.Getter;
@@ -28,9 +28,9 @@ public class ProductReadResponse {
         this.statuses = statuses;
     }
 
-    public static ProductReadResponse of(boolean isSeller, Product product, List<Image> images, List<ProductStatus> status) {
+    public static ProductReadResponse of(boolean isSeller, Product product, List<ProductImage> productImages, List<ProductStatus> status) {
         ProductResponse productResponse = ProductResponse.from(product);
-        List<ProductImageResponse> productImageResponse = images.stream()
+        List<ProductImageResponse> productImageResponse = productImages.stream()
                 .map(ProductImageResponse::from)
                 .collect(Collectors.toUnmodifiableList());
         List<ProductStatusResponse> productStatusResponse = status.stream()
@@ -79,8 +79,8 @@ public class ProductReadResponse {
             this.url = url;
         }
 
-        public static ProductImageResponse from(Image image) {
-            return new ProductImageResponse(image.getId(), image.getUrl());
+        public static ProductImageResponse from(ProductImage productImage) {
+            return new ProductImageResponse(productImage.getId(), productImage.getUrl());
         }
     }
 

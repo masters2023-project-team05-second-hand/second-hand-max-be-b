@@ -11,8 +11,8 @@ import kr.codesquad.secondhand.api.member.domain.Address;
 import kr.codesquad.secondhand.api.member.domain.Member;
 import kr.codesquad.secondhand.api.member.repository.AddressRepositoryImpl;
 import kr.codesquad.secondhand.api.member.service.MemberService;
-import kr.codesquad.secondhand.api.product.domain.Image;
 import kr.codesquad.secondhand.api.product.domain.Product;
+import kr.codesquad.secondhand.api.product.domain.ProductImage;
 import kr.codesquad.secondhand.api.product.domain.ProductStatus;
 import kr.codesquad.secondhand.api.product.dto.ProductCreateRequest;
 import kr.codesquad.secondhand.api.product.dto.ProductCreateResponse;
@@ -64,9 +64,9 @@ public class ProductService {
     public ProductReadResponse readProduct(Long memberId, Long productId) {
         Product product = productRepository.findById(productId).orElseThrow();
         boolean isSeller = Objects.equals(memberId, product.getSeller().getId());
-        List<Image> images = imageRepository.findAllByProductId(productId);
+        List<ProductImage> productImages = imageRepository.findAllByProductId(productId);
         List<ProductStatus> statuses = statusRepository.findAll();
-        ProductReadResponse response = ProductReadResponse.of(isSeller, product, images, statuses);
+        ProductReadResponse response = ProductReadResponse.of(isSeller, product, productImages, statuses);
         return response;
     }
 
