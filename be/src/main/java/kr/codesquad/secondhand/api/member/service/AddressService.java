@@ -18,4 +18,8 @@ public class AddressService {
         Slice<Address> addressSlice = addressRepository.findAllBy(pageRequest);
         return AddressSliceResponse.of(addressSlice.getContent(), addressSlice.hasNext());
     }
+
+    public Address findReferenceById(Long id) {
+        return addressRepository.getReferenceById(id);
+    }
 }

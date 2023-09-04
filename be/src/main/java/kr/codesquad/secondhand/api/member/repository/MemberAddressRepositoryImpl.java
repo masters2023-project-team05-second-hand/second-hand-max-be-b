@@ -7,5 +7,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface MemberAddressRepositoryImpl extends JpaRepository<MemberAddress, Long> {
 
+    Boolean existsByMemberId(Long memberId);
+
+    Long deleteByMemberId(Long MemberId);
+
     Optional<List<MemberAddress>> findAllByMemberId(Long memberId);
 }

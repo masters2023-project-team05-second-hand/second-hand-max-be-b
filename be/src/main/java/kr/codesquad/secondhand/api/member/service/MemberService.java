@@ -1,10 +1,17 @@
 package kr.codesquad.secondhand.api.member.service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import kr.codesquad.secondhand.api.jwt.domain.Jwt;
 import kr.codesquad.secondhand.api.jwt.service.JwtService;
+import kr.codesquad.secondhand.api.member.domain.Address;
 import kr.codesquad.secondhand.api.member.domain.Member;
+import kr.codesquad.secondhand.api.member.domain.MemberAddress;
 import kr.codesquad.secondhand.api.member.domain.SignInType;
+import kr.codesquad.secondhand.api.member.dto.MemberAddressModifyRequest;
+import kr.codesquad.secondhand.api.member.dto.MemberAddressResponse;
 import kr.codesquad.secondhand.api.member.dto.OAuthSignInResponse;
 import kr.codesquad.secondhand.api.member.repository.MemberAddressRepositoryImpl;
 import kr.codesquad.secondhand.api.member.repository.MemberRepository;
@@ -21,6 +28,7 @@ public class MemberService {
 
     private final OAuthService oAuthService;
     private final JwtService jwtService;
+    private final AddressService addressService;
 
     private final SignInTypeRepositoryImpl signInTypeRepository;
     private final MemberRepository memberRepository;
@@ -49,6 +57,32 @@ public class MemberService {
     private OAuthSignInResponse signIn(Member member) {
         Jwt jwt = jwtService.issueJwt(member.getId());
         return OAuthSignInResponse.from(jwt);
+    }
+
+    @Transactional
+    public List<MemberAddressResponse> modifyMemberAddresses(Long memberId,
+                                                             MemberAddressModifyRequest memberAddressModifyRequest) {
+        if (memberAddressRepository.existsByMemberId(memberId)) {
+            memberAddressRepository.deleteByMemberId(memberId);
+        }
+
+        List<Long> addressIds = memberAddressModifyRequest.getAddressIds();
+
+        List<Address> addresses = addressIds.stream()
+                .map(addressService::findReferenceById)
+                .collect(Collectors.toUnmodifiableList());
+
+        Member member = getMemberReferenceById(memberId);
+        List<MemberAddress> memberAddresses = new ArrayList<>();
+
+        for (int i = 0; i < addresses.size(); i++) {
+            Address address = addresses.get(i);
+            boolean isLastVisited = i == addresses.size() - 1;
+            memberAddresses.add(new MemberAddress(member, address, isLastVisited));
+        }
+
+        List<MemberAddress> memberAddressesResult = memberAddressRepository.saveAll(memberAddresses);
+        return MemberAddressResponse.from(memberAddressesResult);
     }
 
     public Member getMemberReferenceById(Long memberId) {
