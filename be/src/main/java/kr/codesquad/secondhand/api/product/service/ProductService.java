@@ -4,17 +4,21 @@ import com.amazonaws.services.s3.AmazonS3;
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
+import java.util.Objects;
 import kr.codesquad.secondhand.api.category.domain.Category;
 import kr.codesquad.secondhand.api.category.repository.CategoryRepositoryImpl;
 import kr.codesquad.secondhand.api.member.domain.Address;
 import kr.codesquad.secondhand.api.member.domain.Member;
 import kr.codesquad.secondhand.api.member.repository.AddressRepositoryImpl;
 import kr.codesquad.secondhand.api.member.service.MemberService;
+import kr.codesquad.secondhand.api.product.domain.Image;
 import kr.codesquad.secondhand.api.product.domain.Product;
 import kr.codesquad.secondhand.api.product.domain.ProductStatus;
 import kr.codesquad.secondhand.api.product.dto.ProductCreateRequest;
 import kr.codesquad.secondhand.api.product.dto.ProductCreateResponse;
 import kr.codesquad.secondhand.api.product.dto.ProductModifyRequest;
+import kr.codesquad.secondhand.api.product.dto.ProductReadResponse;
+import kr.codesquad.secondhand.api.product.repository.ImageRepository;
 import kr.codesquad.secondhand.api.product.repository.ProductRepository;
 import kr.codesquad.secondhand.api.product.repository.StatusRepository;
 import lombok.RequiredArgsConstructor;
@@ -32,7 +36,10 @@ public class ProductService {
     private final ProductRepository productRepository;
     private final AddressRepositoryImpl addressRepository;
     private final CategoryRepositoryImpl categoryRepository;
+    private final ImageRepository imageRepository;
+
     private final ImageService imageService;
+
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
 
@@ -52,6 +59,15 @@ public class ProductService {
         productRepository.save(product);
         imageService.saveAll(imageUrls, product);
         return new ProductCreateResponse(product.getId());
+    }
+
+    public ProductReadResponse readProduct(Long memberId, Long productId) {
+        Product product = productRepository.findById(productId).orElseThrow();
+        boolean isSeller = Objects.equals(memberId, product.getSeller().getId());
+        List<Image> images = imageRepository.findAllByProductId(productId);
+        List<ProductStatus> statuses = statusRepository.findAll();
+        ProductReadResponse response = ProductReadResponse.of(isSeller, product, images, statuses);
+        return response;
     }
 
     @Transactional

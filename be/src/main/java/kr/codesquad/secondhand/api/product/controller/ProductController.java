@@ -4,10 +4,11 @@ import java.io.IOException;
 import kr.codesquad.secondhand.api.product.dto.ProductCreateRequest;
 import kr.codesquad.secondhand.api.product.dto.ProductCreateResponse;
 import kr.codesquad.secondhand.api.product.dto.ProductModifyRequest;
+import kr.codesquad.secondhand.api.product.dto.ProductReadResponse;
 import kr.codesquad.secondhand.api.product.service.ProductService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -27,6 +28,13 @@ public class ProductController {
         Long memberId = 1L;
         ProductCreateResponse productCreateResponse = productService.save(productCreateRequest, memberId);
         return ResponseEntity.ok().body(productCreateResponse);
+    }
+
+    @GetMapping("/api/products/{productId}")
+    public ResponseEntity<ProductReadResponse> readProduct(@PathVariable Long productId) {
+        ProductReadResponse productReadResponse = productService.readProduct(1L, productId);
+        return ResponseEntity.ok()
+                .body(productReadResponse);
     }
 
     @PatchMapping("/api/products/{productId}")
