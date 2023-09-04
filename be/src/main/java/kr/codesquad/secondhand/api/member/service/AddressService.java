@@ -1,7 +1,7 @@
 package kr.codesquad.secondhand.api.member.service;
 
 import kr.codesquad.secondhand.api.member.domain.Address;
-import kr.codesquad.secondhand.api.member.dto.FindAddressesResponse;
+import kr.codesquad.secondhand.api.member.dto.AddressSliceResponse;
 import kr.codesquad.secondhand.api.member.repository.AddressRepositoryImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -13,9 +13,9 @@ import org.springframework.stereotype.Service;
 public class AddressService {
     private final AddressRepositoryImpl addressRepository;
 
-    public FindAddressesResponse getAddresses(int page, int size) {
+    public AddressSliceResponse getAddresses(int page, int size) {
         PageRequest pageRequest = PageRequest.of(page, size);
         Slice<Address> addressSlice = addressRepository.findAllBy(pageRequest);
-        return FindAddressesResponse.of(addressSlice.getContent(), addressSlice.hasNext());
+        return AddressSliceResponse.of(addressSlice.getContent(), addressSlice.hasNext());
     }
 }

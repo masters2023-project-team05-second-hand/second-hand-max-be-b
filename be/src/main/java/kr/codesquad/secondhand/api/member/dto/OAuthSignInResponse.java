@@ -1,11 +1,6 @@
 package kr.codesquad.secondhand.api.member.dto;
 
-import java.util.List;
-import java.util.stream.Collectors;
 import kr.codesquad.secondhand.api.jwt.domain.Jwt;
-import kr.codesquad.secondhand.api.member.domain.Address;
-import kr.codesquad.secondhand.api.member.domain.Member;
-import kr.codesquad.secondhand.api.member.domain.MemberAddress;
 import lombok.Getter;
 
 @Getter
