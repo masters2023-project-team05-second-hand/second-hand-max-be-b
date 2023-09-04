@@ -71,6 +71,10 @@ public class ImageService {
         return getThumbnailImgUrl(product.getId());
     }
 
+    public List<ProductImage> findAllByProductId(Long productId) {
+        return imageRepository.findAllByProductId(productId);
+    }
+
     private URL getThumbnailImgUrl(Long productId) {
         return imageRepository.findMinByProductId(productId);
     }

@@ -79,4 +79,9 @@ public class Product {
         this.category = category;
         this.thumbnailImgUrl = thumbnailImgUrl;
     }
+
+    public boolean isSellerIdEqualsTo(Long memberId) {
+        return seller.getId()
+                .equals(memberId);
+    }
 }

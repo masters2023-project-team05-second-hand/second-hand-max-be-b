@@ -5,6 +5,7 @@ import kr.codesquad.secondhand.api.product.dto.ProductCreateRequest;
 import kr.codesquad.secondhand.api.product.dto.ProductCreateResponse;
 import kr.codesquad.secondhand.api.product.dto.ProductModifyRequest;
 import kr.codesquad.secondhand.api.product.dto.ProductReadResponse;
+import kr.codesquad.secondhand.api.product.service.ProductFacadeService;
 import kr.codesquad.secondhand.api.product.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class ProductController {
 
+    private final ProductFacadeService productFacadeService;
     private final ProductService productService;
 
     @PostMapping("/api/products")
@@ -33,7 +35,7 @@ public class ProductController {
 
     @GetMapping("/api/products/{productId}")
     public ResponseEntity<ProductReadResponse> readProduct(@PathVariable Long productId) {
-        ProductReadResponse productReadResponse = productService.readProduct(1L, productId);
+        ProductReadResponse productReadResponse = productFacadeService.readProduct(1L, productId);
         return ResponseEntity.ok()
                 .body(productReadResponse);
     }
