@@ -1,0 +1,21 @@
+version: '3'
+
+services:
+
+  was:
+    container_name: second-hand-was
+    image: aladinjinny/second-hand-was:latest
+    ports:
+      - 8080:8080
+    environment:
+      - JASYPT_PASSWORD=${JASYPT_PASSWORD}
+
+  web-with-nginx:
+    container_name: second-hand-web-with-nginx
+    image: aladinjinny/second-hand-web-with-nginx:latest
+    volumes:
+      - /home/ubuntu/logs:/var/log/nginx
+    ports:
+      - 80:80
+    depends_on:
+      - was
