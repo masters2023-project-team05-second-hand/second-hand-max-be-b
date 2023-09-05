@@ -8,8 +8,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import kr.codesquad.secondhand.api.product.domain.Image;
 import kr.codesquad.secondhand.api.product.domain.Product;
+import kr.codesquad.secondhand.api.product.domain.ProductImage;
 import kr.codesquad.secondhand.api.product.repository.ImageRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,8 +26,8 @@ public class ImageService {
     private String bucket;
 
     public void saveAll(List<URL> imageUrls, Product product) {
-        List<Image> images = imageUrlsToImage(imageUrls, product);
-        imageRepository.saveAll(images);
+        List<ProductImage> productImages = imageUrlsToProductImage(imageUrls, product);
+        imageRepository.saveAll(productImages);
     }
 
     public List<URL> uploadMultiImagesToS3(List<MultipartFile> multipartFiles) throws IOException {
@@ -47,9 +47,9 @@ public class ImageService {
         return amazonS3.getUrl(bucket, uuid);
     }
 
-    public List<Image> imageUrlsToImage(List<URL> imageUrls, Product product) {
+    public List<ProductImage> imageUrlsToProductImage(List<URL> imageUrls, Product product) {
         return imageUrls.stream()
-                .map(imageUrl -> new Image(product, imageUrl))
+                .map(imageUrl -> new ProductImage(product, imageUrl))
                 .collect(Collectors.toUnmodifiableList());
     }
 
@@ -57,18 +57,22 @@ public class ImageService {
             throws IOException {
 
         if (!newImages.isEmpty()) {
-            List<Image> newImageEntities = imageUrlsToImage(uploadMultiImagesToS3(newImages), product);
-            imageRepository.saveAll(newImageEntities);
+            List<ProductImage> newProductImageEntities = imageUrlsToProductImage(uploadMultiImagesToS3(newImages), product);
+            imageRepository.saveAll(newProductImageEntities);
         }
 
-        List<Image> images = imageRepository.findAllByProductId(product.getId());
+        List<ProductImage> productImages = imageRepository.findAllByProductId(product.getId());
         if (deletedImageIds != null) {
             List<Long> deleteImgIds = deletedImageIds.stream()
-                    .map(deleteId -> images.get(deleteId).getId())
+                    .map(deleteId -> productImages.get(deleteId).getId())
                     .collect(Collectors.toUnmodifiableList());
             imageRepository.deleteAllById(deleteImgIds);
         }
         return getThumbnailImgUrl(product.getId());
+    }
+
+    public List<ProductImage> findAllByProductId(Long productId) {
+        return imageRepository.findAllByProductId(productId);
     }
 
     private URL getThumbnailImgUrl(Long productId) {

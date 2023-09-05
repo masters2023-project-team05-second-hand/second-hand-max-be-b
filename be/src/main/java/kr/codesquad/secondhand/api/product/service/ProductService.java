@@ -1,6 +1,5 @@
 package kr.codesquad.secondhand.api.product.service;
 
-import com.amazonaws.services.s3.AmazonS3;
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
@@ -26,18 +25,19 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class ProductService {
 
-    private final AmazonS3 amazonS3;
     private final MemberService memberService;
     private final StatusRepository statusRepository;
     private final ProductRepository productRepository;
     private final AddressRepositoryImpl addressRepository;
     private final CategoryRepositoryImpl categoryRepository;
+
     private final ImageService imageService;
+
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
 
     @Transactional
-    public ProductCreateResponse save(ProductCreateRequest productCreateRequest, Long memberId) throws IOException {
+    public ProductCreateResponse saveProduct(ProductCreateRequest productCreateRequest, Long memberId) throws IOException {
         //  TODO 썸네일 리사이징 기능 구현
         // 임시 썸네일 이미지
         List<URL> imageUrls = imageService.uploadMultiImagesToS3(productCreateRequest.getImages());
@@ -55,7 +55,12 @@ public class ProductService {
     }
 
     @Transactional
-    public void modifyProduct(Long productId, ProductModifyRequest productModifyRequest) throws IOException {
+    public Product findById(Long productId) {
+        return productRepository.findById(productId).orElseThrow();
+    }
+
+    @Transactional
+    public void updateProduct(Long productId, ProductModifyRequest productModifyRequest) throws IOException {
         Product product = productRepository.findById(productId).orElseThrow();
         URL thumbnailImgUrl = imageService.updateImageUrls(product, productModifyRequest.getNewImages(),
                 productModifyRequest.getDeletedImgIds());
