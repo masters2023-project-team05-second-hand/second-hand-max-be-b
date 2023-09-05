@@ -1,5 +1,7 @@
 package kr.codesquad.secondhand.api.member.domain;
 
+import java.util.ArrayList;
+import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -39,4 +41,17 @@ public class MemberAddress {
     public void updateLastVisited(boolean isLastVisited) {
         this.isLastVisited = isLastVisited;
     }
+
+    public static List<MemberAddress> of(Member member, List<Address> addresses) {
+        List<MemberAddress> memberAddresses = new ArrayList<>();
+
+        for (int i = 0; i < addresses.size(); i++) {
+            Address address = addresses.get(i);
+            boolean isLastVisited = i == addresses.size() - 1;
+            memberAddresses.add(new MemberAddress(member, address, isLastVisited));
+        }
+
+        return memberAddresses;
+    }
 }
+
