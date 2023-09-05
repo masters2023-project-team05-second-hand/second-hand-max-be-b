@@ -68,4 +68,11 @@ public class ProductService {
         Category category = categoryRepository.getReferenceById(productModifyRequest.getCategoryId());
         product.updateProduct(productModifyRequest, address, category, thumbnailImgUrl);
     }
+
+    @Transactional
+    public void deleteProduct(Long productId) {
+        productRepository.deleteById(productId);
+
+
+    }
 }

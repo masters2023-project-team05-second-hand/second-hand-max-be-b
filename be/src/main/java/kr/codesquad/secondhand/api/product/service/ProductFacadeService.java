@@ -26,4 +26,11 @@ public class ProductFacadeService {
 
         return ProductReadResponse.of(isSeller, product, productImages, statuses);
     }
+
+    @Transactional
+    public void deleteProduct(Long productId) {
+        // 주의: Entity 영속성으로 인해 순서 바뀌면 이미지 삭제 안됨
+        imageService.deleteProductImages(productId);
+        productService.deleteProduct(productId);
+    }
 }
