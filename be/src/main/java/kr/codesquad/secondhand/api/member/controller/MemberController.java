@@ -2,7 +2,7 @@ package kr.codesquad.secondhand.api.member.controller;
 
 import java.util.List;
 import kr.codesquad.secondhand.api.member.dto.AddressSliceResponse;
-import kr.codesquad.secondhand.api.member.dto.LastVisitedAddressRequest;
+import kr.codesquad.secondhand.api.member.dto.LastVisitedUpdateRequest;
 import kr.codesquad.secondhand.api.member.dto.MemberAddressModifyRequest;
 import kr.codesquad.secondhand.api.member.dto.MemberAddressResponse;
 import kr.codesquad.secondhand.api.member.dto.OAuthSignInRequest;
@@ -55,10 +55,10 @@ public class MemberController {
     }
 
     @PatchMapping("/api/members/addresses")
-    public ResponseEntity setLastVisitedAddress(@RequestBody LastVisitedAddressRequest lastVisitedAddressRequest) {
+    public ResponseEntity setLastVisitedAddress(@RequestBody LastVisitedUpdateRequest lastVisitedUpdateRequest) {
         // 임시 id
         Long memberId = 1L;
-        memberService.setLastVisitedAddress(memberId, lastVisitedAddressRequest.getLastVisitedAddressId());
+        memberService.setLastVisitedAddress(memberId, lastVisitedUpdateRequest.getLastVisitedAddressId());
         return ResponseEntity.ok().build();
     }
 

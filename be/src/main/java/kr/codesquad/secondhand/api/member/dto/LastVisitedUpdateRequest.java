@@ -6,11 +6,11 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class LastVisitedAddressRequest {
+public class LastVisitedUpdateRequest {
 
     private Long lastVisitedAddressId;
 
-    public LastVisitedAddressRequest(Long lastVisitedAddressId) {
+    public LastVisitedUpdateRequest(Long lastVisitedAddressId) {
         this.lastVisitedAddressId = lastVisitedAddressId;
     }
 }
