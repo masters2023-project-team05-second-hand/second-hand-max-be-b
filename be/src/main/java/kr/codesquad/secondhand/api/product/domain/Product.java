@@ -13,7 +13,6 @@ import javax.persistence.ManyToOne;
 import kr.codesquad.secondhand.api.category.domain.Category;
 import kr.codesquad.secondhand.api.member.domain.Address;
 import kr.codesquad.secondhand.api.member.domain.Member;
-import kr.codesquad.secondhand.api.product.dto.ProductModifyRequest;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -66,11 +65,11 @@ public class Product {
         this.thumbnailImgUrl = thumbnailImgUrl;
     }
 
-    public void updateProduct(ProductModifyRequest productModifyRequest, Address address, Category category,
+    public void updateProduct(String title, String content, Long price, Address address, Category category,
                               URL thumbnailImgUrl) {
-        this.title = productModifyRequest.getTitle();
-        this.content = productModifyRequest.getContent();
-        this.price = productModifyRequest.getPrice();
+        this.title = title;
+        this.content = content;
+        this.price = price;
         this.address = address;
         this.category = category;
         this.thumbnailImgUrl = thumbnailImgUrl;
