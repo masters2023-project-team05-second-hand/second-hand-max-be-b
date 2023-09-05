@@ -31,7 +31,7 @@ public class ProductController {
             throws IOException {
         //TODO 인증 필터 구현 시 토큰에서 memberId 받아올 예정
         Long memberId = 1L;
-        ProductCreateResponse productCreateResponse = productService.saveProduct(productCreateRequest, memberId);
+        ProductCreateResponse productCreateResponse = productFacadeService.saveProduct(memberId, productCreateRequest);
         return ResponseEntity.ok()
                 .body(productCreateResponse);
     }
@@ -46,7 +46,7 @@ public class ProductController {
     @PatchMapping("/api/products/{productId}")
     public ResponseEntity<String> updateProduct(@PathVariable Long productId,
                                                 @ModelAttribute ProductModifyRequest productModifyRequest) throws IOException {
-        productService.updateProduct(productId, productModifyRequest);
+        productFacadeService.updateProduct(productId, productModifyRequest);
         return ResponseEntity.ok()
                 .build();
     }
