@@ -64,10 +64,11 @@ public class MemberController {
     }
 
     @PatchMapping("/api/members/addresses")
-    public ResponseEntity<String> setLastVisitedAddress(@RequestBody LastVisitedUpdateRequest lastVisitedUpdateRequest) {
+    public ResponseEntity<String> setLastVisitedAddress(
+            @RequestBody LastVisitedUpdateRequest lastVisitedUpdateRequest) {
         // 임시 id
         Long memberId = 1L;
-        memberService.setLastVisitedAddress(memberId, lastVisitedUpdateRequest.getLastVisitedAddressId());
+        memberFacadeService.updateLastVisitedAddress(memberId, lastVisitedUpdateRequest.getLastVisitedAddressId());
         return ResponseEntity.ok()
                 .build();
     }

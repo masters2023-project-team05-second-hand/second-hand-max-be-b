@@ -20,12 +20,15 @@ public class MemberFacadeService {
 
     private final JwtService jwtService;
     private final MemberService memberService;
+    private final MemberAddressService memberAddressService;
+
     private final AddressRepositoryImpl addressRepository;
 
+
     @Transactional
-    public OAuthSignInResponse login(Member member){
+    public OAuthSignInResponse login(Member member) {
         Boolean existMember = memberService.isExistMember(member.getSignInType().getId(), member.getEmail());
-        if(!existMember){
+        if (!existMember) {
             memberService.save(member);
         }
         Jwt jwt = jwtService.issueJwt(member.getId());
@@ -33,15 +36,20 @@ public class MemberFacadeService {
     }
 
     @Transactional
-    public List<MemberAddressResponse> updateMemberAddress(Long memberId, List<Long> addressIds){
-        memberService.clearMemberAddressByMemberId(memberId);
+    public List<MemberAddressResponse> updateMemberAddress(Long memberId, List<Long> addressIds) {
+        memberAddressService.clearMemberAddressByMemberId(memberId);
         List<Address> addresses = getAddressesByIds(addressIds);
         Member member = memberService.getMemberReferenceById(memberId);
-        List<MemberAddress> memberAddresses = memberService.getMemberAddresses(member, addresses);
-        return memberService.modifyMemberAddresses(memberAddresses);
+        List<MemberAddress> memberAddresses = MemberAddress.of(member, addresses);
+        return memberAddressService.modifyMemberAddresses(memberAddresses);
     }
 
-    public List<Address> getAddressesByIds(List<Long> addressIds){
+    @Transactional
+    public void updateLastVisitedAddress(Long memberId, Long lastVisitedAddressId) {
+        memberAddressService.updateLastVisitedAddress(memberId, lastVisitedAddressId);
+    }
+
+    private List<Address> getAddressesByIds(List<Long> addressIds) {
         return addressIds.stream()
                 .map(addressRepository::getReferenceById)
                 .collect(Collectors.toUnmodifiableList());
