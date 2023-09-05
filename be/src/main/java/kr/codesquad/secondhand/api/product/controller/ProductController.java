@@ -9,6 +9,7 @@ import kr.codesquad.secondhand.api.product.service.ProductFacadeService;
 import kr.codesquad.secondhand.api.product.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -35,7 +36,7 @@ public class ProductController {
 
     @GetMapping("/api/products/{productId}")
     public ResponseEntity<ProductReadResponse> readProduct(@PathVariable Long productId) {
-        ProductReadResponse productReadResponse = productFacadeService.readProduct(1L, productId);
+        ProductReadResponse productReadResponse = productFacadeService.readProduct(1L, productId); // TODO memberId 임시 처리
         return ResponseEntity.ok()
                 .body(productReadResponse);
     }
@@ -44,6 +45,13 @@ public class ProductController {
     public ResponseEntity<String> updateProduct(@PathVariable Long productId,
                                                 @ModelAttribute ProductModifyRequest productModifyRequest) throws IOException {
         productService.updateProduct(productId, productModifyRequest);
+        return ResponseEntity.ok()
+                .build();
+    }
+
+    @DeleteMapping("/api/products/{productId}")
+    public ResponseEntity<String> deleteProduct(@PathVariable Long productId) {
+        productFacadeService.deleteProduct(productId);
         return ResponseEntity.ok()
                 .build();
     }

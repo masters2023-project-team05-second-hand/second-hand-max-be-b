@@ -22,6 +22,7 @@ public class ImageService {
 
     private final AmazonS3 amazonS3;
     private final ImageRepository imageRepository;
+
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
 
@@ -77,5 +78,9 @@ public class ImageService {
 
     private URL getThumbnailImgUrl(Long productId) {
         return imageRepository.findMinByProductId(productId);
+    }
+
+    public void deleteProductImages(Long productId) {
+        imageRepository.deleteAllByProductId(productId);
     }
 }

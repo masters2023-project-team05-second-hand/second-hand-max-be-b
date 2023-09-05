@@ -10,6 +10,8 @@ public interface ImageRepository extends JpaRepository<ProductImage, Long> {
 
     List<ProductImage> findAllByProductId(Long ProductId);
 
+    void deleteAllByProductId(Long productId);
+
     @Query(value = "select i.url from product_image i where i.product_id = ?1 order by id asc limit 1", nativeQuery = true)
     URL findMinByProductId(Long productId);
 
