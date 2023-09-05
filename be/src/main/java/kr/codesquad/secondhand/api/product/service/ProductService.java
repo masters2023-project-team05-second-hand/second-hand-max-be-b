@@ -14,6 +14,7 @@ import kr.codesquad.secondhand.api.product.domain.ProductStatus;
 import kr.codesquad.secondhand.api.product.dto.ProductCreateRequest;
 import kr.codesquad.secondhand.api.product.dto.ProductCreateResponse;
 import kr.codesquad.secondhand.api.product.dto.ProductModifyRequest;
+import kr.codesquad.secondhand.api.product.dto.ProductStatusUpdateRequest;
 import kr.codesquad.secondhand.api.product.repository.ProductRepository;
 import kr.codesquad.secondhand.api.product.repository.StatusRepository;
 import lombok.RequiredArgsConstructor;
@@ -70,9 +71,14 @@ public class ProductService {
     }
 
     @Transactional
+    public void updateProductStatus(Long productId, ProductStatusUpdateRequest request) {
+        Product product = productRepository.findById(productId).orElseThrow();
+        ProductStatus status = statusRepository.getReferenceById(request.getStatusId());
+        product.updateStatus(status);
+    }
+
+    @Transactional
     public void deleteProduct(Long productId) {
         productRepository.deleteById(productId);
-
-
     }
 }

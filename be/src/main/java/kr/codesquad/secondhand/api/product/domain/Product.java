@@ -47,18 +47,17 @@ public class Product {
     @JoinColumn(name = "category_id")
     private Category category;
 
+    @CreationTimestamp
+    private Date createdTime;
+
     private String title;
     private String content;
     private Long price;
-
-    @CreationTimestamp
-    private Date createdTime;
     private URL thumbnailImgUrl;
 
     @Builder
     public Product(Member seller, ProductStatus status, Address address, Category category, String title,
-                   String content,
-                   Long price, Date createdTime, URL thumbnailImgUrl) {
+                   String content, Long price, Date createdTime, URL thumbnailImgUrl) {
         this.seller = seller;
         this.status = status;
         this.address = address;
@@ -78,6 +77,10 @@ public class Product {
         this.address = address;
         this.category = category;
         this.thumbnailImgUrl = thumbnailImgUrl;
+    }
+
+    public void updateStatus(ProductStatus status) {
+        this.status = status;
     }
 
     public boolean isSellerIdEqualsTo(Long memberId) {
