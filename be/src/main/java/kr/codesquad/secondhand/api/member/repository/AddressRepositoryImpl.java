@@ -8,4 +8,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface AddressRepositoryImpl extends JpaRepository<Address, Long> {
 
     Slice<Address> findAllBy(Pageable pageable);
+
+    Address getReferenceById(Long id);
 }

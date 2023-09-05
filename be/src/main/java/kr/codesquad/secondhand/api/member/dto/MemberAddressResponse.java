@@ -1,5 +1,7 @@
 package kr.codesquad.secondhand.api.member.dto;
 
+import java.util.List;
+import java.util.stream.Collectors;
 import kr.codesquad.secondhand.api.member.domain.Address;
 import kr.codesquad.secondhand.api.member.domain.MemberAddress;
 import lombok.Getter;
@@ -17,9 +19,12 @@ public class MemberAddressResponse {
         this.isLastVisited = isLastVisited;
     }
 
-    public static MemberAddressResponse from(MemberAddress memberAddress) {
-        Address address = memberAddress.getAddress();
-        return new MemberAddressResponse(address.getId(), address.getName(),
-                memberAddress.isLastVisited());
+    public static List<MemberAddressResponse> from(List<MemberAddress> memberAddresses) {
+        return memberAddresses.stream()
+                .map(memberAddress -> {
+                    Address address = memberAddress.getAddress();
+                    return new MemberAddressResponse(address.getId(), address.getName(), memberAddress.isLastVisited());
+                })
+                .collect(Collectors.toUnmodifiableList());
     }
 }

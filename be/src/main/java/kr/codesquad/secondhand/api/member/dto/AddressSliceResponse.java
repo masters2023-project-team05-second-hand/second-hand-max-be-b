@@ -7,6 +7,7 @@ import lombok.Getter;
 
 @Getter
 public class AddressSliceResponse {
+
     public List<AddressesResponse> addresses;
     public Boolean hasNext;
 
