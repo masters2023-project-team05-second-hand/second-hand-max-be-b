@@ -36,10 +36,6 @@ public class Product {
     private Member seller;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "status_id")
-    private ProductStatus status;
-
-    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "address_id")
     private Address address;
 
@@ -50,16 +46,17 @@ public class Product {
     @CreationTimestamp
     private Date createdTime;
 
+    private Integer statusId;
     private String title;
     private String content;
     private Long price;
     private URL thumbnailImgUrl;
 
     @Builder
-    public Product(Member seller, ProductStatus status, Address address, Category category, String title,
+    public Product(Member seller, Integer statusId, Address address, Category category, String title,
                    String content, Long price, Date createdTime, URL thumbnailImgUrl) {
         this.seller = seller;
-        this.status = status;
+        this.statusId = statusId;
         this.address = address;
         this.category = category;
         this.title = title;
@@ -79,8 +76,8 @@ public class Product {
         this.thumbnailImgUrl = thumbnailImgUrl;
     }
 
-    public void updateStatus(ProductStatus status) {
-        this.status = status;
+    public void updateStatus(Status status) {
+        this.statusId = status.getId();
     }
 
     public boolean isSellerIdEqualsTo(Long memberId) {

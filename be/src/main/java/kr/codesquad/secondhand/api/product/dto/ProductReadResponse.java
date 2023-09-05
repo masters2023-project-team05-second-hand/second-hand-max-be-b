@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import kr.codesquad.secondhand.api.product.domain.Product;
 import kr.codesquad.secondhand.api.product.domain.ProductImage;
-import kr.codesquad.secondhand.api.product.domain.ProductStatus;
+import kr.codesquad.secondhand.api.product.domain.Status;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -19,21 +19,21 @@ public class ProductReadResponse {
     private final List<ProductStatusResponse> statuses;
 //    private Stats stats; redis로 구현 필요
 
-
     private ProductReadResponse(boolean isSeller, ProductResponse product, List<ProductImageResponse> images,
-                               List<ProductStatusResponse> statuses) {
+                                List<ProductStatusResponse> statuses) {
         this.isSeller = isSeller;
         this.product = product;
         this.images = images;
         this.statuses = statuses;
     }
 
-    public static ProductReadResponse of(boolean isSeller, Product product, List<ProductImage> productImages, List<ProductStatus> status) {
+    public static ProductReadResponse of(boolean isSeller, Product product, List<ProductImage> productImages,
+                                         List<Status> statuses) {
         ProductResponse productResponse = ProductResponse.from(product);
         List<ProductImageResponse> productImageResponse = productImages.stream()
                 .map(ProductImageResponse::from)
                 .collect(Collectors.toUnmodifiableList());
-        List<ProductStatusResponse> productStatusResponse = status.stream()
+        List<ProductStatusResponse> productStatusResponse = statuses.stream()
                 .map(ProductStatusResponse::from)
                 .collect(Collectors.toUnmodifiableList());
         return new ProductReadResponse(isSeller, productResponse, productImageResponse, productStatusResponse);
@@ -46,10 +46,10 @@ public class ProductReadResponse {
         private final String contents;
         private final Long price;
         private final Date createdTime; // 시간 타입 뭘로 할지 정해야 함
-        private final Long productStatus;
+        private final Integer productStatus;
 
         @Builder
-        private ProductResponse(String title, String contents, Long price, Date createdTime, Long productStatus) {
+        private ProductResponse(String title, String contents, Long price, Date createdTime, Integer productStatus) {
             this.title = title;
             this.contents = contents;
             this.price = price;
@@ -63,7 +63,7 @@ public class ProductReadResponse {
                     .contents(product.getContent())
                     .price(product.getPrice())
                     .createdTime(product.getCreatedTime())
-                    .productStatus(product.getStatus().getId())
+                    .productStatus(product.getStatusId())
                     .build();
         }
     }
@@ -79,7 +79,7 @@ public class ProductReadResponse {
             this.url = url;
         }
 
-        public static ProductImageResponse from(ProductImage productImage) {
+        private static ProductImageResponse from(ProductImage productImage) {
             return new ProductImageResponse(productImage.getId(), productImage.getUrl());
         }
     }
@@ -87,16 +87,16 @@ public class ProductReadResponse {
     @Getter
     private static class ProductStatusResponse {
 
-        private final Long id;
+        private final Integer id;
         private final String type;
 
-        public ProductStatusResponse(Long id, String type) {
+        private ProductStatusResponse(Integer id, String type) {
             this.id = id;
             this.type = type;
         }
 
-        public static ProductStatusResponse from(ProductStatus productStatus) {
-            return new ProductStatusResponse(productStatus.getId(), productStatus.getType());
+        private static ProductStatusResponse from(Status status) {
+            return new ProductStatusResponse(status.getId(), status.getType());
         }
     }
 }
