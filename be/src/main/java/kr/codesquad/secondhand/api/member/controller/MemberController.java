@@ -6,8 +6,8 @@ import kr.codesquad.secondhand.api.member.dto.request.MemberAddressUpdateRequest
 import kr.codesquad.secondhand.api.member.dto.request.OAuthSignInRequest;
 import kr.codesquad.secondhand.api.member.dto.response.MemberAddressResponse;
 import kr.codesquad.secondhand.api.member.dto.response.OAuthSignInResponse;
+import kr.codesquad.secondhand.api.member.service.MemberAddressService;
 import kr.codesquad.secondhand.api.member.service.MemberFacadeService;
-import kr.codesquad.secondhand.api.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -21,8 +21,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class MemberController {
 
-    private final MemberService memberService;
     private final MemberFacadeService memberFacadeService;
+    private final MemberAddressService memberAddressService;
 
     /**
      * 로그인 요청
@@ -41,7 +41,7 @@ public class MemberController {
             @RequestBody MemberAddressUpdateRequest memberAddressUpdateRequest) {
         // 임시 id
         Long memberId = 1L;
-        List<MemberAddressResponse> memberAddressResponses = memberFacadeService.updateMemberAddress(
+        List<MemberAddressResponse> memberAddressResponses = memberFacadeService.updateMemberAddresses(
                 memberId,
                 memberAddressUpdateRequest.getAddressIds()
         );
@@ -54,9 +54,8 @@ public class MemberController {
             @RequestBody LastVisitedUpdateRequest lastVisitedUpdateRequest) {
         // 임시 id
         Long memberId = 1L;
-        memberFacadeService.updateLastVisitedAddress(memberId, lastVisitedUpdateRequest.getLastVisitedAddressId());
+        memberAddressService.updateLastVisitedAddress(memberId, lastVisitedUpdateRequest.getLastVisitedAddressId());
         return ResponseEntity.ok()
                 .build();
     }
-
 }
