@@ -3,7 +3,6 @@ package kr.codesquad.secondhand.api.oauth.domain;
 import java.util.Arrays;
 import java.util.Map;
 import kr.codesquad.secondhand.api.member.domain.Member;
-import kr.codesquad.secondhand.api.member.domain.SignInType;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -32,9 +31,9 @@ public class OAuthProfile {
                 .of(attributes);
     }
 
-    public Member toMember(SignInType signInType) {
+    public Member toMember(OAuthAttributes oAuthAttributes) {
         return Member.builder()
-                .signInType(signInType)
+                .oAuthAttributes(oAuthAttributes)
                 .email(email)
                 .nickname(name)
                 .profileImgUrl(imageUrl)

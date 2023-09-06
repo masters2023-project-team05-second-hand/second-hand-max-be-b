@@ -5,6 +5,6 @@ import lombok.Getter;
 @Getter
 public class ProductStatusUpdateRequest {
 
-    private Long statusId;
+    private Integer statusId;
 
 }
