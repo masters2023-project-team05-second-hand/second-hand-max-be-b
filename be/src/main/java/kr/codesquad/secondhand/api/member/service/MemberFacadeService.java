@@ -2,14 +2,14 @@ package kr.codesquad.secondhand.api.member.service;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import kr.codesquad.secondhand.api.address.domain.Address;
+import kr.codesquad.secondhand.api.address.repository.AddressRepositoryImpl;
 import kr.codesquad.secondhand.api.jwt.domain.Jwt;
 import kr.codesquad.secondhand.api.jwt.service.JwtService;
-import kr.codesquad.secondhand.api.member.domain.Address;
 import kr.codesquad.secondhand.api.member.domain.Member;
 import kr.codesquad.secondhand.api.member.domain.MemberAddress;
 import kr.codesquad.secondhand.api.member.dto.MemberAddressResponse;
 import kr.codesquad.secondhand.api.member.dto.OAuthSignInResponse;
-import kr.codesquad.secondhand.api.member.repository.AddressRepositoryImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

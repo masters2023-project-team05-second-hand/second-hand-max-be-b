@@ -1,4 +1,4 @@
-package kr.codesquad.secondhand.api.member.domain;
+package kr.codesquad.secondhand.api.address.domain;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;

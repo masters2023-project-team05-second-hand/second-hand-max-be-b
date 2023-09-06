@@ -2,8 +2,8 @@ package kr.codesquad.secondhand.api.product.dto;
 
 import java.net.URL;
 import java.util.List;
+import kr.codesquad.secondhand.api.address.domain.Address;
 import kr.codesquad.secondhand.api.category.domain.Category;
-import kr.codesquad.secondhand.api.member.domain.Address;
 import kr.codesquad.secondhand.api.member.domain.Member;
 import kr.codesquad.secondhand.api.product.domain.Product;
 import lombok.Getter;

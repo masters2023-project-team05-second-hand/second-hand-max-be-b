@@ -1,8 +1,8 @@
-package kr.codesquad.secondhand.api.member.service;
+package kr.codesquad.secondhand.api.address.service;
 
-import kr.codesquad.secondhand.api.member.domain.Address;
+import kr.codesquad.secondhand.api.address.domain.Address;
+import kr.codesquad.secondhand.api.address.repository.AddressRepositoryImpl;
 import kr.codesquad.secondhand.api.member.dto.AddressSliceResponse;
-import kr.codesquad.secondhand.api.member.repository.AddressRepositoryImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
@@ -17,9 +17,5 @@ public class AddressService {
         PageRequest pageRequest = PageRequest.of(page, size);
         Slice<Address> addressSlice = addressRepository.findAllBy(pageRequest);
         return AddressSliceResponse.of(addressSlice.getContent(), addressSlice.hasNext());
-    }
-
-    public Address findReferenceById(Long id) {
-        return addressRepository.getReferenceById(id);
     }
 }

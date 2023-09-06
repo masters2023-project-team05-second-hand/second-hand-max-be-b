@@ -2,8 +2,8 @@ package kr.codesquad.secondhand.api.product.service;
 
 import java.io.IOException;
 import java.net.URL;
+import kr.codesquad.secondhand.api.address.domain.Address;
 import kr.codesquad.secondhand.api.category.domain.Category;
-import kr.codesquad.secondhand.api.member.domain.Address;
 import kr.codesquad.secondhand.api.product.domain.Product;
 import kr.codesquad.secondhand.api.product.domain.Status;
 import kr.codesquad.secondhand.api.product.dto.ProductStatusUpdateRequest;
