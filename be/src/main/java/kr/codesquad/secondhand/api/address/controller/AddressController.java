@@ -1,7 +1,7 @@
 package kr.codesquad.secondhand.api.address.controller;
 
 import kr.codesquad.secondhand.api.address.service.AddressService;
-import kr.codesquad.secondhand.api.member.dto.AddressSliceResponse;
+import kr.codesquad.secondhand.api.member.dto.response.AddressSliceResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;

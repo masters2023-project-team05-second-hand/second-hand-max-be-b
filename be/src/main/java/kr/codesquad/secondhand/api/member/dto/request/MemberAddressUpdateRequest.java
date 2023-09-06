@@ -1,4 +1,4 @@
-package kr.codesquad.secondhand.api.member.dto;
+package kr.codesquad.secondhand.api.member.dto.request;
 
 import java.util.List;
 import lombok.AccessLevel;
@@ -7,11 +7,8 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class MemberAddressModifyRequest {
+public class MemberAddressUpdateRequest {
 
     private List<Long> addressIds;
 
-    public MemberAddressModifyRequest(List<Long> addressIds) {
-        this.addressIds = addressIds;
-    }
 }

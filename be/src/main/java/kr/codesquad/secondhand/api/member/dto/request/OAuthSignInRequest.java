@@ -1,4 +1,4 @@
-package kr.codesquad.secondhand.api.member.dto;
+package kr.codesquad.secondhand.api.member.dto.request;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

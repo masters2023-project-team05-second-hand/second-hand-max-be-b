@@ -1,4 +1,4 @@
-package kr.codesquad.secondhand.api.member.dto;
+package kr.codesquad.secondhand.api.member.dto.response;
 
 import java.util.List;
 import java.util.stream.Collectors;

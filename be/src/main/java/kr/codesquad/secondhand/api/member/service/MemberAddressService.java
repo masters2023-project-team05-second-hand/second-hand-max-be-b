@@ -2,7 +2,7 @@ package kr.codesquad.secondhand.api.member.service;
 
 import java.util.List;
 import kr.codesquad.secondhand.api.member.domain.MemberAddress;
-import kr.codesquad.secondhand.api.member.dto.MemberAddressResponse;
+import kr.codesquad.secondhand.api.member.dto.response.MemberAddressResponse;
 import kr.codesquad.secondhand.api.member.repository.MemberAddressRepositoryImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -15,7 +15,7 @@ public class MemberAddressService {
     private final MemberAddressRepositoryImpl memberAddressRepository;
 
     @Transactional
-    public List<MemberAddressResponse> modifyMemberAddresses(List<MemberAddress> memberAddresses) {
+    public List<MemberAddressResponse> updateMemberAddresses(List<MemberAddress> memberAddresses) {
         List<MemberAddress> memberAddressesResult = memberAddressRepository.saveAll(memberAddresses);
         return MemberAddressResponse.from(memberAddressesResult);
     }
@@ -29,7 +29,7 @@ public class MemberAddressService {
         lastVisitedAddress.updateLastVisited(true);
     }
 
-    public void clearMemberAddressByMemberId(Long memberId) {
+    public void deleteMemberAddressByMemberId(Long memberId) {
         if (memberAddressRepository.existsByMemberId(memberId)) {
             memberAddressRepository.deleteByMemberId(memberId);
         }

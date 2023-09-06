@@ -1,4 +1,4 @@
-package kr.codesquad.secondhand.api.member.dto;
+package kr.codesquad.secondhand.api.member.dto.response;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -8,8 +8,8 @@ import lombok.Getter;
 @Getter
 public class AddressSliceResponse {
 
-    public List<AddressesResponse> addresses;
-    public Boolean hasNext;
+    private final List<AddressesResponse> addresses;
+    private final Boolean hasNext;
 
     public AddressSliceResponse(List<AddressesResponse> addresses, Boolean hasNext) {
         this.addresses = addresses;

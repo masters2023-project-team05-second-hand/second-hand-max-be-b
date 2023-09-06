@@ -8,8 +8,8 @@ import kr.codesquad.secondhand.api.jwt.domain.Jwt;
 import kr.codesquad.secondhand.api.jwt.service.JwtService;
 import kr.codesquad.secondhand.api.member.domain.Member;
 import kr.codesquad.secondhand.api.member.domain.MemberAddress;
-import kr.codesquad.secondhand.api.member.dto.MemberAddressResponse;
-import kr.codesquad.secondhand.api.member.dto.OAuthSignInResponse;
+import kr.codesquad.secondhand.api.member.dto.response.MemberAddressResponse;
+import kr.codesquad.secondhand.api.member.dto.response.OAuthSignInResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,11 +37,11 @@ public class MemberFacadeService {
 
     @Transactional
     public List<MemberAddressResponse> updateMemberAddress(Long memberId, List<Long> addressIds) {
-        memberAddressService.clearMemberAddressByMemberId(memberId);
+        memberAddressService.deleteMemberAddressByMemberId(memberId);
         List<Address> addresses = getAddressesByIds(addressIds);
         Member member = memberService.getMemberReferenceById(memberId);
         List<MemberAddress> memberAddresses = MemberAddress.of(member, addresses);
-        return memberAddressService.modifyMemberAddresses(memberAddresses);
+        return memberAddressService.updateMemberAddresses(memberAddresses);
     }
 
     @Transactional

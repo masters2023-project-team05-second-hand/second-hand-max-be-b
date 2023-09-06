@@ -2,11 +2,11 @@ package kr.codesquad.secondhand.api.member.controller;
 
 import java.util.List;
 import kr.codesquad.secondhand.api.member.domain.Member;
-import kr.codesquad.secondhand.api.member.dto.LastVisitedUpdateRequest;
-import kr.codesquad.secondhand.api.member.dto.MemberAddressModifyRequest;
-import kr.codesquad.secondhand.api.member.dto.MemberAddressResponse;
-import kr.codesquad.secondhand.api.member.dto.OAuthSignInRequest;
-import kr.codesquad.secondhand.api.member.dto.OAuthSignInResponse;
+import kr.codesquad.secondhand.api.member.dto.request.LastVisitedUpdateRequest;
+import kr.codesquad.secondhand.api.member.dto.request.MemberAddressUpdateRequest;
+import kr.codesquad.secondhand.api.member.dto.request.OAuthSignInRequest;
+import kr.codesquad.secondhand.api.member.dto.response.MemberAddressResponse;
+import kr.codesquad.secondhand.api.member.dto.response.OAuthSignInResponse;
 import kr.codesquad.secondhand.api.member.service.MemberFacadeService;
 import kr.codesquad.secondhand.api.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
@@ -40,12 +40,12 @@ public class MemberController {
 
     @PutMapping("/api/members/addresses")
     public ResponseEntity<List<MemberAddressResponse>> updateMemberAddresses(
-            @RequestBody MemberAddressModifyRequest memberAddressModifyRequest) {
+            @RequestBody MemberAddressUpdateRequest memberAddressUpdateRequest) {
         // 임시 id
         Long memberId = 1L;
         List<MemberAddressResponse> memberAddressResponses = memberFacadeService.updateMemberAddress(
                 memberId,
-                memberAddressModifyRequest.getAddressIds()
+                memberAddressUpdateRequest.getAddressIds()
         );
         return ResponseEntity.ok()
                 .body(memberAddressResponses);

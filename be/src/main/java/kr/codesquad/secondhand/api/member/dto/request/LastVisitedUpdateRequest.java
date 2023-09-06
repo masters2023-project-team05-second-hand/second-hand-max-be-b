@@ -1,4 +1,4 @@
-package kr.codesquad.secondhand.api.member.dto;
+package kr.codesquad.secondhand.api.member.dto.request;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -10,7 +10,4 @@ public class LastVisitedUpdateRequest {
 
     private Long lastVisitedAddressId;
 
-    public LastVisitedUpdateRequest(Long lastVisitedAddressId) {
-        this.lastVisitedAddressId = lastVisitedAddressId;
-    }
 }
