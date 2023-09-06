@@ -25,13 +25,11 @@ public class MemberFacadeService {
     private final AddressService addressService;
 
     @Transactional
-    public OAuthSignInResponse login(Member member) {
-        Boolean existMember = memberService.isExistMember(member.getSignInTypeId(), member.getEmail());
-        if (!existMember) {
-            memberService.save(member);
-        }
-        Jwt jwt = jwtService.issueJwt(member.getId());
-        return OAuthSignInResponse.from(jwt);
+    public OAuthSignInResponse login(String providerName, String authorizationCode) {
+        OAuthProfile oAuthProfile = oAuthService.requestOauthProfile(providerName, authorizationCode);
+        Long memberId = memberService.oAuthLogin(providerName, oAuthProfile);
+        Jwt tokens = jwtService.issueJwt(memberId);
+        return OAuthSignInResponse.from(tokens);
     }
 
     @Transactional
