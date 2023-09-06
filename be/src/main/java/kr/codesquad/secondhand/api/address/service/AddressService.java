@@ -24,4 +24,8 @@ public class AddressService {
     public List<Address> findAddressesByIds(List<Long> addressIds) {
         return addressRepository.findAllById(addressIds);
     }
+
+    public Address getReferenceById(Long addressId) {
+        return addressRepository.getReferenceById(addressId);
+    }
 }

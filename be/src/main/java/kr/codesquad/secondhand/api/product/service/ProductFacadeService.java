@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 import kr.codesquad.secondhand.api.address.domain.Address;
-import kr.codesquad.secondhand.api.address.repository.AddressRepositoryImpl;
+import kr.codesquad.secondhand.api.address.service.AddressService;
 import kr.codesquad.secondhand.api.category.domain.Category;
 import kr.codesquad.secondhand.api.member.domain.Member;
 import kr.codesquad.secondhand.api.member.service.MemberService;
@@ -26,7 +26,7 @@ public class ProductFacadeService {
 
     private final ProductService productService;
     private final ImageService imageService;
-    private final AddressRepositoryImpl addressRepository;
+    private final AddressService addressService;
     private final MemberService memberService;
 
     @Transactional
@@ -52,7 +52,7 @@ public class ProductFacadeService {
         List<URL> imageUrls = imageService.uploadMultiImagesToS3(productCreateRequest.getImages());
         URL thumbnailImgUrl = imageUrls.get(0); // 임시 썸네일 이미지
         Member seller = memberService.getMemberReferenceById(memberId);
-        Address address = addressRepository.getReferenceById(productCreateRequest.getAddressId());
+        Address address = addressService.getReferenceById(productCreateRequest.getAddressId());
         Category category = Category.from(productCreateRequest.getCategoryId());
         Integer statusId = Status.FOR_SALE.getId();
         Product product = productCreateRequest.toEntity(seller, statusId, address, category, thumbnailImgUrl);
@@ -67,7 +67,7 @@ public class ProductFacadeService {
         Product product = productService.findById(productId);
         List<MultipartFile> newImages = productModifyRequest.getNewImages();
         List<Integer> deleteImgIds = productModifyRequest.getDeletedImgIds();
-        Address address = addressRepository.getReferenceById(productModifyRequest.getAddressId());
+        Address address = addressService.getReferenceById(productModifyRequest.getAddressId());
         Category category = Category.from(productModifyRequest.getCategoryId());
         imageService.updateImageUrls(product, newImages, deleteImgIds);
         URL thumbnailImgUrl = imageService.getThumbnailImgUrl(productId);
