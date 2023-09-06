@@ -1,8 +1,8 @@
-package kr.codesquad.secondhand.api.member.dto;
+package kr.codesquad.secondhand.api.member.dto.response;
 
 import java.util.List;
 import java.util.stream.Collectors;
-import kr.codesquad.secondhand.api.member.domain.Address;
+import kr.codesquad.secondhand.api.address.domain.Address;
 import kr.codesquad.secondhand.api.member.domain.MemberAddress;
 import lombok.Getter;
 

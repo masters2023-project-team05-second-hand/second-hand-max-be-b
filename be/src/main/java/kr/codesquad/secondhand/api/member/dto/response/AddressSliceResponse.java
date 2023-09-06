@@ -1,15 +1,15 @@
-package kr.codesquad.secondhand.api.member.dto;
+package kr.codesquad.secondhand.api.member.dto.response;
 
 import java.util.List;
 import java.util.stream.Collectors;
-import kr.codesquad.secondhand.api.member.domain.Address;
+import kr.codesquad.secondhand.api.address.domain.Address;
 import lombok.Getter;
 
 @Getter
 public class AddressSliceResponse {
 
-    public List<AddressesResponse> addresses;
-    public Boolean hasNext;
+    private final List<AddressesResponse> addresses;
+    private final Boolean hasNext;
 
     public AddressSliceResponse(List<AddressesResponse> addresses, Boolean hasNext) {
         this.addresses = addresses;
@@ -23,17 +23,17 @@ public class AddressSliceResponse {
     }
 
     @Getter
-    public static class AddressesResponse {
+    private static class AddressesResponse {
 
-        private Long id;
-        private String name;
+        private final Long id;
+        private final String name;
 
-        public AddressesResponse(Long id, String name) {
+        private AddressesResponse(Long id, String name) {
             this.id = id;
             this.name = name;
         }
 
-        public static AddressesResponse from(Address address) {
+        private static AddressesResponse from(Address address) {
             return new AddressesResponse(address.getId(), address.getName());
         }
     }

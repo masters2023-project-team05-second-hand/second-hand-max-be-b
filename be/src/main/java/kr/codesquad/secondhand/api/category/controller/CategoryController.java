@@ -1,7 +1,6 @@
 package kr.codesquad.secondhand.api.category.controller;
 
-import java.util.List;
-import kr.codesquad.secondhand.api.category.dto.CategoryResponse;
+import kr.codesquad.secondhand.api.category.dto.CategoriesReadResponse;
 import kr.codesquad.secondhand.api.category.service.CategoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -15,9 +14,9 @@ public class CategoryController {
     private final CategoryService categoryService;
 
     @GetMapping("api/categories")
-    public ResponseEntity<List<CategoryResponse>> getCategories() {
-        List<CategoryResponse> categoryResponses = categoryService.getCategories();
+    public ResponseEntity<CategoriesReadResponse> readCategories() {
+        CategoriesReadResponse categoriesReadResponse = categoryService.findCategories();
         return ResponseEntity.ok()
-                .body(categoryResponses);
+                .body(categoriesReadResponse);
     }
 }

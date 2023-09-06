@@ -1,4 +1,4 @@
-package kr.codesquad.secondhand.api.member.dto;
+package kr.codesquad.secondhand.api.member.dto.response;
 
 import kr.codesquad.secondhand.api.jwt.domain.Jwt;
 import lombok.Getter;

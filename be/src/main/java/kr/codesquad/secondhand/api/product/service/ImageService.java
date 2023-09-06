@@ -54,33 +54,41 @@ public class ImageService {
                 .collect(Collectors.toUnmodifiableList());
     }
 
-    public URL updateImageUrls(Product product, List<MultipartFile> newImages, List<Integer> deletedImageIds)
+    public void updateImageUrls(Product product, List<MultipartFile> newImages, List<Integer> deletedImageIds)
             throws IOException {
-
-        if (!newImages.isEmpty()) {
-            List<ProductImage> newProductImageEntities = imageUrlsToProductImage(uploadMultiImagesToS3(newImages), product);
-            imageRepository.saveAll(newProductImageEntities);
-        }
-
-        List<ProductImage> productImages = imageRepository.findAllByProductId(product.getId());
-        if (deletedImageIds != null) {
-            List<Long> deleteImgIds = deletedImageIds.stream()
-                    .map(deleteId -> productImages.get(deleteId).getId())
-                    .collect(Collectors.toUnmodifiableList());
-            imageRepository.deleteAllById(deleteImgIds);
-        }
-        return getThumbnailImgUrl(product.getId());
+        updateNewImages(newImages, product);
+        updateDeleteImages(deletedImageIds, product);
     }
+
 
     public List<ProductImage> findAllByProductId(Long productId) {
         return imageRepository.findAllByProductId(productId);
     }
 
-    private URL getThumbnailImgUrl(Long productId) {
+    public URL getThumbnailImgUrl(Long productId) {
         return imageRepository.findMinByProductId(productId);
     }
 
     public void deleteProductImages(Long productId) {
         imageRepository.deleteAllByProductId(productId);
+    }
+
+    public void updateNewImages(List<MultipartFile> newImages, Product product) throws IOException {
+        if (!newImages.isEmpty()) {
+            List<URL> imageUrls = uploadMultiImagesToS3(newImages);
+            saveAll(imageUrls, product);
+        }
+    }
+
+    public void updateDeleteImages(List<Integer> deletedImageIds, Product product) {
+        if (deletedImageIds != null) {
+            List<ProductImage> productImages = imageRepository.findAllByProductId(product.getId());
+
+            List<Long> deleteImgIds = deletedImageIds.stream()
+                    .map(deleteId -> productImages.get(deleteId).getId())
+                    .collect(Collectors.toUnmodifiableList());
+
+            imageRepository.deleteAllById(deleteImgIds);
+        }
     }
 }
