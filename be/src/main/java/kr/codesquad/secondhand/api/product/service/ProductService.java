@@ -5,7 +5,7 @@ import java.net.URL;
 import kr.codesquad.secondhand.api.address.domain.Address;
 import kr.codesquad.secondhand.api.category.domain.Category;
 import kr.codesquad.secondhand.api.product.domain.Product;
-import kr.codesquad.secondhand.api.product.domain.Status;
+import kr.codesquad.secondhand.api.product.domain.ProductStatus;
 import kr.codesquad.secondhand.api.product.dto.ProductStatusUpdateRequest;
 import kr.codesquad.secondhand.api.product.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
@@ -39,9 +39,9 @@ public class ProductService {
 
     @Transactional
     public void updateProductStatus(Long productId, ProductStatusUpdateRequest request) {
-        Status status = Status.from(request.getStatusId());
+        ProductStatus productStatus = ProductStatus.from(request.getStatusId());
         Product product = productRepository.findById(productId).orElseThrow();
-        product.updateStatus(status);
+        product.updateStatus(productStatus);
     }
 
     @Transactional

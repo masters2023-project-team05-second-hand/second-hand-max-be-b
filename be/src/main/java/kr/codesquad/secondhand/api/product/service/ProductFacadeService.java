@@ -10,7 +10,7 @@ import kr.codesquad.secondhand.api.member.domain.Member;
 import kr.codesquad.secondhand.api.member.service.MemberService;
 import kr.codesquad.secondhand.api.product.domain.Product;
 import kr.codesquad.secondhand.api.product.domain.ProductImage;
-import kr.codesquad.secondhand.api.product.domain.Status;
+import kr.codesquad.secondhand.api.product.domain.ProductStatus;
 import kr.codesquad.secondhand.api.product.dto.ProductCreateRequest;
 import kr.codesquad.secondhand.api.product.dto.ProductCreateResponse;
 import kr.codesquad.secondhand.api.product.dto.ProductModifyRequest;
@@ -34,9 +34,9 @@ public class ProductFacadeService {
         Product product = productService.findById(productId);
         List<ProductImage> productImages = imageService.findAllByProductId(productId);
         boolean isSeller = product.isSellerIdEqualsTo(memberId);
-        List<Status> statuses = Status.findAll();
+        List<ProductStatus> productStatuses = ProductStatus.findAll();
 
-        return ProductReadResponse.of(isSeller, product, productImages, statuses);
+        return ProductReadResponse.of(isSeller, product, productImages, productStatuses);
     }
 
     @Transactional
@@ -54,7 +54,7 @@ public class ProductFacadeService {
         Member seller = memberService.getMemberReferenceById(memberId);
         Address address = addressService.getReferenceById(productCreateRequest.getAddressId());
         Category category = Category.from(productCreateRequest.getCategoryId());
-        Integer statusId = Status.FOR_SALE.getId();
+        Integer statusId = ProductStatus.FOR_SALE.getId();
         Product product = productCreateRequest.toEntity(seller, statusId, address, category, thumbnailImgUrl);
 
         productService.saveProduct(product);

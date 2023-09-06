@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import kr.codesquad.secondhand.api.product.domain.Product;
 import kr.codesquad.secondhand.api.product.domain.ProductImage;
-import kr.codesquad.secondhand.api.product.domain.Status;
+import kr.codesquad.secondhand.api.product.domain.ProductStatus;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -28,12 +28,12 @@ public class ProductReadResponse {
     }
 
     public static ProductReadResponse of(boolean isSeller, Product product, List<ProductImage> productImages,
-                                         List<Status> statuses) {
+                                         List<ProductStatus> productStatuses) {
         ProductResponse productResponse = ProductResponse.from(product);
         List<ProductImageResponse> productImageResponse = productImages.stream()
                 .map(ProductImageResponse::from)
                 .collect(Collectors.toUnmodifiableList());
-        List<ProductStatusResponse> productStatusResponse = statuses.stream()
+        List<ProductStatusResponse> productStatusResponse = productStatuses.stream()
                 .map(ProductStatusResponse::from)
                 .collect(Collectors.toUnmodifiableList());
         return new ProductReadResponse(isSeller, productResponse, productImageResponse, productStatusResponse);
@@ -95,8 +95,8 @@ public class ProductReadResponse {
             this.type = type;
         }
 
-        private static ProductStatusResponse from(Status status) {
-            return new ProductStatusResponse(status.getId(), status.getType());
+        private static ProductStatusResponse from(ProductStatus productStatus) {
+            return new ProductStatusResponse(productStatus.getId(), productStatus.getType());
         }
     }
 }

@@ -73,8 +73,8 @@ public class Product {
         this.thumbnailImgUrl = thumbnailImgUrl;
     }
 
-    public void updateStatus(Status status) {
-        this.statusId = status.getId();
+    public void updateStatus(ProductStatus productStatus) {
+        this.statusId = productStatus.getId();
     }
 
     public boolean isSellerIdEqualsTo(Long memberId) {
