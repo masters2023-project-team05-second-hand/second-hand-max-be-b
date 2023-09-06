@@ -38,13 +38,11 @@ public class Product {
     @JoinColumn(name = "address_id")
     private Address address;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "category_id")
-    private Category category;
 
     @CreationTimestamp
     private Date createdTime;
 
+    private Long categoryId;
     private Integer statusId;
     private String title;
     private String content;
@@ -57,7 +55,7 @@ public class Product {
         this.seller = seller;
         this.statusId = statusId;
         this.address = address;
-        this.category = category;
+        this.categoryId = category.getId();
         this.title = title;
         this.content = content;
         this.price = price;
@@ -71,7 +69,7 @@ public class Product {
         this.content = content;
         this.price = price;
         this.address = address;
-        this.category = category;
+        this.categoryId = category.getId();
         this.thumbnailImgUrl = thumbnailImgUrl;
     }
 

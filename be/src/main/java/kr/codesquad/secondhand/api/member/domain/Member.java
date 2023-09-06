@@ -3,12 +3,10 @@ package kr.codesquad.secondhand.api.member.domain;
 import java.time.LocalDateTime;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import kr.codesquad.secondhand.api.oauth.domain.OAuthAttributes;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -26,20 +24,19 @@ public class Member {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @CreatedDate
+    private LocalDateTime createdTime;
+
     private String email;
     private String nickname;
     private String profileImgUrl;
 
-    @CreatedDate
-    private LocalDateTime createdTime;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "sign_in_type_id")
-    private SignInType signInType;
+    private Long signInTypeId;
 
     @Builder
-    public Member(SignInType signInType, String email, String nickname, String profileImgUrl) {
-        this.signInType = signInType;
+    public Member(OAuthAttributes oAuthAttributes, String email, String nickname, String profileImgUrl) {
+        this.signInTypeId = oAuthAttributes.getId();
         this.email = email;
         this.nickname = nickname;
         this.profileImgUrl = profileImgUrl;

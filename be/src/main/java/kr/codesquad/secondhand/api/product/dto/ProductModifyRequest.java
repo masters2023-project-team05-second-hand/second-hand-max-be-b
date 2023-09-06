@@ -6,6 +6,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Getter
 public class ProductModifyRequest {
+
     private final Long categoryId;
     private final Long addressId;
     private final String title;

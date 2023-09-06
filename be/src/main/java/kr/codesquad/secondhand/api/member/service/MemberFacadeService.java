@@ -27,7 +27,7 @@ public class MemberFacadeService {
 
     @Transactional
     public OAuthSignInResponse login(Member member) {
-        Boolean existMember = memberService.isExistMember(member.getSignInType().getId(), member.getEmail());
+        Boolean existMember = memberService.isExistMember(member.getSignInTypeId(), member.getEmail());
         if (!existMember) {
             memberService.save(member);
         }
