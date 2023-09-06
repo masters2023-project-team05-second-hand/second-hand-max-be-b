@@ -44,14 +44,14 @@ public class MemberController {
     }
 
     @GetMapping("/api/addresses")
-    private ResponseEntity<AddressSliceResponse> getAddresses(@RequestParam int page, @RequestParam int size) {
-        AddressSliceResponse addressSliceResponse = addressService.getAddresses(page, size);
+    private ResponseEntity<AddressSliceResponse> readAddresses(@RequestParam int page, @RequestParam int size) {
+        AddressSliceResponse addressSliceResponse = addressService.findAddresses(page, size);
         return ResponseEntity.ok()
                 .body(addressSliceResponse);
     }
 
     @PutMapping("/api/members/addresses")
-    public ResponseEntity<List<MemberAddressResponse>> modifyMemberAddresses(
+    public ResponseEntity<List<MemberAddressResponse>> updateMemberAddresses(
             @RequestBody MemberAddressModifyRequest memberAddressModifyRequest) {
         // 임시 id
         Long memberId = 1L;
@@ -64,7 +64,7 @@ public class MemberController {
     }
 
     @PatchMapping("/api/members/addresses")
-    public ResponseEntity<String> setLastVisitedAddress(
+    public ResponseEntity<String> updateLastVisitedAddress(
             @RequestBody LastVisitedUpdateRequest lastVisitedUpdateRequest) {
         // 임시 id
         Long memberId = 1L;

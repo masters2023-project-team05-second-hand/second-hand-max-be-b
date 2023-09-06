@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 public class AddressService {
     private final AddressRepositoryImpl addressRepository;
 
-    public AddressSliceResponse getAddresses(int page, int size) {
+    public AddressSliceResponse findAddresses(int page, int size) {
         PageRequest pageRequest = PageRequest.of(page, size);
         Slice<Address> addressSlice = addressRepository.findAllBy(pageRequest);
         return AddressSliceResponse.of(addressSlice.getContent(), addressSlice.hasNext());
