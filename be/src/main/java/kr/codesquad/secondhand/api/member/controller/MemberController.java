@@ -1,7 +1,6 @@
 package kr.codesquad.secondhand.api.member.controller;
 
 import java.util.List;
-import kr.codesquad.secondhand.api.member.domain.Member;
 import kr.codesquad.secondhand.api.member.dto.request.LastVisitedUpdateRequest;
 import kr.codesquad.secondhand.api.member.dto.request.MemberAddressUpdateRequest;
 import kr.codesquad.secondhand.api.member.dto.request.OAuthSignInRequest;
@@ -32,8 +31,7 @@ public class MemberController {
     public ResponseEntity<OAuthSignInResponse> login(@PathVariable String provider,
                                                      @RequestBody OAuthSignInRequest request) {
 
-        Member member = memberService.oAuthLogin(provider, request.getAccessCode());
-        OAuthSignInResponse oAuthSignInResponse = memberFacadeService.login(member);
+        OAuthSignInResponse oAuthSignInResponse = memberFacadeService.login(provider, request.getAccessCode());
         return ResponseEntity.ok()
                 .body(oAuthSignInResponse);
     }
