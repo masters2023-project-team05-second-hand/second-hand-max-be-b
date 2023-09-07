@@ -9,7 +9,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
+import org.springframework.web.cors.CorsUtils;
 
 public class CorsFilter implements Filter {
 
@@ -18,20 +18,15 @@ public class CorsFilter implements Filter {
             throws ServletException, IOException {
         HttpServletResponse response = (HttpServletResponse) servletResponse;
 
-        response.setHeader(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN,
-                "http://localhost:8080, http://localhost:5173, http://gaji-b.s3-website.ap-northeast-2.amazonaws.com");
+        response.setHeader(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, "*");
         response.setHeader(HttpHeaders.ACCESS_CONTROL_ALLOW_METHODS, "GET, POST, PUT, PATCH, DELETE, OPTIONS");
         response.setHeader(HttpHeaders.ACCESS_CONTROL_MAX_AGE, "3600");
         response.setHeader(HttpHeaders.ACCESS_CONTROL_ALLOW_HEADERS,
                 "Authorization, x-requested-with, origin, content-type, accept");
 
-        if (isPreflight((HttpServletRequest) servletRequest)) {
+        if (CorsUtils.isPreFlightRequest((HttpServletRequest) servletRequest)) {
             return;
         }
         chain.doFilter(servletRequest, servletResponse);
-    }
-
-    private boolean isPreflight(HttpServletRequest servletRequest) {
-        return servletRequest.getMethod().equalsIgnoreCase(HttpMethod.OPTIONS.name());
     }
 }
