@@ -3,6 +3,7 @@ package kr.codesquad.secondhand.api.category.domain;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+import kr.codesquad.secondhand.api.category.exception.InvalidCategoryIdException;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -52,6 +53,6 @@ public enum Category {
         return Arrays.stream(values())
                 .filter(category -> category.id.equals(categoryId))
                 .findAny()
-                .orElseThrow();
+                .orElseThrow(InvalidCategoryIdException::new);
     }
 }

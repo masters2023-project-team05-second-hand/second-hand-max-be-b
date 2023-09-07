@@ -5,6 +5,7 @@ import kr.codesquad.secondhand.api.address.domain.Address;
 import kr.codesquad.secondhand.api.member.domain.Member;
 import kr.codesquad.secondhand.api.member.domain.MemberAddress;
 import kr.codesquad.secondhand.api.member.dto.response.MemberAddressResponse;
+import kr.codesquad.secondhand.api.member.exception.InvalidMemberAddressIdException;
 import kr.codesquad.secondhand.api.member.repository.MemberAddressRepositoryImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -41,12 +42,13 @@ public class MemberAddressService {
 
     private void resetLastVisitedAddress(Long memberId) {
         MemberAddress memberAddress = memberAddressRepository.findByMemberIdAndIsLastVisited(memberId, true)
-                .orElseThrow();
+                .orElseThrow(); // TODO: 무슨 예외를 날려야할지 고민중
         memberAddress.updateLastVisited(false);
     }
 
     private void setLastVisitedAddress(Long lastVisitedAddressId) {
-        MemberAddress lastVisitedAddress = memberAddressRepository.findByAddressId(lastVisitedAddressId).orElseThrow();
+        MemberAddress lastVisitedAddress = memberAddressRepository.findByAddressId(lastVisitedAddressId)
+                .orElseThrow(InvalidMemberAddressIdException::new);
         lastVisitedAddress.updateLastVisited(true);
     }
 }

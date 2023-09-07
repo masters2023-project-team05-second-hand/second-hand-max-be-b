@@ -2,6 +2,7 @@ package kr.codesquad.secondhand.api.oauth.domain;
 
 import java.util.Arrays;
 import java.util.Map;
+import kr.codesquad.secondhand.api.oauth.exception.InvalidOauthProviderNameException;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -46,7 +47,7 @@ public enum OAuthAttributes {
         return Arrays.stream(values())
                 .filter(oAuthAttribute -> oAuthAttribute.providerName.equals(providerName))
                 .findAny()
-                .orElseThrow();
+                .orElseThrow(InvalidOauthProviderNameException::new);
     }
 
     public abstract OAuthProfile of(Map<String, Object> attributes);
