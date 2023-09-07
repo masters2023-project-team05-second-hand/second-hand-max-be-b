@@ -6,11 +6,11 @@ import lombok.Getter;
 @Getter
 public class MemberProfileResponse {
 
-    private final String nickName;
+    private final String nickname;
     private final String profileImgUrl;
 
-    public MemberProfileResponse(String nickName, String profileImgUrl) {
-        this.nickName = nickName;
+    public MemberProfileResponse(String nickname, String profileImgUrl) {
+        this.nickname = nickname;
         this.profileImgUrl = profileImgUrl;
     }
 
