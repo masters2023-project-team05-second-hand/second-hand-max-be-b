@@ -21,8 +21,7 @@ public class ProductCreateRequest {
     private final Long price;
     private final List<MultipartFile> images;
 
-    public Product toEntity(Member seller, Integer statusId, Address address, Category category,
-                            URL thumbnailImgUrl) {
+    public Product toEntity(Member seller, Integer statusId, Address address, Category category, URL thumbnailImgUrl) {
         return Product.builder()
                 .seller(seller)
                 .thumbnailImgUrl(thumbnailImgUrl)

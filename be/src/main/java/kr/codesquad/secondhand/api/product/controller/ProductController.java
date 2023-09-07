@@ -1,14 +1,14 @@
 package kr.codesquad.secondhand.api.product.controller;
 
-import java.io.IOException;
 import kr.codesquad.secondhand.api.product.dto.ProductCreateRequest;
 import kr.codesquad.secondhand.api.product.dto.ProductCreateResponse;
-import kr.codesquad.secondhand.api.product.dto.ProductModifyRequest;
 import kr.codesquad.secondhand.api.product.dto.ProductReadResponse;
 import kr.codesquad.secondhand.api.product.dto.ProductStatusUpdateRequest;
+import kr.codesquad.secondhand.api.product.dto.ProductUpdateRequest;
 import kr.codesquad.secondhand.api.product.service.ProductFacadeService;
 import kr.codesquad.secondhand.api.product.service.ProductService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,12 +27,11 @@ public class ProductController {
     private final ProductService productService;
 
     @PostMapping("/api/products")
-    public ResponseEntity<ProductCreateResponse> createProduct(@ModelAttribute ProductCreateRequest productCreateRequest)
-            throws IOException {
+    public ResponseEntity<ProductCreateResponse> createProduct(@ModelAttribute ProductCreateRequest productCreateRequest) {
         //TODO 인증 필터 구현 시 토큰에서 memberId 받아올 예정
         Long memberId = 1L;
         ProductCreateResponse productCreateResponse = productFacadeService.saveProduct(memberId, productCreateRequest);
-        return ResponseEntity.ok()
+        return ResponseEntity.status(HttpStatus.CREATED)
                 .body(productCreateResponse);
     }
 
@@ -45,8 +44,8 @@ public class ProductController {
 
     @PatchMapping("/api/products/{productId}")
     public ResponseEntity<String> updateProduct(@PathVariable Long productId,
-                                                @ModelAttribute ProductModifyRequest productModifyRequest) throws IOException {
-        productFacadeService.updateProduct(productId, productModifyRequest);
+                                                @ModelAttribute ProductUpdateRequest productUpdateRequest) {
+        productFacadeService.updateProduct(productId, productUpdateRequest);
         return ResponseEntity.ok()
                 .build();
     }
