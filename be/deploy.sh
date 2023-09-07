@@ -32,5 +32,5 @@ chmod +x ./gradlew
 
 # [참고] JASYPT_PASSWORD는 서버 내 ./bash_profile에 설정되어 있음
 echo "서버 시작"
-nohup java -jar -Djasypt.encryptor.password=$JASYPT_PASSWORD -Dspring.config.location=~/app/application-s3.yml ~/app/second-hand-max-be-b/be/build/libs/second-hand-0.0.1-SNAPSHOT.jar > ~/app/log.txt 2>&1 &
+nohup java -jar -Djasypt.encryptor.password=$JASYPT_PASSWORD ~/app/second-hand-max-be-b/be/build/libs/second-hand-0.0.1-SNAPSHOT.jar > ~/app/log.txt 2>&1 &
 echo "배포 완료!"

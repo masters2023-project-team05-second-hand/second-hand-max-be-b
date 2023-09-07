@@ -21,7 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 @RequiredArgsConstructor
 public class ImageService {
 
-    private final AmazonS3 amazonS3;
+    private final AmazonS3 amazonS3Client;
     private final ImageRepository imageRepository;
 
     @Value("${cloud.aws.s3.bucket}")
@@ -50,11 +50,11 @@ public class ImageService {
         metadata.setContentLength(multipartFile.getSize());
         metadata.setContentType(multipartFile.getContentType());
         try {
-            amazonS3.putObject(bucket, uuid, multipartFile.getInputStream(), metadata);
+            amazonS3Client.putObject(bucket, uuid, multipartFile.getInputStream(), metadata);
         } catch (IOException e) {
             throw new ImageUploadFailedException();
         }
-        return amazonS3.getUrl(bucket, uuid);
+        return amazonS3Client.getUrl(bucket, uuid);
     }
 
     @Transactional
