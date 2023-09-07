@@ -1,8 +1,5 @@
 package kr.codesquad.secondhand.api.product.service;
 
-import java.net.URL;
-import kr.codesquad.secondhand.api.address.domain.Address;
-import kr.codesquad.secondhand.api.category.domain.Category;
 import kr.codesquad.secondhand.api.product.domain.Product;
 import kr.codesquad.secondhand.api.product.domain.ProductStatus;
 import kr.codesquad.secondhand.api.product.dto.ProductStatusUpdateRequest;
@@ -26,13 +23,6 @@ public class ProductService {
     @Transactional
     public Product findById(Long productId) {
         return productRepository.findById(productId).orElseThrow();
-    }
-
-    @Transactional
-    public void updateProduct(Product product, String title, String content, Long price, Address address,
-                              Category category,
-                              URL thumbnailImgUrl) {
-        product.updateProduct(title, content, price, address, category, thumbnailImgUrl);
     }
 
     @Transactional

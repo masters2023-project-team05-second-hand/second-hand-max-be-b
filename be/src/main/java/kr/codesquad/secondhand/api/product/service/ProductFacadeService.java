@@ -12,8 +12,8 @@ import kr.codesquad.secondhand.api.product.domain.ProductImage;
 import kr.codesquad.secondhand.api.product.domain.ProductStatus;
 import kr.codesquad.secondhand.api.product.dto.ProductCreateRequest;
 import kr.codesquad.secondhand.api.product.dto.ProductCreateResponse;
-import kr.codesquad.secondhand.api.product.dto.ProductModifyRequest;
 import kr.codesquad.secondhand.api.product.dto.ProductReadResponse;
+import kr.codesquad.secondhand.api.product.dto.ProductUpdateRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,6 +38,7 @@ public class ProductFacadeService {
                 productCreateRequest.getImages().get(THUMBNAIL_IMAGE_INDEX)
         );
         Product product = toProduct(memberId, productCreateRequest, thumbnailImgUrl);
+
         Long productId = productService.saveProduct(product);
         imageService.saveProductImages(productCreateRequest.getImages(), product);
         statService.saveNewProductStats(productId);
@@ -48,52 +49,44 @@ public class ProductFacadeService {
         Member seller = memberService.getMemberReferenceById(memberId);
         Address address = addressService.getReferenceById(productCreateRequest.getAddressId());
         Category category = Category.from(productCreateRequest.getCategoryId());
+
         return productCreateRequest.toEntity(seller, DEFAULT_PRODUCT_STATUS_ID, address, category, thumbnailImgUrl);
     }
 
+    @Transactional
     public ProductReadResponse readProduct(Long memberId, Long productId) {
         Product product = productService.findById(productId);
-        List<ProductImage> productImages = imageService.findAllByProductId(productId);
         boolean isSeller = product.isSellerIdEqualsTo(memberId);
+        List<ProductImage> productImages = imageService.findAllByProductId(productId);
         List<ProductStatus> productStatuses = ProductStatus.findAll();
         List<Integer> stats = statService.findProductStats(memberId, productId);
+
         return ProductReadResponse.of(isSeller, product, productImages, productStatuses, stats);
     }
 
     @Transactional
+    public void updateProduct(Long productId, ProductUpdateRequest productUpdateRequest) {
+        Address address = addressService.getReferenceById(productUpdateRequest.getAddressId());
+        Category categories = Category.from(productUpdateRequest.getCategoryId());
+        Product product = productService.findById(productId);
+
+        // 주의: 상품 수정 시 이미지 순서가 변경되기 때문에 먼저 이미지 전체를 업데이트하고 상품 업데이트를 해야 함
+        updateProductImages(product, productUpdateRequest);
+        URL thumbnailImgUrl = imageService.getThumbnailImgUrl(productId); // TODO 썸네일 저장 로직이 지금은 멀티파트 기반으로 되어 있는데, URL로 수정 필요
+        product.updateProduct(productUpdateRequest.getTitle(), productUpdateRequest.getContent(), // TODO: title, content 순서 바뀌면 버그 나는데, 방지할 수 있는 방법이 있을지 고민중
+                productUpdateRequest.getPrice(), address, categories, thumbnailImgUrl);
+    }
+
+    private void updateProductImages(Product product, ProductUpdateRequest productUpdateRequest) {
+        List<MultipartFile> newImages = productUpdateRequest.getNewImages();
+        List<Long> deleteImgIds = productUpdateRequest.getDeletedImgIds();
+        imageService.updateImageUrls(product, newImages, deleteImgIds);
+    }
+
+    @Transactional
     public void deleteProduct(Long productId) {
-        // 주의: Entity 영속성으로 인해 순서 바뀌면 이미지 삭제 안됨
+        // 주의: Entity 영속성으로 인해 순서 바뀌면 이미지 삭제 안됨(순서: 이미지 삭제 -> 상품 삭제)
         imageService.deleteProductImages(productId);
         productService.deleteProduct(productId);
-    }
-
-    @Transactional
-    public ProductCreateResponse saveProduct(Long memberId, ProductCreateRequest productCreateRequest)
-            throws IOException {
-        List<URL> imageUrls = imageService.uploadMultiImagesToS3(productCreateRequest.getImages());
-        URL thumbnailImgUrl = imageUrls.get(0); // 임시 썸네일 이미지
-        Member seller = memberService.getMemberReferenceById(memberId);
-        Address address = addressService.getReferenceById(productCreateRequest.getAddressId());
-        Category category = Category.from(productCreateRequest.getCategoryId());
-        Integer statusId = ProductStatus.FOR_SALE.getId();
-        Product product = productCreateRequest.toEntity(seller, statusId, address, category, thumbnailImgUrl);
-        Long productId = productService.saveProduct(product);
-        statService.saveNewProductStats(productId);
-        imageService.saveAll(imageUrls, product);
-        return new ProductCreateResponse(productId);
-    }
-
-    @Transactional
-    public void updateProduct(Long productId, ProductModifyRequest productModifyRequest) throws IOException {
-        Product product = productService.findById(productId);
-        List<MultipartFile> newImages = productModifyRequest.getNewImages();
-        List<Integer> deleteImgIds = productModifyRequest.getDeletedImgIds();
-        Address address = addressService.getReferenceById(productModifyRequest.getAddressId());
-        Category category = Category.from(productModifyRequest.getCategoryId());
-        imageService.updateImageUrls(product, newImages, deleteImgIds);
-        URL thumbnailImgUrl = imageService.getThumbnailImgUrl(productId);
-
-        productService.updateProduct(product, productModifyRequest.getTitle(), productModifyRequest.getContent(),
-                productModifyRequest.getPrice(), address, category, thumbnailImgUrl);
     }
 }

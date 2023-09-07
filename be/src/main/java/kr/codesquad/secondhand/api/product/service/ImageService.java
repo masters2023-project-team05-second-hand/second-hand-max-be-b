@@ -14,6 +14,7 @@ import kr.codesquad.secondhand.api.product.repository.ImageRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
@@ -56,18 +57,23 @@ public class ImageService {
         return amazonS3.getUrl(bucket, uuid);
     }
 
-    public List<ProductImage> imageUrlsToProductImage(List<URL> imageUrls, Product product) {
-        return imageUrls.stream()
-                .map(imageUrl -> new ProductImage(product, imageUrl))
-                .collect(Collectors.toUnmodifiableList());
+    @Transactional
+    public void updateImageUrls(Product product, List<MultipartFile> newImages, List<Long> deletedImageIds) {
+        updateNewImagesIfExists(newImages, product);
+        deleteTargetImagesIfExists(product, deletedImageIds);
     }
 
-    public void updateImageUrls(Product product, List<MultipartFile> newImages, List<Integer> deletedImageIds)
-            throws IOException {
-        updateNewImages(newImages, product);
-        updateDeleteImages(deletedImageIds, product);
+    private void updateNewImagesIfExists(List<MultipartFile> newImages, Product product) {
+        if (!newImages.isEmpty()) {
+            saveProductImages(newImages, product);
+        }
     }
 
+    private void deleteTargetImagesIfExists(Product product, List<Long> deletedImageIds) {
+        if (!deletedImageIds.isEmpty()) {
+            imageRepository.deleteAllById(deletedImageIds);
+        }
+    }
 
     public List<ProductImage> findAllByProductId(Long productId) {
         return imageRepository.findAllByProductId(productId);
@@ -79,24 +85,5 @@ public class ImageService {
 
     public void deleteProductImages(Long productId) {
         imageRepository.deleteAllByProductId(productId);
-    }
-
-    public void updateNewImages(List<MultipartFile> newImages, Product product) throws IOException {
-        if (!newImages.isEmpty()) {
-            List<URL> imageUrls = uploadMultiImagesToS3(newImages);
-            saveAll(imageUrls, product);
-        }
-    }
-
-    public void updateDeleteImages(List<Integer> deletedImageIds, Product product) {
-        if (deletedImageIds != null) {
-            List<ProductImage> productImages = imageRepository.findAllByProductId(product.getId());
-
-            List<Long> deleteImgIds = deletedImageIds.stream()
-                    .map(deleteId -> productImages.get(deleteId).getId())
-                    .collect(Collectors.toUnmodifiableList());
-
-            imageRepository.deleteAllById(deleteImgIds);
-        }
     }
 }
