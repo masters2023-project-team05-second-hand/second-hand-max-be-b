@@ -4,6 +4,9 @@ import java.net.URL;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
+import kr.codesquad.secondhand.api.address.domain.Address;
+import kr.codesquad.secondhand.api.category.domain.Category;
+import kr.codesquad.secondhand.api.category.dto.CategoryReadResponse;
 import kr.codesquad.secondhand.api.product.domain.Product;
 import kr.codesquad.secondhand.api.product.domain.ProductImage;
 import kr.codesquad.secondhand.api.product.domain.ProductStatus;
@@ -18,18 +21,24 @@ public class ProductReadResponse {
     private final List<ProductImageResponse> images;
     private final List<ProductStatusResponse> statuses;
     private final ProductStats stats;
+    private final CategoryReadResponse category;
+    private final AddressResponse address;
 
-    private ProductReadResponse(Boolean isSeller, ProductResponse product, List<ProductImageResponse> images,
-                               List<ProductStatusResponse> statuses, ProductStats stats) {
+    public ProductReadResponse(Boolean isSeller, ProductResponse product, List<ProductImageResponse> images,
+                               List<ProductStatusResponse> statuses, ProductStats stats,
+                               CategoryReadResponse category, AddressResponse address) {
         this.isSeller = isSeller;
         this.product = product;
         this.images = images;
         this.statuses = statuses;
         this.stats = stats;
+        this.category = category;
+        this.address = address;
     }
 
     public static ProductReadResponse of(boolean isSeller, Product product, List<ProductImage> productImages,
-                                         List<ProductStatus> productStatuses, List<Integer> statsList) {
+                                         List<ProductStatus> productStatuses, List<Integer> statsList,
+                                         Category category, Address address) {
         ProductResponse productResponse = ProductResponse.from(product);
         List<ProductImageResponse> productImageResponse = productImages.stream()
                 .map(ProductImageResponse::from)
@@ -38,7 +47,10 @@ public class ProductReadResponse {
                 .map(ProductStatusResponse::from)
                 .collect(Collectors.toUnmodifiableList());
         ProductStats stats = ProductStats.from(statsList);
-        return new ProductReadResponse(isSeller, productResponse, productImageResponse, productStatusResponse, stats);
+        CategoryReadResponse categoryReadResponse = CategoryReadResponse.from(category);
+        AddressResponse addressResponse = AddressResponse.from(address);
+        return new ProductReadResponse(isSeller, productResponse, productImageResponse, productStatusResponse, stats,
+                categoryReadResponse, addressResponse);
     }
 
     @Getter
@@ -115,6 +127,22 @@ public class ProductReadResponse {
 
         private static ProductStats from(List<Integer> stats) {
             return new ProductStats(stats.get(0), stats.get(1));
+        }
+    }
+
+    @Getter
+    private static class AddressResponse {
+
+        private final Long id;
+        private final String name;
+
+        private AddressResponse(Long id, String name) {
+            this.id = id;
+            this.name = name;
+        }
+
+        private static AddressResponse from(Address address) {
+            return new AddressResponse(address.getId(), address.getName());
         }
     }
 }
