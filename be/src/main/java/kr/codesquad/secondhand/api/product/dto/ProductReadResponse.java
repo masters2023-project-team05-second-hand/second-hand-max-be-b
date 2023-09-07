@@ -17,18 +17,19 @@ public class ProductReadResponse {
     private final ProductResponse product;
     private final List<ProductImageResponse> images;
     private final List<ProductStatusResponse> statuses;
-//    private Stats stats; redis로 구현 필요
+    private final ProductStats stats;
 
-    private ProductReadResponse(boolean isSeller, ProductResponse product, List<ProductImageResponse> images,
-                                List<ProductStatusResponse> statuses) {
+    private ProductReadResponse(Boolean isSeller, ProductResponse product, List<ProductImageResponse> images,
+                               List<ProductStatusResponse> statuses, ProductStats stats) {
         this.isSeller = isSeller;
         this.product = product;
         this.images = images;
         this.statuses = statuses;
+        this.stats = stats;
     }
 
     public static ProductReadResponse of(boolean isSeller, Product product, List<ProductImage> productImages,
-                                         List<ProductStatus> productStatuses) {
+                                         List<ProductStatus> productStatuses, List<Integer> statsList) {
         ProductResponse productResponse = ProductResponse.from(product);
         List<ProductImageResponse> productImageResponse = productImages.stream()
                 .map(ProductImageResponse::from)
@@ -36,7 +37,8 @@ public class ProductReadResponse {
         List<ProductStatusResponse> productStatusResponse = productStatuses.stream()
                 .map(ProductStatusResponse::from)
                 .collect(Collectors.toUnmodifiableList());
-        return new ProductReadResponse(isSeller, productResponse, productImageResponse, productStatusResponse);
+        ProductStats stats = ProductStats.from(statsList);
+        return new ProductReadResponse(isSeller, productResponse, productImageResponse, productStatusResponse, stats);
     }
 
     @Getter
@@ -97,6 +99,22 @@ public class ProductReadResponse {
 
         private static ProductStatusResponse from(ProductStatus productStatus) {
             return new ProductStatusResponse(productStatus.getId(), productStatus.getType());
+        }
+    }
+
+    @Getter
+    private static class ProductStats {
+
+        private final Integer viewCount;
+        private final Integer wishCount;
+
+        private ProductStats(Integer viewCount, Integer wishCount) {
+            this.viewCount = viewCount;
+            this.wishCount = wishCount;
+        }
+
+        private static ProductStats from(List<Integer> stats) {
+            return new ProductStats(stats.get(0), stats.get(1));
         }
     }
 }
