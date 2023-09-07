@@ -4,7 +4,6 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -27,17 +26,21 @@ public class ImageService {
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
 
-    public void saveAll(List<URL> imageUrls, Product product) {
-        List<ProductImage> productImages = imageUrlsToProductImage(imageUrls, product);
+    public URL saveThumbnailImage(MultipartFile multipartFile) {
+        // TODO: 리사이징 기능 구현
+        return uploadSingleImageToS3(multipartFile);
+    }
+
+    public void saveProductImages(List<MultipartFile> multipartFiles, Product product) {
+        List<URL> imageUrls = uploadMultiImagesToS3(multipartFiles);
+        List<ProductImage> productImages = ProductImage.from(product, imageUrls);
         imageRepository.saveAll(productImages);
     }
 
-    public List<URL> uploadMultiImagesToS3(List<MultipartFile> multipartFiles) throws IOException {
-        List<URL> urls = new ArrayList<>();
-        for (MultipartFile multipartFile : multipartFiles) {
-            urls.add(uploadSingleImageToS3(multipartFile));
-        }
-        return urls;
+    private List<URL> uploadMultiImagesToS3(List<MultipartFile> multipartFiles) {
+        return multipartFiles.stream()
+                .map(this::uploadSingleImageToS3)
+                .collect(Collectors.toUnmodifiableList());
     }
 
     private URL uploadSingleImageToS3(MultipartFile multipartFile) {

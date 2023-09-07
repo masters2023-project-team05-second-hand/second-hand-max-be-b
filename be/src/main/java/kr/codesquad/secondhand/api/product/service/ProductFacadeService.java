@@ -1,6 +1,5 @@
 package kr.codesquad.secondhand.api.product.service;
 
-import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 import kr.codesquad.secondhand.api.address.domain.Address;
@@ -24,6 +23,9 @@ import org.springframework.web.multipart.MultipartFile;
 @RequiredArgsConstructor
 public class ProductFacadeService {
 
+    private static final Integer THUMBNAIL_IMAGE_INDEX = 0;
+    private static final Integer DEFAULT_PRODUCT_STATUS_ID = ProductStatus.FOR_SALE.getId();;
+
     private final ProductService productService;
     private final ImageService imageService;
     private final AddressService addressService;
@@ -31,6 +33,24 @@ public class ProductFacadeService {
     private final StatService statService;
 
     @Transactional
+    public ProductCreateResponse saveProduct(Long memberId, ProductCreateRequest productCreateRequest) {
+        URL thumbnailImgUrl = imageService.saveThumbnailImage(
+                productCreateRequest.getImages().get(THUMBNAIL_IMAGE_INDEX)
+        );
+        Product product = toProduct(memberId, productCreateRequest, thumbnailImgUrl);
+        Long productId = productService.saveProduct(product);
+        imageService.saveProductImages(productCreateRequest.getImages(), product);
+        statService.saveNewProductStats(productId);
+        return new ProductCreateResponse(productId);
+    }
+
+    private Product toProduct(Long memberId, ProductCreateRequest productCreateRequest, URL thumbnailImgUrl) {
+        Member seller = memberService.getMemberReferenceById(memberId);
+        Address address = addressService.getReferenceById(productCreateRequest.getAddressId());
+        Category category = Category.from(productCreateRequest.getCategoryId());
+        return productCreateRequest.toEntity(seller, DEFAULT_PRODUCT_STATUS_ID, address, category, thumbnailImgUrl);
+    }
+
     public ProductReadResponse readProduct(Long memberId, Long productId) {
         Product product = productService.findById(productId);
         List<ProductImage> productImages = imageService.findAllByProductId(productId);
