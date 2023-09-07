@@ -27,4 +27,9 @@ public class MemberRepositoryImpl implements MemberRepository {
         return repository.getReferenceById(id);
     }
 
+    @Override
+    public Optional<Member> findById(Long id) {
+        return repository.findById(id);
+    }
+
 }

@@ -1,6 +1,8 @@
 package kr.codesquad.secondhand.api.member.service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import kr.codesquad.secondhand.api.address.domain.Address;
 import kr.codesquad.secondhand.api.member.domain.Member;
 import kr.codesquad.secondhand.api.member.domain.MemberAddress;
@@ -50,5 +52,14 @@ public class MemberAddressService {
         MemberAddress lastVisitedAddress = memberAddressRepository.findByAddressId(lastVisitedAddressId)
                 .orElseThrow(InvalidMemberAddressIdException::new);
         lastVisitedAddress.updateLastVisited(true);
+    }
+
+    @Transactional
+    public List<MemberAddress> findByMemberId(Long memberId){
+        Optional<List<MemberAddress>> memberAddresses = memberAddressRepository.findAllByMemberId(memberId);
+        if(memberAddresses.isPresent()){
+            return memberAddresses.orElseThrow(InvalidMemberAddressIdException::new);
+        }
+        return new ArrayList<>();
     }
 }
