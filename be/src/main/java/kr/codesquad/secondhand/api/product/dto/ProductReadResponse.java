@@ -18,9 +18,8 @@ public class ProductReadResponse {
     private final List<ProductImageResponse> images;
     private final List<ProductStatusResponse> statuses;
     private final ProductStats stats;
-//    private Stats stats; redis로 구현 필요
 
-    public ProductReadResponse(Boolean isSeller, ProductResponse product, List<ProductImageResponse> images,
+    private ProductReadResponse(Boolean isSeller, ProductResponse product, List<ProductImageResponse> images,
                                List<ProductStatusResponse> statuses, ProductStats stats) {
         this.isSeller = isSeller;
         this.product = product;
