@@ -34,11 +34,11 @@ public class ProductFacadeService {
 
     @Transactional
     public ProductCreateResponse saveProduct(Long memberId, ProductCreateRequest productCreateRequest) {
-        URL thumbnailImgUrl = imageService.saveThumbnailImage(
-                productCreateRequest.getImages().get(THUMBNAIL_IMAGE_INDEX)
-        );
+        List<URL> imageUrls = imageService.uploadMultiImagesToS3(productCreateRequest.getImages());
+        URL thumbnailImgUrl = imageService.resizeAndUploadToS3(imageUrls.get(THUMBNAIL_IMAGE_INDEX));
         Product product = toProduct(memberId, productCreateRequest, thumbnailImgUrl);
 
+        // 주의: 상품 저장 시 순서(상품 Insert -> 상품 이미지 Insert), 순서 바뀌면 ProductImage 의 product_id 에서 NPE 발생함
         Long productId = productService.saveProduct(product);
         imageService.saveProductImages(productCreateRequest.getImages(), product);
         statService.saveNewProductStats(productId);
@@ -72,7 +72,7 @@ public class ProductFacadeService {
 
         // 주의: 상품 수정 시 이미지 순서가 변경되기 때문에 먼저 이미지 전체를 업데이트하고 상품 업데이트를 해야 함
         updateProductImages(product, productUpdateRequest);
-        URL thumbnailImgUrl = imageService.getThumbnailImgUrl(productId); // TODO 썸네일 저장 로직이 지금은 멀티파트 기반으로 되어 있는데, URL로 수정 필요
+        URL thumbnailImgUrl = imageService.resizeAndUploadToS3(imageService.getThumbnailImgUrl(productId));
         product.updateProduct(productUpdateRequest.getTitle(), productUpdateRequest.getContent(), // TODO: title, content 순서 바뀌면 버그 나는데, 방지할 수 있는 방법이 있을지 고민중
                 productUpdateRequest.getPrice(), address, categories, thumbnailImgUrl);
     }

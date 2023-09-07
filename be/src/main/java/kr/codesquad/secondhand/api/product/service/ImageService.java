@@ -27,9 +27,9 @@ public class ImageService {
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
 
-    public URL saveThumbnailImage(MultipartFile multipartFile) {
+    public URL resizeAndUploadToS3(URL imageUrl) {
         // TODO: 리사이징 기능 구현
-        return uploadSingleImageToS3(multipartFile);
+        return imageUrl;
     }
 
     public void saveProductImages(List<MultipartFile> multipartFiles, Product product) {
@@ -38,7 +38,7 @@ public class ImageService {
         imageRepository.saveAll(productImages);
     }
 
-    private List<URL> uploadMultiImagesToS3(List<MultipartFile> multipartFiles) {
+    public List<URL> uploadMultiImagesToS3(List<MultipartFile> multipartFiles) {
         return multipartFiles.stream()
                 .map(this::uploadSingleImageToS3)
                 .collect(Collectors.toUnmodifiableList());

@@ -38,7 +38,6 @@ public class Product {
     @JoinColumn(name = "address_id")
     private Address address;
 
-
     @CreationTimestamp
     private Date createdTime;
 
