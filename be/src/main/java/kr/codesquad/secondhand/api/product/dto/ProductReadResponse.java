@@ -19,65 +19,70 @@ public class ProductReadResponse {
     private final Boolean isSeller;
     private final ProductResponse product;
     private final List<ProductImageResponse> images;
-    private final List<ProductStatusResponse> statuses;
     private final ProductStats stats;
-    private final CategoryReadResponse category;
-    private final AddressResponse address;
+    private final List<ProductStatusResponse> statuses;
 
     public ProductReadResponse(Boolean isSeller, ProductResponse product, List<ProductImageResponse> images,
-                               List<ProductStatusResponse> statuses, ProductStats stats,
-                               CategoryReadResponse category, AddressResponse address) {
+                               List<ProductStatusResponse> statuses, ProductStats stats) {
         this.isSeller = isSeller;
         this.product = product;
         this.images = images;
         this.statuses = statuses;
         this.stats = stats;
-        this.category = category;
-        this.address = address;
     }
 
     public static ProductReadResponse of(boolean isSeller, Product product, List<ProductImage> productImages,
-                                         List<ProductStatus> productStatuses, List<Integer> statsList,
+                                         List<ProductStatus> productStatuses, List<Integer> stats,
                                          Category category, Address address) {
-        ProductResponse productResponse = ProductResponse.from(product);
+        CategoryReadResponse categoryReadResponse = CategoryReadResponse.from(category);
+        AddressResponse addressResponse = AddressResponse.from(address);
+        ProductResponse productResponse = ProductResponse.from(product, categoryReadResponse, addressResponse);
         List<ProductImageResponse> productImageResponse = productImages.stream()
                 .map(ProductImageResponse::from)
                 .collect(Collectors.toUnmodifiableList());
         List<ProductStatusResponse> productStatusResponse = productStatuses.stream()
                 .map(ProductStatusResponse::from)
                 .collect(Collectors.toUnmodifiableList());
-        ProductStats stats = ProductStats.from(statsList);
-        CategoryReadResponse categoryReadResponse = CategoryReadResponse.from(category);
-        AddressResponse addressResponse = AddressResponse.from(address);
-        return new ProductReadResponse(isSeller, productResponse, productImageResponse, productStatusResponse, stats,
-                categoryReadResponse, addressResponse);
+        ProductStats productStats = ProductStats.from(stats);
+        return new ProductReadResponse(isSeller, productResponse, productImageResponse, productStatusResponse,
+                productStats);
     }
 
     @Getter
     private static class ProductResponse {
 
+        private final String seller;
+        private final CategoryReadResponse category;
+        private final AddressResponse address;
         private final String title;
         private final String contents;
         private final Long price;
         private final Date createdTime; // 시간 타입 뭘로 할지 정해야 함
-        private final Integer productStatus;
+        private final Integer status;
 
         @Builder
-        private ProductResponse(String title, String contents, Long price, Date createdTime, Integer productStatus) {
+        private ProductResponse(String seller, CategoryReadResponse category, AddressResponse address, String title,
+                               String contents, Long price, Date createdTime, Integer status) {
+            this.seller = seller;
+            this.category = category;
+            this.address = address;
             this.title = title;
             this.contents = contents;
             this.price = price;
             this.createdTime = createdTime;
-            this.productStatus = productStatus;
+            this.status = status;
         }
 
-        private static ProductResponse from(Product product) {
+        private static ProductResponse from(Product product, CategoryReadResponse category, AddressResponse address) {
             return ProductResponse.builder()
+                    .seller(product.getSeller().getNickname())
+                    .category(category)
+                    .address(address)
                     .title(product.getTitle())
                     .contents(product.getContent())
                     .price(product.getPrice())
                     .createdTime(product.getCreatedTime())
-                    .productStatus(product.getStatusId())
+                    .status(product.getStatusId())
                     .build();
         }
     }
