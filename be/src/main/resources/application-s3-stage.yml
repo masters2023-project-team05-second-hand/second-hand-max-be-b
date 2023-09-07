@@ -1,0 +1,12 @@
+cloud:
+  aws:
+    region:
+      static: ap-northeast-2
+      auto: false
+    s3:
+      bucket: gamgyul-bucket/public
+    credentials:
+      access-key: ENC(DWhPRk2PI1JN9DsGkPP698lb35BrgJwQoF/5wW0myqg=)
+      secret-key: ENC(UW/T4vAVl6iyqawog7HC5Ic0eJd5Pgyfug/bmPm22I1+q+6vK7jjAGbp1WG2anaYO9GAcHBpveA=)
+    stack:
+      auto: false
