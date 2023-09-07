@@ -28,15 +28,16 @@ public class ProductFacadeService {
     private final ImageService imageService;
     private final AddressService addressService;
     private final MemberService memberService;
+    private final StatService statService;
 
     @Transactional
-    public ProductReadResponse readProduct(long memberId, Long productId) {
+    public ProductReadResponse readProduct(Long memberId, Long productId) {
         Product product = productService.findById(productId);
         List<ProductImage> productImages = imageService.findAllByProductId(productId);
         boolean isSeller = product.isSellerIdEqualsTo(memberId);
         List<ProductStatus> productStatuses = ProductStatus.findAll();
-
-        return ProductReadResponse.of(isSeller, product, productImages, productStatuses);
+        List<Integer> stats = statService.findProductStats(memberId, productId);
+        return ProductReadResponse.of(isSeller, product, productImages, productStatuses, stats);
     }
 
     @Transactional
@@ -56,10 +57,10 @@ public class ProductFacadeService {
         Category category = Category.from(productCreateRequest.getCategoryId());
         Integer statusId = ProductStatus.FOR_SALE.getId();
         Product product = productCreateRequest.toEntity(seller, statusId, address, category, thumbnailImgUrl);
-
-        productService.saveProduct(product);
+        Long productId = productService.saveProduct(product);
+        statService.saveNewProductStats(productId);
         imageService.saveAll(imageUrls, product);
-        return new ProductCreateResponse(product.getId());
+        return new ProductCreateResponse(productId);
     }
 
     @Transactional
