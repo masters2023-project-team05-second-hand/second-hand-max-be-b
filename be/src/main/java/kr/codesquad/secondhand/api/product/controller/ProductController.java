@@ -8,6 +8,7 @@ import kr.codesquad.secondhand.api.product.dto.ProductUpdateRequest;
 import kr.codesquad.secondhand.api.product.service.ProductFacadeService;
 import kr.codesquad.secondhand.api.product.service.ProductService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,7 +31,7 @@ public class ProductController {
         //TODO 인증 필터 구현 시 토큰에서 memberId 받아올 예정
         Long memberId = 1L;
         ProductCreateResponse productCreateResponse = productFacadeService.saveProduct(memberId, productCreateRequest);
-        return ResponseEntity.ok()
+        return ResponseEntity.status(HttpStatus.CREATED)
                 .body(productCreateResponse);
     }
 
