@@ -60,8 +60,9 @@ public class ProductFacadeService {
         List<ProductImage> productImages = imageService.findAllByProductId(productId);
         List<ProductStatus> productStatuses = ProductStatus.findAll();
         List<Integer> stats = statService.findProductStats(memberId, productId);
-
-        return ProductReadResponse.of(isSeller, product, productImages, productStatuses, stats);
+        Category category = Category.from(product.getCategoryId());
+        Address address = product.getAddress();
+        return ProductReadResponse.of(isSeller, product, productImages, productStatuses, stats, category, address);
     }
 
     @Transactional
