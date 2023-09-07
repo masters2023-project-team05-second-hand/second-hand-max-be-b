@@ -10,6 +10,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import kr.codesquad.secondhand.api.product.domain.Product;
 import kr.codesquad.secondhand.api.product.domain.ProductImage;
+import kr.codesquad.secondhand.api.product.exception.ImageUploadFailedException;
 import kr.codesquad.secondhand.api.product.repository.ImageRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -39,12 +40,16 @@ public class ImageService {
         return urls;
     }
 
-    private URL uploadSingleImageToS3(MultipartFile multipartFile) throws IOException {
+    private URL uploadSingleImageToS3(MultipartFile multipartFile) {
         String uuid = UUID.randomUUID().toString(); // 이미지 이름 중복 방지를 위한 고유한 이미지 이름 생성
         ObjectMetadata metadata = new ObjectMetadata();
         metadata.setContentLength(multipartFile.getSize());
         metadata.setContentType(multipartFile.getContentType());
-        amazonS3.putObject(bucket, uuid, multipartFile.getInputStream(), metadata);
+        try {
+            amazonS3.putObject(bucket, uuid, multipartFile.getInputStream(), metadata);
+        } catch (IOException e) {
+            throw new ImageUploadFailedException();
+        }
         return amazonS3.getUrl(bucket, uuid);
     }
 
