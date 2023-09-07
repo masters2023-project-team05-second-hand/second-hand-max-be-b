@@ -1,0 +1,12 @@
+cloud:
+  aws:
+    region:
+      static: ap-northeast-2
+      auto: false
+    s3:
+      bucket: codesquad-project/public
+    credentials:
+      access-key: ENC(+640/+4fM6WwNJuSYJsej3VwCn8TT6UK2UZsE1V/KDY=)
+      secret-key: ENC(Ps4gMW4Lot4hFzeyM9bRfZO80HzB66M5zGIlizZGWak2Unp/Y7P1Kuc6WzWCb4f0GgHzjhwL5+k=)
+    stack:
+      auto: false
