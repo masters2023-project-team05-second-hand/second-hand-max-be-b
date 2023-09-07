@@ -5,8 +5,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Repository;
 
-@RequiredArgsConstructor
 @Repository
+@RequiredArgsConstructor
 public class StatRedisRepository {
 
     private static final Long INCREMENT_COUNT = 1L;
@@ -16,7 +16,6 @@ public class StatRedisRepository {
     private static final String DEFAULT_COUNT = "0";
     private static final String VIEWS_KEY = "VIEWS";
     private static final String WISHES_KEY = "WISHES";
-
 
     private final RedisTemplate<String, String> redisTemplate;
 
@@ -34,8 +33,7 @@ public class StatRedisRepository {
     }
 
     public List<String> findMemberViewedProducts(String memberViewedKey) {
-        List<String> memberViewedProducts = redisTemplate.opsForList().range(memberViewedKey, START, END);
-        return memberViewedProducts;
+        return redisTemplate.opsForList().range(memberViewedKey, START, END);
     }
 
     public void saveMemberViewedProducts(String memberId, String productId) {
@@ -47,8 +45,7 @@ public class StatRedisRepository {
     }
 
     public List<String> findMemberWishedProducts(String memberWishedProductsKey) {
-        List<String> memberWishedProducts = redisTemplate.opsForList().range(memberWishedProductsKey, START, END);
-        return memberWishedProducts;
+        return redisTemplate.opsForList().range(memberWishedProductsKey, START, END);
     }
 
     public void saveMemberWishedProducts(String memberWishedProductsKey, String productId) {

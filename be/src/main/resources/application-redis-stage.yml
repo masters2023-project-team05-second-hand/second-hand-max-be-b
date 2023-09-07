@@ -1,0 +1,4 @@
+redis:
+  host: ENC(3mnCaEJsAU1R1yuLrIeeTU9J6Hh/m5kP)
+  password: ENC(pv5n32AUL7uf4aVSSWXZwg==)
+  port: 6379

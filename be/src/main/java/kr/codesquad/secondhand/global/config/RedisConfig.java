@@ -10,31 +10,37 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 @Configuration
+//@EnableRedisRepositories 확인하고 추가 예정
 public class RedisConfig {
 
-    @Value("${spring.redis.port}")
-    private int port;
-
-    @Value("${spring.redis.host}")
+    @Value("${redis.host}")
     private String host;
+    
+    @Value("${redis.password}")
+    private String password;
+    
+    @Value("${redis.port}")
+    private int port;
 
     @Bean
     public RedisConnectionFactory redisConnectionFactory() {
         RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration();
         redisStandaloneConfiguration.setHostName(host);
+        redisStandaloneConfiguration.setPassword(password);
         redisStandaloneConfiguration.setPort(port);
-        LettuceConnectionFactory lettuceConnectionFactory = new LettuceConnectionFactory(redisStandaloneConfiguration);
-        return lettuceConnectionFactory;
+        return new LettuceConnectionFactory(redisStandaloneConfiguration);
     }
 
     @Bean
     public RedisTemplate<String, Object> redisTemplate() {
         RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
+        
         redisTemplate.setConnectionFactory(redisConnectionFactory());
         redisTemplate.setKeySerializer(new StringRedisSerializer());
         redisTemplate.setValueSerializer(new StringRedisSerializer());
+
+        // TODO: 확인 후 Redis key와 value를 JSON 문자열로 직렬화하는 Serializer 설정
+//        redisTemplate.setDefaultSerializer(new GenericJackson2JsonRedisSerializer());
         return redisTemplate;
     }
-
 }
-
