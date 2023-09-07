@@ -8,34 +8,19 @@ import lombok.Getter;
 @Getter
 public class CategoriesReadResponse {
 
-    private final List<CategoryResponse> categories;
+    private final Long id;
+    private final String name;
+    private final String imgUrl;
 
-    public CategoriesReadResponse(List<CategoryResponse> categories) {
-        this.categories = categories;
+    public CategoriesReadResponse(Long id, String name, String imgUrl) {
+        this.id = id;
+        this.name = name;
+        this.imgUrl = imgUrl;
     }
 
-    public static CategoriesReadResponse from(List<Category> categories) {
-        return new CategoriesReadResponse(categories.stream()
-                .map(CategoryResponse::from)
-                .collect(Collectors.toUnmodifiableList())
-        );
-    }
-
-    @Getter
-    private static class CategoryResponse {
-
-        private final Long id;
-        private final String name;
-        private final String imgUrl;
-
-        private CategoryResponse(Long id, String name, String imgUrl) {
-            this.id = id;
-            this.name = name;
-            this.imgUrl = imgUrl;
-        }
-
-        private static CategoryResponse from(Category category) {
-            return new CategoryResponse(category.getId(), category.getName(), category.getImgUrl());
-        }
+    public static List<CategoriesReadResponse> from(List<Category> categories) {
+        return categories.stream()
+                .map(category -> new CategoriesReadResponse(category.getId(), category.getName(), category.getImgUrl()))
+                .collect(Collectors.toUnmodifiableList());
     }
 }
