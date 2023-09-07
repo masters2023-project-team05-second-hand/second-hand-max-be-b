@@ -55,7 +55,12 @@ public class MemberAddressService {
     }
 
     @Transactional
-    public List<MemberAddress> findByMemberId(Long memberId){
+    public List<MemberAddressResponse> readMemberAddresses(Long memberId){
+        List<MemberAddress> memberAddresses = findByMemberId(memberId);
+        return MemberAddressResponse.from(memberAddresses);
+    }
+
+    private List<MemberAddress> findByMemberId(Long memberId){
         Optional<List<MemberAddress>> memberAddresses = memberAddressRepository.findAllByMemberId(memberId);
         if(memberAddresses.isPresent()){
             return memberAddresses.orElseThrow(InvalidMemberAddressIdException::new);

@@ -6,9 +6,7 @@ import kr.codesquad.secondhand.api.address.service.AddressService;
 import kr.codesquad.secondhand.api.jwt.domain.Jwt;
 import kr.codesquad.secondhand.api.jwt.service.JwtService;
 import kr.codesquad.secondhand.api.member.domain.Member;
-import kr.codesquad.secondhand.api.member.domain.MemberAddress;
 import kr.codesquad.secondhand.api.member.dto.response.MemberAddressResponse;
-import kr.codesquad.secondhand.api.member.dto.response.MemberProfileResponse;
 import kr.codesquad.secondhand.api.member.dto.response.OAuthSignInResponse;
 import kr.codesquad.secondhand.api.oauth.domain.OAuthProfile;
 import kr.codesquad.secondhand.api.oauth.service.OAuthService;
@@ -41,15 +39,4 @@ public class MemberFacadeService {
         return memberAddressService.deleteAndUpdateMemberAddresses(member, addresses);
     }
 
-    @Transactional
-    public MemberProfileResponse readMemberProfile(Long memberId){
-        Member member = memberService.findById(memberId);
-        return MemberProfileResponse.from(member);
-    }
-
-    @Transactional
-    public List<MemberAddressResponse> readMemberAddresses(Long memberId){
-        List<MemberAddress> memberAddresses = memberAddressService.findByMemberId(memberId);
-        return MemberAddressResponse.from(memberAddresses);
-    }
 }

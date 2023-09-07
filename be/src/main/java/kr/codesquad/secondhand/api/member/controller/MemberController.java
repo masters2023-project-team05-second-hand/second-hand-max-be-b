@@ -9,6 +9,7 @@ import kr.codesquad.secondhand.api.member.dto.response.MemberProfileResponse;
 import kr.codesquad.secondhand.api.member.dto.response.OAuthSignInResponse;
 import kr.codesquad.secondhand.api.member.service.MemberAddressService;
 import kr.codesquad.secondhand.api.member.service.MemberFacadeService;
+import kr.codesquad.secondhand.api.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,6 +26,7 @@ public class MemberController {
 
     private final MemberFacadeService memberFacadeService;
     private final MemberAddressService memberAddressService;
+    private final MemberService memberService;
 
     /**
      * 로그인 요청
@@ -61,17 +63,17 @@ public class MemberController {
                 .build();
     }
 
-    @GetMapping("api/members")
+    @GetMapping("/api/members")
     public ResponseEntity<MemberProfileResponse> readMemberProfile() {
         Long memberId = 1L;
-        MemberProfileResponse memberProfileResponse = memberFacadeService.readMemberProfile(memberId);
+        MemberProfileResponse memberProfileResponse = memberService.readMemberProfile(memberId);
         return ResponseEntity.ok().body(memberProfileResponse);
     }
 
     @GetMapping("api/members/addresses")
     public ResponseEntity<List<MemberAddressResponse>> readMemberAddress() {
         Long memberId = 1L;
-        List<MemberAddressResponse> memberAddressResponse = memberFacadeService.readMemberAddresses(memberId);
+        List<MemberAddressResponse> memberAddressResponse = memberAddressService.readMemberAddresses(memberId);
         return ResponseEntity.ok().body(memberAddressResponse);
     }
 }

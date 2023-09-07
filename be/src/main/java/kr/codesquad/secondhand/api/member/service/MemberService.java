@@ -2,11 +2,13 @@ package kr.codesquad.secondhand.api.member.service;
 
 import java.util.Optional;
 import kr.codesquad.secondhand.api.member.domain.Member;
+import kr.codesquad.secondhand.api.member.dto.response.MemberProfileResponse;
 import kr.codesquad.secondhand.api.member.repository.MemberRepository;
 import kr.codesquad.secondhand.api.oauth.domain.OAuthAttributes;
 import kr.codesquad.secondhand.api.oauth.domain.OAuthProfile;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -35,5 +37,11 @@ public class MemberService {
 
     public Member findById(Long memberId){
         return memberRepository.findById(memberId).orElseThrow();
+    }
+
+    @Transactional
+    public MemberProfileResponse readMemberProfile(Long memberId){
+        Member member = findById(memberId);
+        return MemberProfileResponse.from(member);
     }
 }
