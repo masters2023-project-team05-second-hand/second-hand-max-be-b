@@ -38,4 +38,5 @@ public class MemberFacadeService {
         Member member = memberService.getMemberReferenceById(memberId);
         return memberAddressService.deleteAndUpdateMemberAddresses(member, addresses);
     }
+
 }
