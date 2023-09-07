@@ -1,9 +1,5 @@
 package kr.codesquad.secondhand.api.product.service;
 
-import java.io.IOException;
-import java.net.URL;
-import kr.codesquad.secondhand.api.address.domain.Address;
-import kr.codesquad.secondhand.api.category.domain.Category;
 import kr.codesquad.secondhand.api.product.domain.Product;
 import kr.codesquad.secondhand.api.product.domain.ProductStatus;
 import kr.codesquad.secondhand.api.product.dto.ProductStatusUpdateRequest;
@@ -19,8 +15,7 @@ public class ProductService {
     private final ProductRepository productRepository;
 
     @Transactional
-    public Long saveProduct(Product product) throws IOException {
-        //  TODO 썸네일 리사이징 기능 구현
+    public Long saveProduct(Product product) {
         productRepository.save(product);
         return product.getId();
     }
@@ -28,13 +23,6 @@ public class ProductService {
     @Transactional
     public Product findById(Long productId) {
         return productRepository.findById(productId).orElseThrow();
-    }
-
-    @Transactional
-    public void updateProduct(Product product, String title, String content, Long price, Address address,
-                              Category category,
-                              URL thumbnailImgUrl) {
-        product.updateProduct(title, content, price, address, category, thumbnailImgUrl);
     }
 
     @Transactional

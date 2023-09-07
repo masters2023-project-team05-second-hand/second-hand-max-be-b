@@ -1,0 +1,16 @@
+package kr.codesquad.secondhand.api.product.exception;
+
+import kr.codesquad.secondhand.global.exception.CustomException;
+
+public class ProductException extends CustomException {
+
+    private static final String ERROR_MESSAGE = "상품 관련 에러입니다.";
+
+    public ProductException() {
+        super(ERROR_MESSAGE);
+    }
+
+    public ProductException(String message) {
+        super(message);
+    }
+}

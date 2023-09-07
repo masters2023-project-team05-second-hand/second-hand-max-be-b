@@ -4,7 +4,8 @@ import lombok.Getter;
 
 @Getter
 public class ProductCreateResponse {
-    Long productId;
+
+    private final Long productId;
 
     public ProductCreateResponse(Long productId) {
         this.productId = productId;
