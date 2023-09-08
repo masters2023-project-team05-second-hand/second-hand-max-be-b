@@ -1,7 +1,7 @@
 name: second-hand deploy-stage
 
 on:
-  push:
+  pull_request:
     branches: [ "release-stage" ]
 
 permissions:
