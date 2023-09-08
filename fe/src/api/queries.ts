@@ -7,14 +7,10 @@ import {
   getProductDetail,
 } from ".";
 
-type Props = {
-  size: number;
-};
-
-export const useAddressesInfiniteQuery = (props?: Props) => {
+export const useAddressesInfiniteQuery = (option?: { size: number }) => {
   return useInfiniteQuery({
     queryKey: ["addresses"],
-    queryFn: ({ pageParam }) => getAddresses(pageParam, props?.size),
+    queryFn: ({ pageParam }) => getAddresses(pageParam, option?.size),
     getNextPageParam: (lastPage, allPages) =>
       lastPage.hasNext ? allPages.length : undefined,
   });

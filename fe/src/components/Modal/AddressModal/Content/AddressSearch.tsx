@@ -3,7 +3,7 @@ import { ListItem, ListPanel } from "@components/Modal/Modal.style";
 import { Error, Loading } from "@components/common/Guide";
 import { useIntersect } from "@hooks/useIntersect";
 import { AddressInfo } from "api/type";
-import { useAddressList, useCurrentAddressId } from "store";
+import { useAddressList, useSetCurrentAddressId } from "store";
 import styled from "styled-components";
 
 export default function AddressSearch({
@@ -14,7 +14,7 @@ export default function AddressSearch({
   closeAddressSearch: () => void;
 }) {
   const [addresses, setAddresses] = useAddressList();
-  const [, setCurrentAddressId] = useCurrentAddressId();
+  const setCurrentAddressId = useSetCurrentAddressId();
 
   const onAddAddress = (item: AddressInfo) => {
     const isMaxAddressCount = addresses.length === 2;

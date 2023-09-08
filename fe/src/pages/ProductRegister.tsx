@@ -26,9 +26,9 @@ export default function ProductRegister() {
   const { productId } = useParams();
   const addressList = useAddressListValue();
   const currentAddressId = useCurrentAddressIdValue();
-  const [selectedAddressId, setSelectedAddressId] = useState<
-    number | undefined
-  >(productId ? undefined : currentAddressId);
+  const [selectedAddressId, setSelectedAddressId] = useState<number | null>(
+    currentAddressId
+  );
 
   // Todo: 상태 분리하기 & 상태 관리 라이브러리 쓰기
   const [productInfo, setProductInfo] = useState<ProductInfo>({
@@ -293,11 +293,13 @@ export default function ProductRegister() {
               onChange={onChangeContent}
             />
           </Main>
-          <ProductRegisterAddress
-            selectedAddressId={selectedAddressId}
-            address={productInfo.address}
-            onChange={onChangeAddress}
-          />
+          {selectedAddressId && (
+            <ProductRegisterAddress
+              selectedAddressId={selectedAddressId}
+              address={productInfo.address}
+              onChange={onChangeAddress}
+            />
+          )}
         </>
       )}
     </Page>
