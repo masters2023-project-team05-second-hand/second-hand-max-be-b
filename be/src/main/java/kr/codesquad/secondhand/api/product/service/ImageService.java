@@ -60,17 +60,17 @@ public class ImageService {
     @Transactional
     public void updateImageUrls(Product product, List<MultipartFile> newImages, List<Long> deletedImageIds) {
         updateNewImagesIfExists(newImages, product);
-        deleteTargetImagesIfExists(product, deletedImageIds);
+        deleteTargetImagesIfExists(deletedImageIds);
     }
 
     private void updateNewImagesIfExists(List<MultipartFile> newImages, Product product) {
-        if (!newImages.isEmpty()) {
+        if (newImages != null && !newImages.isEmpty()) {
             saveProductImages(newImages, product);
         }
     }
 
-    private void deleteTargetImagesIfExists(Product product, List<Long> deletedImageIds) {
-        if (!deletedImageIds.isEmpty()) {
+    private void deleteTargetImagesIfExists(List<Long> deletedImageIds) {
+        if (deletedImageIds != null && !deletedImageIds.isEmpty()) {
             imageRepository.deleteAllById(deletedImageIds);
         }
     }
