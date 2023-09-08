@@ -2,7 +2,7 @@ name: second-hand auto-deploy
 
 on:
   pull_request:
-    branches: [ "production" ]
+    branches: [ "release-production" ]
 
 permissions:
   contents: read
