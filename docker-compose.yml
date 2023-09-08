@@ -1,0 +1,30 @@
+version: '3'
+
+services:
+
+  redis:
+    image: redis
+    container_name: redis
+    hostname: redis
+    ports:
+      - "6379:6379"
+
+  was:
+    container_name: second-hand-was
+    image: aladinjinny/second-hand-was:latest
+    ports:
+      - "8080:8080"
+    environment:
+      - JASYPT_PASSWORD=${JASYPT_PASSWORD}
+    depends_on:
+      - redis
+
+  web-with-nginx:
+    container_name: second-hand-web-with-nginx
+    image: aladinjinny/second-hand-web-with-nginx:latest
+    volumes:
+      - /home/ubuntu/logs:/var/log/nginx
+    ports:
+      - "80:80"
+    depends_on:
+      - was

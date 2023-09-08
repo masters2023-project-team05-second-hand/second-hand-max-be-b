@@ -3,8 +3,7 @@ package kr.codesquad.secondhand.api.category.service;
 import java.util.List;
 import java.util.stream.Collectors;
 import kr.codesquad.secondhand.api.category.domain.Category;
-import kr.codesquad.secondhand.api.category.dto.CategoryResponse;
-import kr.codesquad.secondhand.api.category.repository.CategoryRepositoryImpl;
+import kr.codesquad.secondhand.api.category.dto.CategoryReadResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -12,12 +11,10 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class CategoryService {
 
-    private final CategoryRepositoryImpl categoryRepository;
-
-    public List<CategoryResponse> getCategories() {
-        List<Category> categories = categoryRepository.findAll();
+    public List<CategoryReadResponse> findCategories() {
+        List<Category> categories = Category.findAll();
         return categories.stream()
-                .map(CategoryResponse::from)
+                .map(category -> new CategoryReadResponse(category.getId(), category.getName(), category.getImgUrl()))
                 .collect(Collectors.toUnmodifiableList());
     }
 }

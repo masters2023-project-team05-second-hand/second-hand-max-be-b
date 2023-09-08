@@ -1,0 +1,23 @@
+name: second-hand deploy-stage
+
+on:
+  pull_request:
+    branches: [ "release-stage" ]
+
+permissions:
+  contents: read
+
+jobs:
+
+  SSH-Transfer:
+    runs-on: ubuntu-latest
+    steps:
+      - name: SSH Transfer
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST_STAGE }}
+          username: ubuntu
+          key: ${{ secrets.KEY_STAGE }}
+          script: |
+            cd ~/app/second-hand-max-be-b/be
+            ./deploy.sh

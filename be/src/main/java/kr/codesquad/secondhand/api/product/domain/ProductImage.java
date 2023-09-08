@@ -1,6 +1,8 @@
 package kr.codesquad.secondhand.api.product.domain;
 
 import java.net.URL;
+import java.util.List;
+import java.util.stream.Collectors;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -12,10 +14,10 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Entity(name = "product_image")
+@Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Image {
+public class ProductImage {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,8 +29,14 @@ public class Image {
 
     private URL url;
 
-    public Image(Product product, URL url) {
+    public ProductImage(Product product, URL url) {
         this.product = product;
         this.url = url;
+    }
+
+    public static List<ProductImage> from(Product product, List<URL> imageUrls) {
+        return imageUrls.stream()
+                .map(imageUrl -> new ProductImage(product, imageUrl))
+                .collect(Collectors.toUnmodifiableList());
     }
 }

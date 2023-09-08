@@ -10,10 +10,9 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import kr.codesquad.secondhand.api.address.domain.Address;
 import kr.codesquad.secondhand.api.category.domain.Category;
-import kr.codesquad.secondhand.api.member.domain.Address;
 import kr.codesquad.secondhand.api.member.domain.Member;
-import kr.codesquad.secondhand.api.product.dto.ProductModifyRequest;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -36,33 +35,26 @@ public class Product {
     private Member seller;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "status_id")
-    private ProductStatus status;
-
-    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "address_id")
     private Address address;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "category_id")
-    private Category category;
+    @CreationTimestamp
+    private Date createdTime;
 
+    private Long categoryId;
+    private Integer statusId;
     private String title;
     private String content;
     private Long price;
-
-    @CreationTimestamp
-    private Date createdTime;
     private URL thumbnailImgUrl;
 
     @Builder
-    public Product(Member seller, ProductStatus status, Address address, Category category, String title,
-                   String content,
-                   Long price, Date createdTime, URL thumbnailImgUrl) {
+    public Product(Member seller, Integer statusId, Address address, Category category, String title,
+                   String content, Long price, Date createdTime, URL thumbnailImgUrl) {
         this.seller = seller;
-        this.status = status;
+        this.statusId = statusId;
         this.address = address;
-        this.category = category;
+        this.categoryId = category.getId();
         this.title = title;
         this.content = content;
         this.price = price;
@@ -70,13 +62,22 @@ public class Product {
         this.thumbnailImgUrl = thumbnailImgUrl;
     }
 
-    public void updateProduct(ProductModifyRequest productModifyRequest, Address address, Category category,
+    public void updateProduct(String title, String content, Long price, Address address, Category category,
                               URL thumbnailImgUrl) {
-        this.title = productModifyRequest.getTitle();
-        this.content = productModifyRequest.getContent();
-        this.price = productModifyRequest.getPrice();
+        this.title = title;
+        this.content = content;
+        this.price = price;
         this.address = address;
-        this.category = category;
+        this.categoryId = category.getId();
         this.thumbnailImgUrl = thumbnailImgUrl;
+    }
+
+    public void updateStatus(ProductStatus productStatus) {
+        this.statusId = productStatus.getId();
+    }
+
+    public boolean isSellerIdEqualsTo(Long memberId) {
+        return seller.getId()
+                .equals(memberId);
     }
 }

@@ -3,7 +3,7 @@ package kr.codesquad.secondhand.api.oauth.domain;
 import java.util.Arrays;
 import java.util.Map;
 import kr.codesquad.secondhand.api.member.domain.Member;
-import kr.codesquad.secondhand.api.member.domain.SignInType;
+import kr.codesquad.secondhand.api.oauth.exception.InvalidOauthProviderNameException;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -28,13 +28,13 @@ public class OAuthProfile {
         return Arrays.stream(OAuthAttributes.values())
                 .filter(provider -> providerName.equals(provider.providerName))
                 .findFirst()
-                .orElseThrow() // TODO: 예외처리
+                .orElseThrow(InvalidOauthProviderNameException::new)
                 .of(attributes);
     }
 
-    public Member toMember(SignInType signInType) {
+    public Member toMember(OAuthAttributes oAuthAttributes) {
         return Member.builder()
-                .signInType(signInType)
+                .oAuthAttributes(oAuthAttributes)
                 .email(email)
                 .nickname(name)
                 .profileImgUrl(imageUrl)

@@ -2,11 +2,10 @@ package kr.codesquad.secondhand.api.product.dto;
 
 import java.net.URL;
 import java.util.List;
+import kr.codesquad.secondhand.api.address.domain.Address;
 import kr.codesquad.secondhand.api.category.domain.Category;
-import kr.codesquad.secondhand.api.member.domain.Address;
 import kr.codesquad.secondhand.api.member.domain.Member;
 import kr.codesquad.secondhand.api.product.domain.Product;
-import kr.codesquad.secondhand.api.product.domain.ProductStatus;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.multipart.MultipartFile;
@@ -22,13 +21,12 @@ public class ProductCreateRequest {
     private final Long price;
     private final List<MultipartFile> images;
 
-    public Product toEntity(Member seller, ProductStatus status, Address address, Category category,
-                            URL thumbnailImgUrl) {
+    public Product toEntity(Member seller, Integer statusId, Address address, Category category, URL thumbnailImgUrl) {
         return Product.builder()
                 .seller(seller)
                 .thumbnailImgUrl(thumbnailImgUrl)
                 .category(category)
-                .status(status)
+                .statusId(statusId)
                 .address(address)
                 .title(title)
                 .content(content)

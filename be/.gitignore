@@ -60,3 +60,6 @@ out/
 
 ### VS Code ###
 .vscode/
+
+### YML ###
+application-s3.yml

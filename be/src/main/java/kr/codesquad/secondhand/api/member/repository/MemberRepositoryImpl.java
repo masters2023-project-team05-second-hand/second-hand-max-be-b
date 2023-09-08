@@ -23,8 +23,13 @@ public class MemberRepositoryImpl implements MemberRepository {
         return repository.findBySignInTypeIdAndEmail(signInTypeId, email);
     }
 
-    public Member getReferenceById(Long id){
+    public Member getReferenceById(Long id) {
         return repository.getReferenceById(id);
+    }
+
+    @Override
+    public Optional<Member> findById(Long id) {
+        return repository.findById(id);
     }
 
 }
