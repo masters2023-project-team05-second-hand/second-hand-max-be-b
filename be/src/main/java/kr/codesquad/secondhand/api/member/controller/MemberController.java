@@ -15,6 +15,7 @@ import kr.codesquad.secondhand.api.member.service.MemberFacadeService;
 import kr.codesquad.secondhand.api.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -36,7 +37,7 @@ public class MemberController {
      */
     @PostMapping("/api/members/sign-in/{provider}")
     public ResponseEntity<OAuthSignInResponse> login(@PathVariable String provider,
-                                                     @RequestBody OAuthSignInRequest request) {
+                                                     @Validated @RequestBody OAuthSignInRequest request) {
 
         OAuthSignInResponse oAuthSignInResponse = memberFacadeService.login(provider, request.getAccessCode());
         return ResponseEntity.ok()
@@ -45,7 +46,7 @@ public class MemberController {
 
     @PutMapping("/api/members/addresses")
     public ResponseEntity<List<MemberAddressResponse>> updateMemberAddresses(HttpServletRequest httpServletRequest,
-                                                                             @RequestBody MemberAddressUpdateRequest memberAddressUpdateRequest) {
+                                                                             @Validated @RequestBody MemberAddressUpdateRequest memberAddressUpdateRequest) {
         Long memberId = extractMemberId(httpServletRequest);
         List<MemberAddressResponse> memberAddressResponses = memberFacadeService.updateMemberAddresses(
                 memberId,
