@@ -53,7 +53,7 @@ public class JwtProvider {
         return new Date(System.currentTimeMillis() + jwtProperties.getRefreshTokenExpirationTime());
     }
 
-    private Claims getClaims(String token) {
+    public Claims getClaims(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(key)
                 .build()
