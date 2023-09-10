@@ -24,7 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class ProductFacadeService {
 
     private static final Integer THUMBNAIL_IMAGE_INDEX = 0;
-    private static final Integer DEFAULT_PRODUCT_STATUS_ID = ProductStatus.FOR_SALE.getId();;
+    private static final Integer DEFAULT_PRODUCT_STATUS_ID = ProductStatus.FOR_SALE.getId();
 
     private final ProductService productService;
     private final ImageService imageService;
