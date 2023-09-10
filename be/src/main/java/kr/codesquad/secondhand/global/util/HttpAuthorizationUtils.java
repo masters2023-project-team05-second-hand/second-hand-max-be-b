@@ -24,4 +24,7 @@ public class HttpAuthorizationUtils {
         return authorization != null && authorization.startsWith(TOKEN_PREFIX);
     }
 
+    public static Long extractMemberId(HttpServletRequest httpServletRequest) {
+        return Long.valueOf(httpServletRequest.getAttribute(MEMBER_ID_CLAIMS_KEY).toString()) ;
+    }
 }

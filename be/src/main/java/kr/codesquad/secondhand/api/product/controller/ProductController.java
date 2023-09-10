@@ -1,5 +1,8 @@
 package kr.codesquad.secondhand.api.product.controller;
 
+import static kr.codesquad.secondhand.global.util.HttpAuthorizationUtils.extractMemberId;
+
+import javax.servlet.http.HttpServletRequest;
 import kr.codesquad.secondhand.api.product.dto.ProductCreateRequest;
 import kr.codesquad.secondhand.api.product.dto.ProductCreateResponse;
 import kr.codesquad.secondhand.api.product.dto.ProductReadResponse;
@@ -27,17 +30,19 @@ public class ProductController {
     private final ProductService productService;
 
     @PostMapping("/api/products")
-    public ResponseEntity<ProductCreateResponse> createProduct(@ModelAttribute ProductCreateRequest productCreateRequest) {
-        //TODO 인증 필터 구현 시 토큰에서 memberId 받아올 예정
-        Long memberId = 1L;
+    public ResponseEntity<ProductCreateResponse> createProduct(HttpServletRequest httpServletRequest,
+                                                               @ModelAttribute ProductCreateRequest productCreateRequest) {
+        Long memberId = extractMemberId(httpServletRequest);
         ProductCreateResponse productCreateResponse = productFacadeService.saveProduct(memberId, productCreateRequest);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(productCreateResponse);
     }
 
     @GetMapping("/api/products/{productId}")
-    public ResponseEntity<ProductReadResponse> readProduct(@PathVariable Long productId) {
-        ProductReadResponse productReadResponse = productFacadeService.readProduct(1L, productId); // TODO memberId 임시 처리
+    public ResponseEntity<ProductReadResponse> readProduct(HttpServletRequest httpServletRequest,
+                                                           @PathVariable Long productId) {
+        Long memberId = extractMemberId(httpServletRequest);
+        ProductReadResponse productReadResponse = productFacadeService.readProduct(memberId, productId);
         return ResponseEntity.ok()
                 .body(productReadResponse);
     }
