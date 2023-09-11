@@ -1,6 +1,9 @@
 package kr.codesquad.secondhand.api.member.controller;
 
+import static kr.codesquad.secondhand.global.util.HttpAuthorizationUtils.extractMemberId;
+
 import java.util.List;
+import javax.servlet.http.HttpServletRequest;
 import kr.codesquad.secondhand.api.member.dto.request.LastVisitedUpdateRequest;
 import kr.codesquad.secondhand.api.member.dto.request.MemberAddressUpdateRequest;
 import kr.codesquad.secondhand.api.member.dto.request.OAuthSignInRequest;
@@ -41,10 +44,9 @@ public class MemberController {
     }
 
     @PutMapping("/api/members/addresses")
-    public ResponseEntity<List<MemberAddressResponse>> updateMemberAddresses(
-            @RequestBody MemberAddressUpdateRequest memberAddressUpdateRequest) {
-        // 임시 id
-        Long memberId = 1L;
+    public ResponseEntity<List<MemberAddressResponse>> updateMemberAddresses(HttpServletRequest httpServletRequest,
+                                                                             @RequestBody MemberAddressUpdateRequest memberAddressUpdateRequest) {
+        Long memberId = extractMemberId(httpServletRequest);
         List<MemberAddressResponse> memberAddressResponses = memberFacadeService.updateMemberAddresses(
                 memberId,
                 memberAddressUpdateRequest.getAddressIds()
@@ -54,25 +56,24 @@ public class MemberController {
     }
 
     @PatchMapping("/api/members/addresses")
-    public ResponseEntity<String> updateLastVisitedAddress(
-            @RequestBody LastVisitedUpdateRequest lastVisitedUpdateRequest) {
-        // 임시 id
-        Long memberId = 1L;
+    public ResponseEntity<String> updateLastVisitedAddress(HttpServletRequest httpServletRequest,
+                                                           @RequestBody LastVisitedUpdateRequest lastVisitedUpdateRequest) {
+        Long memberId = extractMemberId(httpServletRequest);
         memberAddressService.updateLastVisitedAddress(memberId, lastVisitedUpdateRequest.getLastVisitedAddressId());
         return ResponseEntity.ok()
                 .build();
     }
 
     @GetMapping("/api/members")
-    public ResponseEntity<MemberProfileResponse> readMemberProfile() {
-        Long memberId = 1L;
+    public ResponseEntity<MemberProfileResponse> readMemberProfile(HttpServletRequest httpServletRequest) {
+        Long memberId = extractMemberId(httpServletRequest);
         MemberProfileResponse memberProfileResponse = memberService.readMemberProfile(memberId);
         return ResponseEntity.ok().body(memberProfileResponse);
     }
 
     @GetMapping("api/members/addresses")
-    public ResponseEntity<List<MemberAddressResponse>> readMemberAddress() {
-        Long memberId = 1L;
+    public ResponseEntity<List<MemberAddressResponse>> readMemberAddress(HttpServletRequest httpServletRequest) {
+        Long memberId = extractMemberId(httpServletRequest);
         List<MemberAddressResponse> memberAddressResponse = memberAddressService.readMemberAddresses(memberId);
         return ResponseEntity.ok().body(memberAddressResponse);
     }
