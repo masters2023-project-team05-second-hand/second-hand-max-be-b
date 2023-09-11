@@ -1,5 +1,6 @@
 package kr.codesquad.secondhand.api.member.controller;
 
+import static kr.codesquad.secondhand.global.util.HttpAuthorizationUtils.extractAccessToken;
 import static kr.codesquad.secondhand.global.util.HttpAuthorizationUtils.extractMemberId;
 
 import java.util.List;
@@ -7,6 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import kr.codesquad.secondhand.api.member.dto.request.LastVisitedUpdateRequest;
 import kr.codesquad.secondhand.api.member.dto.request.MemberAddressUpdateRequest;
 import kr.codesquad.secondhand.api.member.dto.request.OAuthSignInRequest;
+import kr.codesquad.secondhand.api.member.dto.request.SignOutRequest;
 import kr.codesquad.secondhand.api.member.dto.response.MemberAddressResponse;
 import kr.codesquad.secondhand.api.member.dto.response.MemberProfileResponse;
 import kr.codesquad.secondhand.api.member.dto.response.OAuthSignInResponse;
@@ -36,12 +38,22 @@ public class MemberController {
      * 로그인 요청
      */
     @PostMapping("/api/members/sign-in/{provider}")
-    public ResponseEntity<OAuthSignInResponse> login(@PathVariable String provider,
-                                                     @Validated @RequestBody OAuthSignInRequest request) {
+    public ResponseEntity<OAuthSignInResponse> signIn(@PathVariable String provider,
+                                                      @Validated @RequestBody OAuthSignInRequest request) {
 
-        OAuthSignInResponse oAuthSignInResponse = memberFacadeService.login(provider, request.getAccessCode());
+        OAuthSignInResponse oAuthSignInResponse = memberFacadeService.signIn(provider, request.getAccessCode());
         return ResponseEntity.ok()
                 .body(oAuthSignInResponse);
+    }
+
+    @PostMapping("/api/sign-out")
+    public ResponseEntity<String> signOut(HttpServletRequest httpServletRequest,
+                                          @Validated @RequestBody SignOutRequest signOutRequest) {
+        Long memberId = extractMemberId(httpServletRequest);
+        String accessToken = extractAccessToken(httpServletRequest);
+        memberFacadeService.signOut(memberId, accessToken, signOutRequest.getRefreshToken());
+        return ResponseEntity.ok()
+                .build();
     }
 
     @PutMapping("/api/members/addresses")

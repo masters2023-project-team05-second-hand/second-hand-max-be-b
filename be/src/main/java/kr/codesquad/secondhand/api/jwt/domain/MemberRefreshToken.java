@@ -1,5 +1,6 @@
 package kr.codesquad.secondhand.api.jwt.domain;
 
+import java.util.Objects;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
@@ -20,4 +21,7 @@ public class MemberRefreshToken {
 
     private String refreshToken;
 
+    public boolean matches(String refreshToken) {
+        return Objects.equals(this.refreshToken, refreshToken);
+    }
 }

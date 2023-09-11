@@ -61,4 +61,7 @@ public class JwtProvider {
                 .getBody();
     }
 
+    public Date getExpiration(String token) { // TODO Date 타입이 시스템 시간이랑 일치하지 않을 수도 있는데, 관련해서 공부하고 처리 필요
+        return getClaims(token).getExpiration();
+    }
 }

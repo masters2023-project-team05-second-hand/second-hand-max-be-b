@@ -15,8 +15,10 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import kr.codesquad.secondhand.api.jwt.exception.BlackListedAccessTokenException;
 import kr.codesquad.secondhand.api.jwt.exception.JwtExceptionType;
 import kr.codesquad.secondhand.api.jwt.exception.TokenNotFoundException;
+import kr.codesquad.secondhand.api.jwt.repository.TokenRedisRepository;
 import kr.codesquad.secondhand.api.jwt.util.JwtProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -43,6 +45,7 @@ public class AuthorizationFilter implements Filter {
 
     private final JwtProvider jwtProvider;
     private final ObjectMapper objectMapper;
+    private final TokenRedisRepository tokenRedisRepository;
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain chain) throws
@@ -58,6 +61,11 @@ public class AuthorizationFilter implements Filter {
 
         if (!containsBearerToken(httpServletRequest)) {
             sendErrorResponse(httpServletResponse, new TokenNotFoundException());
+            return;
+        }
+
+        if (tokenRedisRepository.isAccessTokenInBlackList(extractAccessToken(httpServletRequest))) {
+            sendErrorResponse(httpServletResponse, new BlackListedAccessTokenException());
             return;
         }
 

@@ -14,8 +14,8 @@ public class HttpAuthorizationUtils {
         httpServletRequest.setAttribute(MEMBER_ID_CLAIMS_KEY, claims.get(MEMBER_ID_CLAIMS_KEY));
     }
 
-    public static String extractAccessToken(HttpServletRequest request) {
-        String authorizationHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
+    public static String extractAccessToken(HttpServletRequest httpServletRequest) {
+        String authorizationHeader = httpServletRequest.getHeader(HttpHeaders.AUTHORIZATION);
         return authorizationHeader.substring(BEARER_TOKEN_PREFIX_LENGTH);
     }
 

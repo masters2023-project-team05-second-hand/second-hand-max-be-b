@@ -1,6 +1,7 @@
 package kr.codesquad.secondhand.global.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import kr.codesquad.secondhand.api.jwt.repository.TokenRedisRepository;
 import kr.codesquad.secondhand.api.jwt.util.JwtProvider;
 import kr.codesquad.secondhand.global.filter.AuthorizationFilter;
 import kr.codesquad.secondhand.global.filter.CorsFilter;
@@ -21,9 +22,10 @@ public class FilterConfig {
 
     @Bean
     public FilterRegistrationBean<AuthorizationFilter> authorizationFilter(JwtProvider jwtProvider,
-                                                                           ObjectMapper objectMapper) {
+                                                                           ObjectMapper objectMapper,
+                                                                           TokenRedisRepository tokenRedisRepository) {
         FilterRegistrationBean<AuthorizationFilter> filterRegistrationBean = new FilterRegistrationBean<>();
-        filterRegistrationBean.setFilter(new AuthorizationFilter(jwtProvider, objectMapper));
+        filterRegistrationBean.setFilter(new AuthorizationFilter(jwtProvider, objectMapper, tokenRedisRepository));
         filterRegistrationBean.setOrder(2);
         return filterRegistrationBean;
     }
