@@ -6,11 +6,11 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import kr.codesquad.secondhand.api.member.dto.request.LastVisitedUpdateRequest;
 import kr.codesquad.secondhand.api.member.dto.request.MemberAddressUpdateRequest;
-import kr.codesquad.secondhand.api.member.dto.request.MemberProfileImgUpdateRequest;
+import kr.codesquad.secondhand.api.member.dto.request.MemberRequest.MemberProfileImgUpdateRequest;
 import kr.codesquad.secondhand.api.member.dto.request.OAuthSignInRequest;
 import kr.codesquad.secondhand.api.member.dto.response.MemberAddressResponse;
-import kr.codesquad.secondhand.api.member.dto.response.MemberProfileImgUrlResponse;
 import kr.codesquad.secondhand.api.member.dto.response.MemberProfileResponse;
+import kr.codesquad.secondhand.api.member.dto.response.MemberResponse.MemberProfileImgUpdateResponse;
 import kr.codesquad.secondhand.api.member.dto.response.OAuthSignInResponse;
 import kr.codesquad.secondhand.api.member.service.MemberAddressService;
 import kr.codesquad.secondhand.api.member.service.MemberFacadeService;
@@ -83,12 +83,11 @@ public class MemberController {
     }
 
     @PatchMapping("api/members/profile-image")
-    public ResponseEntity<MemberProfileImgUrlResponse> updateMemberProfileImg(HttpServletRequest httpServletRequest,
-                                                                              @ModelAttribute
-                                                                              MemberProfileImgUpdateRequest memberProfileImgUpdateRequest) {
+    public ResponseEntity<MemberProfileImgUpdateResponse> updateMemberProfileImg(HttpServletRequest httpServletRequest,
+                                                                                 @ModelAttribute MemberProfileImgUpdateRequest request) {
         Long memberId = extractMemberId(httpServletRequest);
-        MemberProfileImgUrlResponse memberProfileImgUrlResponse = memberFacadeService.updateMemberProfileImg(memberId,
-                memberProfileImgUpdateRequest);
+        MemberProfileImgUpdateResponse memberProfileImgUrlResponse = memberFacadeService.updateMemberProfileImg(
+                memberId, request);
         return ResponseEntity.ok().body(memberProfileImgUrlResponse);
     }
 }
