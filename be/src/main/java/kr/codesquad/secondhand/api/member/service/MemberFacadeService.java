@@ -8,6 +8,7 @@ import kr.codesquad.secondhand.api.jwt.service.JwtService;
 import kr.codesquad.secondhand.api.member.domain.Member;
 import kr.codesquad.secondhand.api.member.dto.response.MemberAddressResponse;
 import kr.codesquad.secondhand.api.member.dto.response.OAuthSignInResponse;
+import kr.codesquad.secondhand.api.member.exception.InvalidRefreshTokenException;
 import kr.codesquad.secondhand.api.oauth.domain.OAuthProfile;
 import kr.codesquad.secondhand.api.oauth.service.OAuthService;
 import lombok.RequiredArgsConstructor;
@@ -25,11 +26,20 @@ public class MemberFacadeService {
     private final AddressService addressService;
 
     @Transactional
-    public OAuthSignInResponse login(String providerName, String authorizationCode) {
+    public OAuthSignInResponse signIn(String providerName, String authorizationCode) {
         OAuthProfile oAuthProfile = oAuthService.requestOauthProfile(providerName, authorizationCode);
         Long memberId = memberService.oAuthLogin(providerName, oAuthProfile);
         Jwt tokens = jwtService.issueJwt(memberId);
         return OAuthSignInResponse.from(tokens);
+    }
+
+    @Transactional
+    public void signOut(Long memberId, String accessToken, String refreshToken) {
+        if (!jwtService.isMemberRefreshToken(memberId, refreshToken)) {
+            throw new InvalidRefreshTokenException();
+        }
+        jwtService.deleteRefreshToken(memberId);
+        jwtService.addAccessTokenToBlackList(accessToken);
     }
 
     @Transactional
