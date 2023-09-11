@@ -1,5 +1,8 @@
 package kr.codesquad.secondhand.global.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import kr.codesquad.secondhand.api.jwt.util.JwtProvider;
+import kr.codesquad.secondhand.global.filter.AuthorizationFilter;
 import kr.codesquad.secondhand.global.filter.CorsFilter;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
@@ -13,6 +16,15 @@ public class FilterConfig {
         FilterRegistrationBean<CorsFilter> filterRegistrationBean = new FilterRegistrationBean<>();
         filterRegistrationBean.setFilter(new CorsFilter());
         filterRegistrationBean.setOrder(1);
+        return filterRegistrationBean;
+    }
+
+    @Bean
+    public FilterRegistrationBean<AuthorizationFilter> authorizationFilter(JwtProvider jwtProvider,
+                                                                           ObjectMapper objectMapper) {
+        FilterRegistrationBean<AuthorizationFilter> filterRegistrationBean = new FilterRegistrationBean<>();
+        filterRegistrationBean.setFilter(new AuthorizationFilter(jwtProvider, objectMapper));
+        filterRegistrationBean.setOrder(2);
         return filterRegistrationBean;
     }
 }
