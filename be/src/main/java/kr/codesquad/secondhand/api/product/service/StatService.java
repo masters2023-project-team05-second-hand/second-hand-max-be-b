@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 import kr.codesquad.secondhand.api.product.repository.StatRedisRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -29,6 +30,7 @@ public class StatService {
                 .collect(Collectors.toUnmodifiableList());
     }
 
+    @Transactional
     public void increaseViews(Long memberId, Long productId) {
         String productKey = productId.toString();
         String memberViewedProductsKey = memberId.toString() + VIEWS_KEY;
@@ -47,6 +49,7 @@ public class StatService {
         return memberViewedProducts != null && memberViewedProducts.contains(productId);
     }
 
+    @Transactional
     public void addOrResetWishes(Long memberId, Long productId) {
         String productKey = productId.toString();
         String memberWishedProductsKey = memberId.toString() + WISHES_KEY;
