@@ -14,4 +14,13 @@ public class MemberResponse {
         }
     }
 
+    @Getter
+    public static class MemberNicknameResponse {
+
+        private String updatedNickname;
+
+        public MemberNicknameResponse(String updatedNickname) {
+            this.updatedNickname = updatedNickname;
+        }
+    }
 }
