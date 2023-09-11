@@ -7,6 +7,7 @@ import kr.codesquad.secondhand.api.jwt.domain.MemberRefreshToken;
 import kr.codesquad.secondhand.api.jwt.repository.TokenRedisRepository;
 import kr.codesquad.secondhand.api.jwt.repository.TokenRepository;
 import kr.codesquad.secondhand.api.jwt.util.JwtProvider;
+import kr.codesquad.secondhand.api.member.exception.InvalidRefreshTokenException;
 import kr.codesquad.secondhand.api.member.exception.NotSignedInException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -31,9 +32,15 @@ public class JwtService {
         return jwt;
     }
 
-    public String reissueAccessToken() {
-        // TODO
-        return null;
+    public String reissueAccessToken(Long memberId, String refreshToken) {
+        MemberRefreshToken memberRefreshToken = tokenRepository.findById(memberId)
+                .orElseThrow(NotSignedInException::new);
+
+        if (!memberRefreshToken.matches(refreshToken)) {
+            throw new InvalidRefreshTokenException();
+        }
+
+        return jwtProvider.reissueAccessToken(Collections.singletonMap(MEMBER_ID, memberId));
     }
 
     public void deleteRefreshToken(Long memberId) {

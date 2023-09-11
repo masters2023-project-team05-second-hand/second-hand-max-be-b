@@ -5,7 +5,9 @@ import static kr.codesquad.secondhand.global.util.HttpAuthorizationUtils.extract
 
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
+import kr.codesquad.secondhand.api.jwt.service.JwtService;
 import kr.codesquad.secondhand.api.member.dto.MemberProfileImgUpdateDto;
+import kr.codesquad.secondhand.api.member.dto.ReissueAccessTokenDto;
 import kr.codesquad.secondhand.api.member.dto.request.LastVisitedUpdateRequest;
 import kr.codesquad.secondhand.api.member.dto.request.MemberAddressUpdateRequest;
 import kr.codesquad.secondhand.api.member.dto.request.MemberNicknameUpdateRequest;
@@ -36,6 +38,7 @@ public class MemberController {
     private final MemberFacadeService memberFacadeService;
     private final MemberAddressService memberAddressService;
     private final MemberService memberService;
+    private final JwtService jwtService;
 
     /**
      * 로그인 요청
@@ -57,6 +60,15 @@ public class MemberController {
         memberFacadeService.signOut(memberId, accessToken, signOutRequest.getRefreshToken());
         return ResponseEntity.ok()
                 .build();
+    }
+
+    @PostMapping("/api/reissue-access-token")
+    public ResponseEntity<ReissueAccessTokenDto.Response> reissueAccessToken(HttpServletRequest httpServletRequest,
+                                                                             @Validated @RequestBody ReissueAccessTokenDto.Request request) {
+        Long memberId = extractMemberId(httpServletRequest);
+        String refreshToken = jwtService.reissueAccessToken(memberId, request.getRefreshToken());
+        return ResponseEntity.ok()
+                .body(new ReissueAccessTokenDto.Response(refreshToken));
     }
 
     @PutMapping("/api/members/addresses")
