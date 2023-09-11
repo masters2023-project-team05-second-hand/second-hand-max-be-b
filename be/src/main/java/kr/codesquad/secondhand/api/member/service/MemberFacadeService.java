@@ -6,10 +6,13 @@ import kr.codesquad.secondhand.api.address.service.AddressService;
 import kr.codesquad.secondhand.api.jwt.domain.Jwt;
 import kr.codesquad.secondhand.api.jwt.service.JwtService;
 import kr.codesquad.secondhand.api.member.domain.Member;
+import kr.codesquad.secondhand.api.member.dto.request.MemberProfileImgUpdateRequest;
 import kr.codesquad.secondhand.api.member.dto.response.MemberAddressResponse;
+import kr.codesquad.secondhand.api.member.dto.response.MemberProfileImgUrlResponse;
 import kr.codesquad.secondhand.api.member.dto.response.OAuthSignInResponse;
 import kr.codesquad.secondhand.api.oauth.domain.OAuthProfile;
 import kr.codesquad.secondhand.api.oauth.service.OAuthService;
+import kr.codesquad.secondhand.api.product.service.ImageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +26,7 @@ public class MemberFacadeService {
     private final JwtService jwtService;
     private final MemberAddressService memberAddressService;
     private final AddressService addressService;
+    private final ImageService imageService;
 
     @Transactional
     public OAuthSignInResponse login(String providerName, String authorizationCode) {
@@ -39,4 +43,11 @@ public class MemberFacadeService {
         return memberAddressService.deleteAndUpdateMemberAddresses(member, addresses);
     }
 
+    @Transactional
+    public MemberProfileImgUrlResponse updateMemberProfileImg(Long memberId,
+                                                              MemberProfileImgUpdateRequest memberProfileImgUpdateRequest) {
+        String newImageUrl = imageService.uploadSingleImageToS3(memberProfileImgUpdateRequest.getNewProfileImage()).toString();
+        memberService.updateMemberProfileImg(memberId, newImageUrl);
+        return new MemberProfileImgUrlResponse(newImageUrl);
+    }
 }
