@@ -6,8 +6,10 @@ import kr.codesquad.secondhand.api.address.service.AddressService;
 import kr.codesquad.secondhand.api.jwt.domain.Jwt;
 import kr.codesquad.secondhand.api.jwt.service.JwtService;
 import kr.codesquad.secondhand.api.member.domain.Member;
+import kr.codesquad.secondhand.api.member.dto.request.MemberRequest.MemberNicknameUpdateRequest;
 import kr.codesquad.secondhand.api.member.dto.request.MemberRequest.MemberProfileImgUpdateRequest;
 import kr.codesquad.secondhand.api.member.dto.response.MemberAddressResponse;
+import kr.codesquad.secondhand.api.member.dto.response.MemberResponse.MemberNicknameResponse;
 import kr.codesquad.secondhand.api.member.dto.response.MemberResponse.MemberProfileImgUpdateResponse;
 import kr.codesquad.secondhand.api.member.dto.response.OAuthSignInResponse;
 import kr.codesquad.secondhand.api.member.exception.InvalidRefreshTokenException;
@@ -60,5 +62,11 @@ public class MemberFacadeService {
                 .toString();
         memberService.updateMemberProfileImg(memberId, newImageUrl);
         return new MemberProfileImgUpdateResponse(newImageUrl);
+    }
+
+    @Transactional
+    public MemberNicknameResponse updateMemberNickname(Long memberId, MemberNicknameUpdateRequest request) {
+        String updatedNickname = memberService.updateMemberNickname(memberId, request.getNewNickname());
+        return new MemberNicknameResponse(updatedNickname);
     }
 }

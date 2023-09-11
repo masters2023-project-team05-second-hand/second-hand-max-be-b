@@ -45,4 +45,8 @@ public class Member {
     public void updateProfileImgUrl(String newProfileImgUrl) {
         this.profileImgUrl = newProfileImgUrl;
     }
+
+    public void updateNickname(String nickname) {
+        this.nickname = nickname;
+    }
 }

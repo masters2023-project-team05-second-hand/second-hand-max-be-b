@@ -7,11 +7,13 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import kr.codesquad.secondhand.api.member.dto.request.LastVisitedUpdateRequest;
 import kr.codesquad.secondhand.api.member.dto.request.MemberAddressUpdateRequest;
+import kr.codesquad.secondhand.api.member.dto.request.MemberRequest.MemberNicknameUpdateRequest;
 import kr.codesquad.secondhand.api.member.dto.request.MemberRequest.MemberProfileImgUpdateRequest;
 import kr.codesquad.secondhand.api.member.dto.request.OAuthSignInRequest;
 import kr.codesquad.secondhand.api.member.dto.request.SignOutRequest;
 import kr.codesquad.secondhand.api.member.dto.response.MemberAddressResponse;
 import kr.codesquad.secondhand.api.member.dto.response.MemberProfileResponse;
+import kr.codesquad.secondhand.api.member.dto.response.MemberResponse.MemberNicknameResponse;
 import kr.codesquad.secondhand.api.member.dto.response.MemberResponse.MemberProfileImgUpdateResponse;
 import kr.codesquad.secondhand.api.member.dto.response.OAuthSignInResponse;
 import kr.codesquad.secondhand.api.member.service.MemberAddressService;
@@ -101,5 +103,13 @@ public class MemberController {
         MemberProfileImgUpdateResponse memberProfileImgUrlResponse = memberFacadeService.updateMemberProfileImg(
                 memberId, request);
         return ResponseEntity.ok().body(memberProfileImgUrlResponse);
+    }
+
+    @PatchMapping("api/members/nickname")
+    public ResponseEntity<MemberNicknameResponse> updateMemberNickname(HttpServletRequest httpServletRequest,
+                                                                       @Validated @RequestBody MemberNicknameUpdateRequest request) {
+        Long memberId = extractMemberId(httpServletRequest);
+        MemberNicknameResponse memberNicknameResponse = memberFacadeService.updateMemberNickname(memberId, request);
+        return ResponseEntity.ok().body(memberNicknameResponse);
     }
 }
