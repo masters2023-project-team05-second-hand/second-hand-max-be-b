@@ -46,7 +46,8 @@ public class MemberFacadeService {
     @Transactional
     public MemberProfileImgUrlResponse updateMemberProfileImg(Long memberId,
                                                               MemberProfileImgUpdateRequest memberProfileImgUpdateRequest) {
-        String newImageUrl = imageService.uploadSingleImageToS3(memberProfileImgUpdateRequest.getNewProfileImage()).toString();
+        String newImageUrl = imageService.uploadSingleImageToS3(memberProfileImgUpdateRequest.getNewProfileImage())
+                .toString();
         memberService.updateMemberProfileImg(memberId, newImageUrl);
         return new MemberProfileImgUrlResponse(newImageUrl);
     }

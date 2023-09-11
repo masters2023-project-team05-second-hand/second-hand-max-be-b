@@ -36,18 +36,18 @@ public class MemberService {
         return memberRepository.getReferenceById(memberId);
     }
 
-    public Member findById(Long memberId){
+    public Member findById(Long memberId) {
         return memberRepository.findById(memberId).orElseThrow(InvalidMemberIdException::new);
     }
 
     @Transactional
-    public MemberProfileResponse readMemberProfile(Long memberId){
+    public MemberProfileResponse readMemberProfile(Long memberId) {
         Member member = findById(memberId);
         return MemberProfileResponse.from(member);
     }
 
     @Transactional
-    public void updateMemberProfileImg(Long memberId, String newImageUrl){
+    public void updateMemberProfileImg(Long memberId, String newImageUrl) {
         Member member = findById(memberId);
         member.updateProfileImgUrl(newImageUrl);
     }

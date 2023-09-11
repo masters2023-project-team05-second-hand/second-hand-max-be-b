@@ -42,7 +42,7 @@ public class Member {
         this.profileImgUrl = profileImgUrl;
     }
 
-    public void updateProfileImgUrl(String newProfileImgUrl){
+    public void updateProfileImgUrl(String newProfileImgUrl) {
         this.profileImgUrl = newProfileImgUrl;
     }
 }
