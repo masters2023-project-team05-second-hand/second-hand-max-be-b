@@ -44,7 +44,7 @@ public class ImageService {
                 .collect(Collectors.toUnmodifiableList());
     }
 
-    private URL uploadSingleImageToS3(MultipartFile multipartFile) {
+    public URL uploadSingleImageToS3(MultipartFile multipartFile) {
         String uuid = UUID.randomUUID().toString(); // 이미지 이름 중복 방지를 위한 고유한 이미지 이름 생성
         ObjectMetadata metadata = new ObjectMetadata();
         metadata.setContentLength(multipartFile.getSize());
