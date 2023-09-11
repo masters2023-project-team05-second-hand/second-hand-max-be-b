@@ -21,14 +21,8 @@ public class MemberAddressService {
 
     @Transactional
     public List<MemberAddressResponse> deleteAndUpdateMemberAddresses(Member member, List<Address> addresses) {
-        deleteMemberAddressIfExists(member.getId());
+        memberAddressRepository.deleteByMemberId(member.getId());
         return updateMemberAddresses(MemberAddress.of(member, addresses));
-    }
-
-    private void deleteMemberAddressIfExists(Long memberId) {
-        if (memberAddressRepository.existsByMemberId(memberId)) {
-            memberAddressRepository.deleteByMemberId(memberId);
-        }
     }
 
     private List<MemberAddressResponse> updateMemberAddresses(List<MemberAddress> memberAddresses) {
