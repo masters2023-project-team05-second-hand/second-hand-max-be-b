@@ -1,10 +1,11 @@
 package kr.codesquad.secondhand.api.member.dto.request;
 
+import javax.validation.constraints.NotEmpty;
 import lombok.Getter;
 
 @Getter
 public class OAuthSignInRequest {
 
-    // Oauth 서버 인증용 Authorization Code
+    @NotEmpty
     private String accessCode;
 }
