@@ -25,9 +25,7 @@ public class JwtService {
     @Transactional
     public Jwt issueJwt(Long memberId) {
         Jwt jwt = jwtProvider.createTokens(Collections.singletonMap(MEMBER_ID, memberId));
-        if (tokenRepository.existsById(memberId)) {
-            tokenRepository.deleteById(memberId);
-        }
+        deleteRefreshToken(memberId);
         tokenRepository.save(new MemberRefreshToken(memberId, jwt.getRefreshToken()));
         return jwt;
     }
@@ -35,6 +33,12 @@ public class JwtService {
     public String reissueAccessToken() {
         // TODO
         return null;
+    }
+
+    public void deleteRefreshToken(Long memberId) {
+        if (tokenRepository.existsById(memberId)) {
+            tokenRepository.deleteById(memberId);
+        }
     }
 
     public void addAccessTokenToBlackList(String accessToken) {

@@ -25,11 +25,17 @@ public class MemberFacadeService {
     private final AddressService addressService;
 
     @Transactional
-    public OAuthSignInResponse login(String providerName, String authorizationCode) {
+    public OAuthSignInResponse signIn(String providerName, String authorizationCode) {
         OAuthProfile oAuthProfile = oAuthService.requestOauthProfile(providerName, authorizationCode);
         Long memberId = memberService.oAuthLogin(providerName, oAuthProfile);
         Jwt tokens = jwtService.issueJwt(memberId);
         return OAuthSignInResponse.from(tokens);
+    }
+
+    @Transactional
+    public void signOut(Long memberId, String accessToken) {
+        jwtService.deleteRefreshToken(memberId);
+        jwtService.addAccessTokenToBlackList(accessToken);
     }
 
     @Transactional
