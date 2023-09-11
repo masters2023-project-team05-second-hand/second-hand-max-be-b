@@ -51,7 +51,7 @@ public class MemberController {
                                           @Validated @RequestBody SignOutRequest signOutRequest) {
         Long memberId = extractMemberId(httpServletRequest);
         String accessToken = extractAccessToken(httpServletRequest);
-        memberFacadeService.signOut(memberId, accessToken);
+        memberFacadeService.signOut(memberId, accessToken, signOutRequest.getRefreshToken());
         return ResponseEntity.ok()
                 .build();
     }

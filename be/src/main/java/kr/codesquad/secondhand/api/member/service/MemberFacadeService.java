@@ -4,10 +4,12 @@ import java.util.List;
 import kr.codesquad.secondhand.api.address.domain.Address;
 import kr.codesquad.secondhand.api.address.service.AddressService;
 import kr.codesquad.secondhand.api.jwt.domain.Jwt;
+import kr.codesquad.secondhand.api.jwt.domain.MemberRefreshToken;
 import kr.codesquad.secondhand.api.jwt.service.JwtService;
 import kr.codesquad.secondhand.api.member.domain.Member;
 import kr.codesquad.secondhand.api.member.dto.response.MemberAddressResponse;
 import kr.codesquad.secondhand.api.member.dto.response.OAuthSignInResponse;
+import kr.codesquad.secondhand.api.member.exception.InvalidRefreshTokenException;
 import kr.codesquad.secondhand.api.oauth.domain.OAuthProfile;
 import kr.codesquad.secondhand.api.oauth.service.OAuthService;
 import lombok.RequiredArgsConstructor;
@@ -33,9 +35,17 @@ public class MemberFacadeService {
     }
 
     @Transactional
-    public void signOut(Long memberId, String accessToken) {
+    public void signOut(Long memberId, String accessToken, String refreshToken) {
+        if (!isMemberRefreshToken(memberId, refreshToken)) {
+            throw new InvalidRefreshTokenException();
+        }
         jwtService.deleteRefreshToken(memberId);
         jwtService.addAccessTokenToBlackList(accessToken);
+    }
+
+    private boolean isMemberRefreshToken(Long memberId, String refreshToken) { // TODO: 검증 클래스를 별도로 분리할지 고민중
+        MemberRefreshToken memberRefreshToken = jwtService.findById(memberId);
+        return memberRefreshToken.matches(refreshToken);
     }
 
     @Transactional

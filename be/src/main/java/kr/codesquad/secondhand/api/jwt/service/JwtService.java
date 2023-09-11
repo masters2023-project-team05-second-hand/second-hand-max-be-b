@@ -7,6 +7,7 @@ import kr.codesquad.secondhand.api.jwt.domain.MemberRefreshToken;
 import kr.codesquad.secondhand.api.jwt.repository.TokenRedisRepository;
 import kr.codesquad.secondhand.api.jwt.repository.TokenRepository;
 import kr.codesquad.secondhand.api.jwt.util.JwtProvider;
+import kr.codesquad.secondhand.api.member.exception.NotSignedInException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -49,5 +50,9 @@ public class JwtService {
         long ttlMinutes = (ttlMillis + BUFFER_TIME_IN_MILLIS) / 1000 / 60;
 
         tokenRedisRepository.addAccessTokenToBlackList(accessToken, ttlMinutes);
+    }
+
+    public MemberRefreshToken findById(Long memberId) {
+        return tokenRepository.findById(memberId).orElseThrow(NotSignedInException::new);
     }
 }
