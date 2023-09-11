@@ -15,6 +15,6 @@ public class OAuthSignInResponse {
     }
 
     public static OAuthSignInResponse from(Jwt jwt) {
-        return new OAuthSignInResponse(jwt.getAccessToken(),jwt.getRefreshToken());
+        return new OAuthSignInResponse(jwt.getAccessToken(), jwt.getRefreshToken());
     }
 }
