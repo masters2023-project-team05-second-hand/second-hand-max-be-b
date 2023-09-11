@@ -13,6 +13,7 @@ import kr.codesquad.secondhand.api.product.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -31,7 +32,7 @@ public class ProductController {
 
     @PostMapping("/api/products")
     public ResponseEntity<ProductCreateResponse> createProduct(HttpServletRequest httpServletRequest,
-                                                               @ModelAttribute ProductCreateRequest productCreateRequest) {
+                                                               @Validated @ModelAttribute ProductCreateRequest productCreateRequest) {
         Long memberId = extractMemberId(httpServletRequest);
         ProductCreateResponse productCreateResponse = productFacadeService.saveProduct(memberId, productCreateRequest);
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -49,7 +50,7 @@ public class ProductController {
 
     @PatchMapping("/api/products/{productId}")
     public ResponseEntity<String> updateProduct(@PathVariable Long productId,
-                                                @ModelAttribute ProductUpdateRequest productUpdateRequest) {
+                                                @Validated @ModelAttribute ProductUpdateRequest productUpdateRequest) {
         productFacadeService.updateProduct(productId, productUpdateRequest);
         return ResponseEntity.ok()
                 .build();
@@ -57,7 +58,7 @@ public class ProductController {
 
     @PatchMapping("/api/products/{productId}/status")
     public ResponseEntity<String> updateProductStatus(@PathVariable Long productId,
-                                                      @RequestBody ProductStatusUpdateRequest request) {
+                                                      @Validated @RequestBody ProductStatusUpdateRequest request) {
         productService.updateProductStatus(productId, request);
         return ResponseEntity.ok()
                 .build();
