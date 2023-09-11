@@ -52,7 +52,9 @@ public class JwtService {
         tokenRedisRepository.addAccessTokenToBlackList(accessToken, ttlMinutes);
     }
 
-    public MemberRefreshToken findById(Long memberId) {
-        return tokenRepository.findById(memberId).orElseThrow(NotSignedInException::new);
+    public boolean isMemberRefreshToken(Long memberId, String refreshToken) {
+        MemberRefreshToken memberRefreshToken = tokenRepository.findById(memberId)
+                .orElseThrow(NotSignedInException::new);
+        return memberRefreshToken.matches(refreshToken);
     }
 }
