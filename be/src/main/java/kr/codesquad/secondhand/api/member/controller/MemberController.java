@@ -5,6 +5,7 @@ import static kr.codesquad.secondhand.global.util.HttpAuthorizationUtils.extract
 
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
+import kr.codesquad.secondhand.api.jwt.exception.TokenNotFoundException;
 import kr.codesquad.secondhand.api.jwt.service.JwtService;
 import kr.codesquad.secondhand.api.member.dto.MemberProfileImgUpdateDto;
 import kr.codesquad.secondhand.api.member.dto.ReissueAccessTokenDto;
@@ -54,7 +55,7 @@ public class MemberController {
 
     @PostMapping("/api/sign-out")
     public ResponseEntity<String> signOut(HttpServletRequest httpServletRequest,
-                                          @Validated @RequestBody SignOutRequest signOutRequest) {
+                                          @Validated @RequestBody SignOutRequest signOutRequest) throws TokenNotFoundException {
         Long memberId = extractMemberId(httpServletRequest);
         String accessToken = extractAccessToken(httpServletRequest);
         memberFacadeService.signOut(memberId, accessToken, signOutRequest.getRefreshToken());
