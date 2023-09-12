@@ -51,4 +51,10 @@ public class MemberService {
         Member member = findById(memberId);
         member.updateProfileImgUrl(newImageUrl);
     }
+
+    @Transactional
+    public void updateMemberNickname(Long memberId, String newNickname) {
+        Member member = findById(memberId);
+        member.updateNickname(newNickname);
+    }
 }

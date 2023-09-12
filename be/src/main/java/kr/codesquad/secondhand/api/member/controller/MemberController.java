@@ -5,14 +5,14 @@ import static kr.codesquad.secondhand.global.util.HttpAuthorizationUtils.extract
 
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
+import kr.codesquad.secondhand.api.member.dto.MemberProfileImgUpdateDto;
 import kr.codesquad.secondhand.api.member.dto.request.LastVisitedUpdateRequest;
 import kr.codesquad.secondhand.api.member.dto.request.MemberAddressUpdateRequest;
-import kr.codesquad.secondhand.api.member.dto.request.MemberRequest.MemberProfileImgUpdateRequest;
+import kr.codesquad.secondhand.api.member.dto.request.MemberNicknameUpdateRequest;
 import kr.codesquad.secondhand.api.member.dto.request.OAuthSignInRequest;
 import kr.codesquad.secondhand.api.member.dto.request.SignOutRequest;
 import kr.codesquad.secondhand.api.member.dto.response.MemberAddressResponse;
 import kr.codesquad.secondhand.api.member.dto.response.MemberProfileResponse;
-import kr.codesquad.secondhand.api.member.dto.response.MemberResponse.MemberProfileImgUpdateResponse;
 import kr.codesquad.secondhand.api.member.dto.response.OAuthSignInResponse;
 import kr.codesquad.secondhand.api.member.service.MemberAddressService;
 import kr.codesquad.secondhand.api.member.service.MemberFacadeService;
@@ -95,11 +95,20 @@ public class MemberController {
     }
 
     @PatchMapping("api/members/profile-image")
-    public ResponseEntity<MemberProfileImgUpdateResponse> updateMemberProfileImg(HttpServletRequest httpServletRequest,
-                                                                                 @ModelAttribute MemberProfileImgUpdateRequest request) {
+    public ResponseEntity<MemberProfileImgUpdateDto.Response> updateMemberProfileImg(
+            HttpServletRequest httpServletRequest,
+            @ModelAttribute MemberProfileImgUpdateDto.Request request) {
         Long memberId = extractMemberId(httpServletRequest);
-        MemberProfileImgUpdateResponse memberProfileImgUrlResponse = memberFacadeService.updateMemberProfileImg(
+        MemberProfileImgUpdateDto.Response response = memberFacadeService.updateMemberProfileImg(
                 memberId, request);
-        return ResponseEntity.ok().body(memberProfileImgUrlResponse);
+        return ResponseEntity.ok().body(response);
+    }
+
+    @PatchMapping("api/members/nickname")
+    public ResponseEntity<String> updateMemberNickname(HttpServletRequest httpServletRequest,
+                                                     @Validated @RequestBody MemberNicknameUpdateRequest request) {
+        Long memberId = extractMemberId(httpServletRequest);
+        memberFacadeService.updateMemberNickname(memberId, request);
+        return ResponseEntity.ok().build();
     }
 }
