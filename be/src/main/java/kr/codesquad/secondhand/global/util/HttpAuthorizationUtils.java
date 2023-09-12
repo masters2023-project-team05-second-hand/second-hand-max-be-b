@@ -2,6 +2,7 @@ package kr.codesquad.secondhand.global.util;
 
 import io.jsonwebtoken.Claims;
 import javax.servlet.http.HttpServletRequest;
+import kr.codesquad.secondhand.api.jwt.exception.TokenNotFoundException;
 import org.springframework.http.HttpHeaders;
 
 public class HttpAuthorizationUtils {
@@ -14,9 +15,13 @@ public class HttpAuthorizationUtils {
         httpServletRequest.setAttribute(MEMBER_ID_CLAIMS_KEY, claims.get(MEMBER_ID_CLAIMS_KEY));
     }
 
-    public static String extractAccessToken(HttpServletRequest httpServletRequest) {
+    public static String extractAccessToken(HttpServletRequest httpServletRequest) throws TokenNotFoundException {
         String authorizationHeader = httpServletRequest.getHeader(HttpHeaders.AUTHORIZATION);
-        return authorizationHeader.substring(BEARER_TOKEN_PREFIX_LENGTH);
+        try {
+            return authorizationHeader.substring(BEARER_TOKEN_PREFIX_LENGTH);
+        } catch (StringIndexOutOfBoundsException e) {
+            throw new TokenNotFoundException();
+        }
     }
 
     public static boolean containsBearerToken(HttpServletRequest httpServletRequest) {

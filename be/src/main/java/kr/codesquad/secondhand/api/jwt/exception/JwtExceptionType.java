@@ -21,10 +21,10 @@ public enum JwtExceptionType {
     BLACKLISTED_ACCESS_TOKEN_EXCEPTION(HttpStatus.UNAUTHORIZED, BlackListedAccessTokenException.class, "로그아웃한 사용자입니다.");
 
     private final HttpStatus httpStatus;
-    private final Class<? extends RuntimeException> originException;
+    private final Class<? extends Exception> originException;
     private final String message;
 
-    public static JwtExceptionType from(RuntimeException e) {
+    public static JwtExceptionType from(Exception e) {
         return Arrays.stream(values())
                 .filter(jwtExceptionType -> jwtExceptionType.originException.equals(e.getClass()))
                 .findAny()
