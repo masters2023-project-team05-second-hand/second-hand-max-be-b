@@ -1,9 +1,11 @@
 package kr.codesquad.secondhand.api.jwt.service;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import java.util.Collections;
 import java.util.Date;
 import kr.codesquad.secondhand.api.jwt.domain.Jwt;
 import kr.codesquad.secondhand.api.jwt.domain.MemberRefreshToken;
+import kr.codesquad.secondhand.api.jwt.exception.ExpiredRefreshTokenException;
 import kr.codesquad.secondhand.api.jwt.repository.TokenRedisRepository;
 import kr.codesquad.secondhand.api.jwt.repository.TokenRepository;
 import kr.codesquad.secondhand.api.jwt.util.JwtProvider;
@@ -38,6 +40,12 @@ public class JwtService {
 
         if (!memberRefreshToken.matches(refreshToken)) {
             throw new InvalidRefreshTokenException();
+        }
+
+        try { // TODO RT 만료를 try-catch 말고 깔끔하게 처리할 수 있는 방법이 있을지?
+            jwtProvider.getClaims(refreshToken);
+        } catch (ExpiredJwtException e) {
+            throw new ExpiredRefreshTokenException();
         }
 
         return jwtProvider.reissueAccessToken(Collections.singletonMap(MEMBER_ID, memberId));
