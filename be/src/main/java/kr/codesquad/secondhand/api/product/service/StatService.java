@@ -2,6 +2,8 @@ package kr.codesquad.secondhand.api.product.service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import kr.codesquad.secondhand.api.product.domain.Product;
 import kr.codesquad.secondhand.api.product.domain.ProductStats;
 import kr.codesquad.secondhand.api.product.repository.StatRedisRepository;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +30,10 @@ public class StatService {
         return statRedisRepository.findProductStats(productKey);
     }
 
-    public Map<Long, ProductStats> findProductsStats(List<Long> productIds) {
+    public Map<Long, ProductStats> findProductsStats(List<Product> products) {
+        List<Long> productIds = products.stream()
+                .map(product -> product.getId())
+                .collect(Collectors.toUnmodifiableList());
         return statRedisRepository.findProductsStats(productIds);
     }
 
