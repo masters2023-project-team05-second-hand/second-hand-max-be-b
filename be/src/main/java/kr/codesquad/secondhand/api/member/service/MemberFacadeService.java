@@ -6,11 +6,9 @@ import kr.codesquad.secondhand.api.address.service.AddressService;
 import kr.codesquad.secondhand.api.jwt.domain.Jwt;
 import kr.codesquad.secondhand.api.jwt.service.JwtService;
 import kr.codesquad.secondhand.api.member.domain.Member;
-import kr.codesquad.secondhand.api.member.dto.request.MemberRequest.MemberNicknameUpdateRequest;
-import kr.codesquad.secondhand.api.member.dto.request.MemberRequest.MemberProfileImgUpdateRequest;
+import kr.codesquad.secondhand.api.member.dto.MemberProfileImgUpdateDto;
+import kr.codesquad.secondhand.api.member.dto.request.MemberNicknameUpdateRequest;
 import kr.codesquad.secondhand.api.member.dto.response.MemberAddressResponse;
-import kr.codesquad.secondhand.api.member.dto.response.MemberResponse.MemberNicknameResponse;
-import kr.codesquad.secondhand.api.member.dto.response.MemberResponse.MemberProfileImgUpdateResponse;
 import kr.codesquad.secondhand.api.member.dto.response.OAuthSignInResponse;
 import kr.codesquad.secondhand.api.member.exception.InvalidRefreshTokenException;
 import kr.codesquad.secondhand.api.oauth.domain.OAuthProfile;
@@ -56,17 +54,16 @@ public class MemberFacadeService {
     }
 
     @Transactional
-    public MemberProfileImgUpdateResponse updateMemberProfileImg(Long memberId,
-                                                                 MemberProfileImgUpdateRequest memberProfileImgUpdateRequest) {
-        String newImageUrl = imageService.uploadSingleImageToS3(memberProfileImgUpdateRequest.getNewProfileImage())
+    public MemberProfileImgUpdateDto.Response updateMemberProfileImg(Long memberId,
+                                                            MemberProfileImgUpdateDto.Request request) {
+        String newImageUrl = imageService.uploadSingleImageToS3(request.getNewProfileImage())
                 .toString();
         memberService.updateMemberProfileImg(memberId, newImageUrl);
-        return new MemberProfileImgUpdateResponse(newImageUrl);
+        return new MemberProfileImgUpdateDto.Response(newImageUrl);
     }
 
     @Transactional
-    public MemberNicknameResponse updateMemberNickname(Long memberId, MemberNicknameUpdateRequest request) {
-        String updatedNickname = memberService.updateMemberNickname(memberId, request.getNewNickname());
-        return new MemberNicknameResponse(updatedNickname);
+    public void updateMemberNickname(Long memberId, MemberNicknameUpdateRequest request) {
+        memberService.updateMemberNickname(memberId, request.getNewNickname());
     }
 }

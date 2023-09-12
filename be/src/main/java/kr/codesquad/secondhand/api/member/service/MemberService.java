@@ -53,9 +53,8 @@ public class MemberService {
     }
 
     @Transactional
-    public String updateMemberNickname(Long memberId, String newNickname) {
+    public void updateMemberNickname(Long memberId, String newNickname) {
         Member member = findById(memberId);
         member.updateNickname(newNickname);
-        return member.getNickname();
     }
 }
