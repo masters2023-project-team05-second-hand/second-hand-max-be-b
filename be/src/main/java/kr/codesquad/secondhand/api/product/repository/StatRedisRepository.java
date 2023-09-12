@@ -1,6 +1,9 @@
 package kr.codesquad.secondhand.api.product.repository;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import kr.codesquad.secondhand.api.product.domain.ProductStats;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Repository;
@@ -24,8 +27,17 @@ public class StatRedisRepository {
         redisTemplate.opsForHash().put(key, WISHES_KEY, DEFAULT_COUNT);
     }
 
-    public List<Object> findProductStats(String productId) {
-        return redisTemplate.opsForHash().multiGet(productId, List.of(VIEWS_KEY, WISHES_KEY));
+    public ProductStats findProductStats(String productId) {
+        List<Object> stats = redisTemplate.opsForHash().multiGet(productId, List.of(VIEWS_KEY, WISHES_KEY));
+        return ProductStats.from(stats);
+    }
+
+    public Map<Long, ProductStats> findProductsStats(List<Long> productIds) {
+        return productIds.stream()
+                .collect(Collectors.toUnmodifiableMap(
+                        productId -> productId,
+                        productId -> findProductStats(productId.toString())
+                ));
     }
 
     public void increaseViews(String productKey) {
