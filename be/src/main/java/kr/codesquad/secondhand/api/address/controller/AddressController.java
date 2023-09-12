@@ -15,7 +15,7 @@ public class AddressController {
     private final AddressService addressService;
 
     @GetMapping("/api/addresses")
-    public ResponseEntity<AddressSliceResponse> readAddresses(@RequestParam int page, @RequestParam int size) {
+    public ResponseEntity<AddressSliceResponse> readAddresses(@RequestParam Integer page, @RequestParam Integer size) {
         AddressSliceResponse addressSliceResponse = addressService.findAddresses(page, size);
         return ResponseEntity.ok()
                 .body(addressSliceResponse);
