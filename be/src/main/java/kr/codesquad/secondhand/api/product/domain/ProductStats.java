@@ -6,7 +6,7 @@ import lombok.Getter;
 @Getter
 public class ProductStats {
 
-    private static final Integer VIEW_COUNT_INDEX = 0; // 상수화 했어여
+    private static final Integer VIEW_COUNT_INDEX = 0;
     private static final Integer WISH_COUNT_INDEX = 1;
 
     private final Integer viewCount;

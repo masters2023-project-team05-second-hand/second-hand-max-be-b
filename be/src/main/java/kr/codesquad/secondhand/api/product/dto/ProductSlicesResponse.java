@@ -21,7 +21,6 @@ public class ProductSlicesResponse {
         this.hasNext = hasNext;
     }
 
-    // 로직은 똑같고 좀 더 가독성 있게 바꿔봤어여, 감귤이 읽기 편한걸로 결정해도 될 듯 합니다.
     public ProductSlicesResponse of(List<Product> products, Map<Long, ProductStats> stats, Boolean hasNext) {
         List<ProductSlice> productSlices = products.stream()
                 .map(product -> {
