@@ -50,6 +50,22 @@ public class GlobalExceptionHandler {
                 .collect(Collectors.toList());
     }
 
+    @ExceptionHandler(CustomException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponseEntity handleCustomException(CustomException e) {
+        log.error(e.getMessage());
+        e.printStackTrace();
+        return new ErrorResponseEntity(e.getMessage());
+    }
+
+    @ExceptionHandler(CustomRuntimeException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponseEntity handleCustomRuntimeException(CustomRuntimeException e) {
+        log.error(e.getMessage());
+        e.printStackTrace();
+        return new ErrorResponseEntity(e.getMessage());
+    }
+
     @ExceptionHandler(MemberException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponseEntity handleMemberException(MemberException e) {
