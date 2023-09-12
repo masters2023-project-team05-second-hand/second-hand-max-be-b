@@ -9,6 +9,7 @@ import kr.codesquad.secondhand.api.member.domain.Member;
 import kr.codesquad.secondhand.api.member.service.MemberService;
 import kr.codesquad.secondhand.api.product.domain.Product;
 import kr.codesquad.secondhand.api.product.domain.ProductImage;
+import kr.codesquad.secondhand.api.product.domain.ProductStats;
 import kr.codesquad.secondhand.api.product.domain.ProductStatus;
 import kr.codesquad.secondhand.api.product.dto.ProductCreateRequest;
 import kr.codesquad.secondhand.api.product.dto.ProductCreateResponse;
@@ -59,7 +60,7 @@ public class ProductFacadeService {
         boolean isSeller = product.isSellerIdEqualsTo(memberId);
         List<ProductImage> productImages = imageService.findAllByProductId(productId);
         List<ProductStatus> productStatuses = ProductStatus.findAll();
-        List<Integer> stats = statService.findProductStats(memberId, productId);
+        ProductStats stats = statService.findProductStats(memberId, productId);
         Category category = Category.from(product.getCategoryId());
         Address address = product.getAddress();
         return ProductReadResponse.of(isSeller, product, productImages, productStatuses, stats, category, address);
