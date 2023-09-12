@@ -19,7 +19,9 @@ import kr.codesquad.secondhand.api.member.dto.response.MemberProfileResponse;
 import kr.codesquad.secondhand.api.member.dto.response.OAuthSignInResponse;
 import kr.codesquad.secondhand.api.member.service.MemberAddressService;
 import kr.codesquad.secondhand.api.member.service.MemberFacadeService;
+import kr.codesquad.secondhand.api.member.service.MemberProductFacadeService;
 import kr.codesquad.secondhand.api.member.service.MemberService;
+import kr.codesquad.secondhand.api.product.dto.ProductSlicesResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -30,6 +32,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -37,6 +40,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class MemberController {
 
     private final MemberFacadeService memberFacadeService;
+    private final MemberProductFacadeService memberProductFacadeService;
     private final MemberAddressService memberAddressService;
     private final MemberService memberService;
     private final JwtService jwtService;
@@ -72,6 +76,31 @@ public class MemberController {
                 .body(new ReissueAccessTokenDto.Response(refreshToken));
     }
 
+    @GetMapping("/api/members")
+    public ResponseEntity<MemberProfileResponse> readMemberProfile(HttpServletRequest httpServletRequest) {
+        Long memberId = extractMemberId(httpServletRequest);
+        MemberProfileResponse memberProfileResponse = memberService.readMemberProfile(memberId);
+        return ResponseEntity.ok().body(memberProfileResponse);
+    }
+
+    @GetMapping("api/members/addresses")
+    public ResponseEntity<List<MemberAddressResponse>> readMemberAddress(HttpServletRequest httpServletRequest) {
+        Long memberId = extractMemberId(httpServletRequest);
+        List<MemberAddressResponse> memberAddressResponse = memberAddressService.readMemberAddresses(memberId);
+        return ResponseEntity.ok().body(memberAddressResponse);
+    }
+
+    @GetMapping("/api/members/sales")
+    public ResponseEntity<ProductSlicesResponse> readMemberSales(HttpServletRequest httpServletRequest,
+                                                                 @RequestParam List<Integer> statusId,
+                                                                 @RequestParam Integer page,
+                                                                 @RequestParam Integer size) {
+        Long memberId = extractMemberId(httpServletRequest);
+        ProductSlicesResponse productSlicesResponse = memberProductFacadeService.readMemberSales(
+                memberId, statusId, page, size);
+        return ResponseEntity.ok().body(productSlicesResponse);
+    }
+
     @PutMapping("/api/members/addresses")
     public ResponseEntity<List<MemberAddressResponse>> updateMemberAddresses(HttpServletRequest httpServletRequest,
                                                                              @Validated @RequestBody MemberAddressUpdateRequest memberAddressUpdateRequest) {
@@ -91,20 +120,6 @@ public class MemberController {
         memberAddressService.updateLastVisitedAddress(memberId, lastVisitedUpdateRequest.getLastVisitedAddressId());
         return ResponseEntity.ok()
                 .build();
-    }
-
-    @GetMapping("/api/members")
-    public ResponseEntity<MemberProfileResponse> readMemberProfile(HttpServletRequest httpServletRequest) {
-        Long memberId = extractMemberId(httpServletRequest);
-        MemberProfileResponse memberProfileResponse = memberService.readMemberProfile(memberId);
-        return ResponseEntity.ok().body(memberProfileResponse);
-    }
-
-    @GetMapping("api/members/addresses")
-    public ResponseEntity<List<MemberAddressResponse>> readMemberAddress(HttpServletRequest httpServletRequest) {
-        Long memberId = extractMemberId(httpServletRequest);
-        List<MemberAddressResponse> memberAddressResponse = memberAddressService.readMemberAddresses(memberId);
-        return ResponseEntity.ok().body(memberAddressResponse);
     }
 
     @PatchMapping("api/members/profile-image")
