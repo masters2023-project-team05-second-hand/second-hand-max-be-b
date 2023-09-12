@@ -6,7 +6,6 @@ import static kr.codesquad.secondhand.global.util.HttpAuthorizationUtils.setAttr
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.JwtException;
 import java.io.IOException;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -64,15 +63,16 @@ public class AuthorizationFilter implements Filter {
             return;
         }
 
-        if (tokenRedisRepository.isAccessTokenInBlackList(extractAccessToken(httpServletRequest))) {
-            sendErrorResponse(httpServletResponse, new BlackListedAccessTokenException());
-            return;
-        }
-
         try {
+            if (tokenRedisRepository.isAccessTokenInBlackList(extractAccessToken(httpServletRequest))) {
+                sendErrorResponse(httpServletResponse, new BlackListedAccessTokenException());
+                return;
+            }
+
             setAttributesFromAccessToken(httpServletRequest);
             chain.doFilter(servletRequest, servletResponse);
-        } catch (JwtException e) {
+
+        } catch (Exception e) {
             sendErrorResponse(httpServletResponse, e);
         }
     }
@@ -89,13 +89,13 @@ public class AuthorizationFilter implements Filter {
                 && PatternMatchUtils.simpleMatch(POST_WHITE_LIST, uri);
     }
 
-    private void setAttributesFromAccessToken(HttpServletRequest httpServletRequest) {
+    private void setAttributesFromAccessToken(HttpServletRequest httpServletRequest) throws TokenNotFoundException {
         String token = extractAccessToken(httpServletRequest);
         Claims claims = jwtProvider.getClaims(token);
         setAttributeFromToken(httpServletRequest, claims);
     }
 
-    private void sendErrorResponse(HttpServletResponse response, RuntimeException e) throws IOException {
+    private void sendErrorResponse(HttpServletResponse response, Exception e) throws IOException {
         log.error(e.getMessage());
         e.printStackTrace();
 
