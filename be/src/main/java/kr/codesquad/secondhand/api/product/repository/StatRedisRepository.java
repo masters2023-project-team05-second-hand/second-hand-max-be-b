@@ -19,8 +19,8 @@ public class StatRedisRepository {
     private static final Integer START = 0;
     private static final Integer END = -1;
     private static final String DEFAULT_COUNT = "0";
-    private static final String VIEWS_KEY = "VIEWS";
-    private static final String WISHES_KEY = "WISHES";
+    private static final String VIEWS_KEY = "::views";
+    private static final String WISHES_KEY = "::wishes";
 
     private final RedisTemplate<String, String> redisTemplate;
 
@@ -66,7 +66,7 @@ public class StatRedisRepository {
         String memberWishedProductsKey = memberId.toString() + WISHES_KEY;
         List<String> result = redisTemplate.opsForList().range(memberWishedProductsKey, START, END);
 
-        if(result == null){
+        if (result == null) {
             return new ArrayList<>();
         }
         return result.stream()
