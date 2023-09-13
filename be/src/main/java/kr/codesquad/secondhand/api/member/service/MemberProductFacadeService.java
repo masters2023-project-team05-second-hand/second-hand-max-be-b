@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -19,6 +20,7 @@ public class MemberProductFacadeService {
     private final ProductService productService;
     private final StatService statService;
 
+    @Transactional
     public ProductSlicesResponse readMemberSales(Long memberId, List<Integer> statusIds, Integer page, Integer size) {
         PageRequest pageRequest = PageRequest.of(page, size);
         Slice<Product> productSlices = productService.findBySellerIdAndStatusIds(memberId, statusIds, pageRequest);

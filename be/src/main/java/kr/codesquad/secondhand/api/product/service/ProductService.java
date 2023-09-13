@@ -28,7 +28,6 @@ public class ProductService {
         return productRepository.findById(productId).orElseThrow();
     }
 
-    @Transactional
     public Slice<Product> findBySellerIdAndStatusIds(Long sellerId, List<Integer> statusIds, PageRequest pageRequest) {
         return productRepository.findBySellerIdAndStatusIds(sellerId, statusIds, pageRequest);
     }
