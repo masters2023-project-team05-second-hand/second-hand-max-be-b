@@ -2,6 +2,7 @@ package kr.codesquad.secondhand.api.product.service;
 
 import java.net.URL;
 import java.util.List;
+import java.util.Map;
 import kr.codesquad.secondhand.api.address.domain.Address;
 import kr.codesquad.secondhand.api.address.service.AddressService;
 import kr.codesquad.secondhand.api.category.domain.Category;
@@ -11,11 +12,13 @@ import kr.codesquad.secondhand.api.product.domain.Product;
 import kr.codesquad.secondhand.api.product.domain.ProductImage;
 import kr.codesquad.secondhand.api.product.domain.ProductStats;
 import kr.codesquad.secondhand.api.product.domain.ProductStatus;
-import kr.codesquad.secondhand.api.product.dto.ProductCreateRequest;
-import kr.codesquad.secondhand.api.product.dto.ProductCreateResponse;
-import kr.codesquad.secondhand.api.product.dto.ProductReadResponse;
-import kr.codesquad.secondhand.api.product.dto.ProductUpdateRequest;
+import kr.codesquad.secondhand.api.product.dto.request.ProductCreateRequest;
+import kr.codesquad.secondhand.api.product.dto.request.ProductUpdateRequest;
+import kr.codesquad.secondhand.api.product.dto.response.ProductCreateResponse;
+import kr.codesquad.secondhand.api.product.dto.response.ProductReadResponse;
+import kr.codesquad.secondhand.api.product.dto.response.ProductSlicesResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -64,6 +67,19 @@ public class ProductFacadeService {
         Category category = Category.from(product.getCategoryId());
         Address address = product.getAddress();
         return ProductReadResponse.of(isSeller, product, productImages, productStatuses, stats, category, address);
+    }
+
+    @Transactional
+    public ProductSlicesResponse readProducts(Long cursor, Long addressId, Long categoryId, Integer size) {
+        Slice<Product> productSlices = productService.findByAddressIdAndCategoryId(
+                cursor, addressId, categoryId, size
+        );
+
+        List<Product> products = productSlices.getContent();
+        Boolean hasNext = productSlices.hasNext();
+        Map<Long, ProductStats> productStats = statService.findProductsStats(products);
+
+        return ProductSlicesResponse.of(products, productStats, hasNext);
     }
 
     @Transactional

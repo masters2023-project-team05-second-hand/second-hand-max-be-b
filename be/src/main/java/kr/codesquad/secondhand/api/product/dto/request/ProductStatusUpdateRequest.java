@@ -1,4 +1,4 @@
-package kr.codesquad.secondhand.api.product.dto;
+package kr.codesquad.secondhand.api.product.dto.request;
 
 import javax.validation.constraints.NotNull;
 import lombok.Getter;
