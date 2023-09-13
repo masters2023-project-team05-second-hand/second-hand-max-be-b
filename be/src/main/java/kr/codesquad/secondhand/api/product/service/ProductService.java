@@ -7,6 +7,7 @@ import kr.codesquad.secondhand.api.product.dto.ProductStatusUpdateRequest;
 import kr.codesquad.secondhand.api.product.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,8 +29,16 @@ public class ProductService {
         return productRepository.findById(productId).orElseThrow();
     }
 
+    public Slice<Product> findWishedProductByCategoryIdAndIdIn(List<Long> productIds, Long categoryId, Pageable pageable) {
+        return productRepository.findByCategoryIdAndIdIn(productIds, categoryId, pageable);
+    }
+
     public Slice<Product> findBySellerIdAndStatusIds(Long sellerId, List<Integer> statusIds, PageRequest pageRequest) {
         return productRepository.findBySellerIdAndStatusIds(sellerId, statusIds, pageRequest);
+    }
+
+    public List<Long> findCategoryIdsByIdIn(List<Long> productIds) {
+        return productRepository.findCategoryIdsByIdIn(productIds);
     }
 
     @Transactional
