@@ -15,10 +15,10 @@ public class ReissueAccessTokenDto {
     @Getter
     public static class Response {
 
-        private final String refreshToken;
+        private final String accessToken;
 
-        public Response(String refreshToken) {
-            this.refreshToken = refreshToken;
+        public Response(String accessToken) {
+            this.accessToken = accessToken;
         }
     }
 }

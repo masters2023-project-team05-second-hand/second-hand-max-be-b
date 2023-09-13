@@ -11,19 +11,17 @@ public class MemberAddressResponse {
 
     private final Long id;
     private final String name;
-    private final boolean isLastVisited;
 
-    public MemberAddressResponse(Long id, String name, boolean isLastVisited) {
+    public MemberAddressResponse(Long id, String name) {
         this.id = id;
         this.name = name;
-        this.isLastVisited = isLastVisited;
     }
 
     public static List<MemberAddressResponse> from(List<MemberAddress> memberAddresses) {
         return memberAddresses.stream()
                 .map(memberAddress -> {
                     Address address = memberAddress.getAddress();
-                    return new MemberAddressResponse(address.getId(), address.getName(), memberAddress.isLastVisited());
+                    return new MemberAddressResponse(address.getId(), address.getName());
                 })
                 .collect(Collectors.toUnmodifiableList());
     }
