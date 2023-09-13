@@ -1,7 +1,6 @@
 package kr.codesquad.secondhand.api.product.service;
 
 import java.util.List;
-import kr.codesquad.secondhand.api.category.domain.Category;
 import kr.codesquad.secondhand.api.product.domain.Product;
 import kr.codesquad.secondhand.api.product.domain.ProductStatus;
 import kr.codesquad.secondhand.api.product.dto.request.ProductStatusUpdateRequest;
@@ -43,9 +42,9 @@ public class ProductService {
     }
 
     public Slice<Product> findByAddressIdAndCategoryId(Long cursor, Long addressId, Long categoryId, Integer size) {
-        Category category = Category.from(categoryId);
+//        Category category = Category.from(categoryId); 0일 경우 버그가 발생할 수 있어서 다른 검증 방식 필요
         PageRequest pageRequest = PageRequest.of(DEFAULT_PAGE, size);
-        return productRepository.findByAddressIdAndCategoryId(cursor, addressId, category.getId(), pageRequest);
+        return productRepository.findByAddressIdAndCategoryId(cursor, addressId, categoryId, pageRequest);
     }
 
     @Transactional

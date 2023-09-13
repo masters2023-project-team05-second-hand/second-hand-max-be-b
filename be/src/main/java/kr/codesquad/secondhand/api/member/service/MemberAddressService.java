@@ -31,24 +31,6 @@ public class MemberAddressService {
     }
 
     @Transactional
-    public void updateLastVisitedAddress(Long memberId, Long lastVisitedAddressId) {
-        resetLastVisitedAddress(memberId);
-        setLastVisitedAddress(lastVisitedAddressId);
-    }
-
-    private void resetLastVisitedAddress(Long memberId) {
-        MemberAddress memberAddress = memberAddressRepository.findByMemberIdAndIsLastVisited(memberId, true)
-                .orElseThrow(); // TODO: 무슨 예외를 날려야할지 고민중
-        memberAddress.updateLastVisited(false);
-    }
-
-    private void setLastVisitedAddress(Long lastVisitedAddressId) {
-        MemberAddress lastVisitedAddress = memberAddressRepository.findByAddressId(lastVisitedAddressId)
-                .orElseThrow(InvalidMemberAddressIdException::new);
-        lastVisitedAddress.updateLastVisited(true);
-    }
-
-    @Transactional
     public List<MemberAddressResponse> readMemberAddresses(Long memberId) {
         List<MemberAddress> memberAddresses = findByMemberId(memberId);
         return MemberAddressResponse.from(memberAddresses);

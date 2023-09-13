@@ -12,6 +12,7 @@ import kr.codesquad.secondhand.api.product.domain.Product;
 import kr.codesquad.secondhand.api.product.domain.ProductImage;
 import kr.codesquad.secondhand.api.product.domain.ProductStats;
 import kr.codesquad.secondhand.api.product.domain.ProductStatus;
+import kr.codesquad.secondhand.api.product.dto.ProductStatusesInfoResponse;
 import kr.codesquad.secondhand.api.product.dto.request.ProductCreateRequest;
 import kr.codesquad.secondhand.api.product.dto.request.ProductUpdateRequest;
 import kr.codesquad.secondhand.api.product.dto.response.ProductCreateResponse;
@@ -66,7 +67,12 @@ public class ProductFacadeService {
         ProductStats stats = statService.findProductStats(memberId, productId);
         Category category = Category.from(product.getCategoryId());
         Address address = product.getAddress();
-        return ProductReadResponse.of(isSeller, product, productImages, productStatuses, stats, category, address);
+        return ProductReadResponse.of(product, productImages, productStatuses, stats, category, address);
+    }
+
+    public List<ProductStatusesInfoResponse> readProductStatuses() {
+        List<ProductStatus> productStatuses = ProductStatus.findAll();
+        return ProductStatusesInfoResponse.from(productStatuses);
     }
 
     @Transactional
@@ -97,7 +103,7 @@ public class ProductFacadeService {
 
     private void updateProductImages(Product product, ProductUpdateRequest productUpdateRequest) {
         List<MultipartFile> newImages = productUpdateRequest.getNewImages();
-        List<Long> deleteImgIds = productUpdateRequest.getDeletedImgIds();
+        List<Long> deleteImgIds = productUpdateRequest.getDeletedImageIds();
         imageService.updateImageUrls(product, newImages, deleteImgIds);
     }
 

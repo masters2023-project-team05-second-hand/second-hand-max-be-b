@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import kr.codesquad.secondhand.api.address.domain.Address;
 import kr.codesquad.secondhand.api.category.domain.Category;
 import kr.codesquad.secondhand.api.category.dto.CategoryReadResponse;
+import kr.codesquad.secondhand.api.member.domain.Member;
 import kr.codesquad.secondhand.api.product.domain.Product;
 import kr.codesquad.secondhand.api.product.domain.ProductImage;
 import kr.codesquad.secondhand.api.product.domain.ProductStats;
@@ -17,27 +18,27 @@ import lombok.Getter;
 @Getter
 public class ProductReadResponse {
 
-    private final Boolean isSeller;
     private final ProductResponse product;
     private final List<ProductImageResponse> images;
     private final ProductStatsResponse stats;
     private final List<ProductStatusResponse> statuses;
 
-    public ProductReadResponse(Boolean isSeller, ProductResponse product, List<ProductImageResponse> images,
+    public ProductReadResponse(ProductResponse product, List<ProductImageResponse> images,
                                List<ProductStatusResponse> statuses, ProductStatsResponse stats) {
-        this.isSeller = isSeller;
         this.product = product;
         this.images = images;
         this.statuses = statuses;
         this.stats = stats;
     }
 
-    public static ProductReadResponse of(boolean isSeller, Product product, List<ProductImage> productImages,
+    public static ProductReadResponse of(Product product, List<ProductImage> productImages,
                                          List<ProductStatus> productStatuses, ProductStats stats,
                                          Category category, Address address) {
         CategoryReadResponse categoryReadResponse = CategoryReadResponse.from(category);
         AddressResponse addressResponse = AddressResponse.from(address);
-        ProductResponse productResponse = ProductResponse.from(product, categoryReadResponse, addressResponse);
+        SellerResponse sellerResponse = SellerResponse.from(product.getSeller());
+        ProductResponse productResponse = ProductResponse.from(product, categoryReadResponse, addressResponse,
+                sellerResponse);
 
         List<ProductImageResponse> productImageResponse = productImages.stream()
                 .map(ProductImageResponse::from)
@@ -48,14 +49,14 @@ public class ProductReadResponse {
                 .collect(Collectors.toUnmodifiableList());
 
         ProductStatsResponse productStatsResponse = ProductStatsResponse.from(stats);
-        return new ProductReadResponse(isSeller, productResponse, productImageResponse, productStatusResponse,
+        return new ProductReadResponse(productResponse, productImageResponse, productStatusResponse,
                 productStatsResponse);
     }
 
     @Getter
     private static class ProductResponse {
 
-        private final String seller;
+        private final SellerResponse seller;
         private final CategoryReadResponse category;
         private final AddressResponse address;
         private final String title;
@@ -65,8 +66,9 @@ public class ProductReadResponse {
         private final Integer status;
 
         @Builder
-        private ProductResponse(String seller, CategoryReadResponse category, AddressResponse address, String title,
-                               String contents, Long price, Date createdTime, Integer status) {
+        private ProductResponse(SellerResponse seller, CategoryReadResponse category, AddressResponse address,
+                                String title,
+                                String contents, Long price, Date createdTime, Integer status) {
             this.seller = seller;
             this.category = category;
             this.address = address;
@@ -77,9 +79,10 @@ public class ProductReadResponse {
             this.status = status;
         }
 
-        private static ProductResponse from(Product product, CategoryReadResponse category, AddressResponse address) {
+        private static ProductResponse from(Product product, CategoryReadResponse category, AddressResponse address,
+                                            SellerResponse sellerResponse) {
             return ProductResponse.builder()
-                    .seller(product.getSeller().getNickname())
+                    .seller(sellerResponse)
                     .category(category)
                     .address(address)
                     .title(product.getTitle())
@@ -136,6 +139,22 @@ public class ProductReadResponse {
 
         private static AddressResponse from(Address address) {
             return new AddressResponse(address.getId(), address.getName());
+        }
+    }
+
+    @Getter
+    private static class SellerResponse {
+
+        private final Long id;
+        private final String nickname;
+
+        public SellerResponse(Long id, String nickname) {
+            this.id = id;
+            this.nickname = nickname;
+        }
+
+        private static SellerResponse from(Member member) {
+            return new SellerResponse(member.getId(), member.getNickname());
         }
     }
 }

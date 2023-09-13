@@ -10,7 +10,6 @@ import kr.codesquad.secondhand.api.jwt.exception.TokenNotFoundException;
 import kr.codesquad.secondhand.api.jwt.service.JwtService;
 import kr.codesquad.secondhand.api.member.dto.MemberProfileImgUpdateDto;
 import kr.codesquad.secondhand.api.member.dto.ReissueAccessTokenDto;
-import kr.codesquad.secondhand.api.member.dto.request.LastVisitedUpdateRequest;
 import kr.codesquad.secondhand.api.member.dto.request.MemberAddressUpdateRequest;
 import kr.codesquad.secondhand.api.member.dto.request.MemberNicknameUpdateRequest;
 import kr.codesquad.secondhand.api.member.dto.request.OAuthSignInRequest;
@@ -131,15 +130,6 @@ public class MemberController {
         );
         return ResponseEntity.ok()
                 .body(memberAddressResponses);
-    }
-
-    @PatchMapping("/api/members/addresses")
-    public ResponseEntity<String> updateLastVisitedAddress(HttpServletRequest httpServletRequest,
-                                                           @RequestBody LastVisitedUpdateRequest lastVisitedUpdateRequest) {
-        Long memberId = extractMemberId(httpServletRequest);
-        memberAddressService.updateLastVisitedAddress(memberId, lastVisitedUpdateRequest.getLastVisitedAddressId());
-        return ResponseEntity.ok()
-                .build();
     }
 
     @PatchMapping("api/members/profile-image")
