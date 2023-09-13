@@ -1,4 +1,4 @@
-package kr.codesquad.secondhand.api.product.dto;
+package kr.codesquad.secondhand.api.product.dto.response;
 
 import kr.codesquad.secondhand.api.product.domain.ProductStats;
 import lombok.Builder;

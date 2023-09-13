@@ -3,11 +3,11 @@ package kr.codesquad.secondhand.api.product.controller;
 import static kr.codesquad.secondhand.global.util.HttpAuthorizationUtils.extractMemberId;
 
 import javax.servlet.http.HttpServletRequest;
-import kr.codesquad.secondhand.api.product.dto.ProductCreateRequest;
-import kr.codesquad.secondhand.api.product.dto.ProductCreateResponse;
-import kr.codesquad.secondhand.api.product.dto.ProductReadResponse;
-import kr.codesquad.secondhand.api.product.dto.ProductStatusUpdateRequest;
-import kr.codesquad.secondhand.api.product.dto.ProductUpdateRequest;
+import kr.codesquad.secondhand.api.product.dto.request.ProductCreateRequest;
+import kr.codesquad.secondhand.api.product.dto.request.ProductStatusUpdateRequest;
+import kr.codesquad.secondhand.api.product.dto.request.ProductUpdateRequest;
+import kr.codesquad.secondhand.api.product.dto.response.ProductCreateResponse;
+import kr.codesquad.secondhand.api.product.dto.response.ProductReadResponse;
 import kr.codesquad.secondhand.api.product.service.ProductFacadeService;
 import kr.codesquad.secondhand.api.product.service.ProductService;
 import lombok.RequiredArgsConstructor;

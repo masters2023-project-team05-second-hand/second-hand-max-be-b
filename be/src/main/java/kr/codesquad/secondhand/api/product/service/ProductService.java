@@ -3,7 +3,7 @@ package kr.codesquad.secondhand.api.product.service;
 import java.util.List;
 import kr.codesquad.secondhand.api.product.domain.Product;
 import kr.codesquad.secondhand.api.product.domain.ProductStatus;
-import kr.codesquad.secondhand.api.product.dto.ProductStatusUpdateRequest;
+import kr.codesquad.secondhand.api.product.dto.request.ProductStatusUpdateRequest;
 import kr.codesquad.secondhand.api.product.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;

@@ -22,7 +22,7 @@ import kr.codesquad.secondhand.api.member.service.MemberAddressService;
 import kr.codesquad.secondhand.api.member.service.MemberFacadeService;
 import kr.codesquad.secondhand.api.member.service.MemberProductFacadeService;
 import kr.codesquad.secondhand.api.member.service.MemberService;
-import kr.codesquad.secondhand.api.product.dto.ProductSlicesResponse;
+import kr.codesquad.secondhand.api.product.dto.response.ProductSlicesResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
