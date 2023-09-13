@@ -6,7 +6,7 @@ import kr.codesquad.secondhand.api.category.domain.Category;
 import kr.codesquad.secondhand.api.category.dto.CategorySummaryResponse;
 import kr.codesquad.secondhand.api.product.domain.Product;
 import kr.codesquad.secondhand.api.product.domain.ProductStats;
-import kr.codesquad.secondhand.api.product.dto.ProductSlicesResponse;
+import kr.codesquad.secondhand.api.product.dto.response.ProductSlicesResponse;
 import kr.codesquad.secondhand.api.product.service.ProductService;
 import kr.codesquad.secondhand.api.product.service.StatService;
 import lombok.RequiredArgsConstructor;
