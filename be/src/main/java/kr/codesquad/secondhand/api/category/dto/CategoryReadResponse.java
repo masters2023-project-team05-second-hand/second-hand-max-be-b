@@ -21,12 +21,20 @@ public class CategoryReadResponse {
     }
 
     public static CategoryReadResponse from(Category category) {
-        return new CategoryReadResponse(category.getId(), category.getName(), category.getImgUrl());
+        return CategoryReadResponse.builder()
+                .id(category.getId())
+                .name(category.getName())
+                .imgUrl(category.getImgUrl())
+                .build();
     }
 
     public static List<CategoryReadResponse> from(List<Category> categories) {
         return categories.stream()
-                .map(category -> new CategoryReadResponse(category.getId(), category.getName(), category.getImgUrl()))
+                .map(category -> CategoryReadResponse.builder()
+                        .id(category.getId())
+                        .name(category.getName())
+                        .imgUrl(category.getImgUrl())
+                        .build())
                 .collect(Collectors.toUnmodifiableList());
     }
 }
