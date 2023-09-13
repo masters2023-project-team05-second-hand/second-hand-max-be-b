@@ -1,4 +1,4 @@
-package kr.codesquad.secondhand.api.product.dto;
+package kr.codesquad.secondhand.api.product.dto.response;
 
 import java.net.URL;
 import java.util.Date;

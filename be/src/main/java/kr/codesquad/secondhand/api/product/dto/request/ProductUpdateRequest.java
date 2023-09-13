@@ -1,4 +1,4 @@
-package kr.codesquad.secondhand.api.product.dto;
+package kr.codesquad.secondhand.api.product.dto.request;
 
 import java.util.List;
 import javax.validation.constraints.NotEmpty;

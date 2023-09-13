@@ -1,4 +1,4 @@
-package kr.codesquad.secondhand.api.product.dto;
+package kr.codesquad.secondhand.api.product.dto.response;
 
 import java.net.URL;
 import java.sql.Timestamp;
@@ -10,6 +10,9 @@ import kr.codesquad.secondhand.api.product.domain.ProductStats;
 import lombok.Builder;
 import lombok.Getter;
 
+/**
+ * 판매 목록 조회, 관심 상품 조회, 전체 상품 조회 시 공통으로 사용
+ */
 @Getter
 public class ProductSlicesResponse {
 
@@ -46,7 +49,7 @@ public class ProductSlicesResponse {
         private final ProductStatsResponse stats;
 
         @Builder
-        public ProductSlice(Long productId, Long sellerId, URL thumbnailUrl, String title, String addressName,
+        private ProductSlice(Long productId, Long sellerId, URL thumbnailUrl, String title, String addressName,
                             Timestamp createdTime, Long price, Integer statusId, ProductStatsResponse stats) {
             this.productId = productId;
             this.sellerId = sellerId;
