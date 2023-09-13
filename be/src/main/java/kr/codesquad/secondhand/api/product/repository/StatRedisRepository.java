@@ -1,5 +1,6 @@
 package kr.codesquad.secondhand.api.product.repository;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -59,6 +60,18 @@ public class StatRedisRepository {
 
     public List<String> findMemberWishedProducts(String memberWishedProductsKey) {
         return redisTemplate.opsForList().range(memberWishedProductsKey, START, END);
+    }
+
+    public List<Long> findMemberWishedProducts(Long memberId) {
+        String memberWishedProductsKey = memberId.toString() + WISHES_KEY;
+        List<String> result = redisTemplate.opsForList().range(memberWishedProductsKey, START, END);
+
+        if(result == null){
+            return new ArrayList<>();
+        }
+        return result.stream()
+                .map(Long::valueOf)
+                .collect(Collectors.toUnmodifiableList());
     }
 
     public void saveMemberWishedProducts(String memberWishedProductsKey, String productId) {
