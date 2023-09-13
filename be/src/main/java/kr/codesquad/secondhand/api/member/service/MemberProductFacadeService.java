@@ -10,6 +10,8 @@ import kr.codesquad.secondhand.api.product.service.StatService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,7 +24,8 @@ public class MemberProductFacadeService {
 
     @Transactional
     public ProductSlicesResponse readMemberSales(Long memberId, List<Integer> statusIds, Integer page, Integer size) {
-        PageRequest pageRequest = PageRequest.of(page, size);
+        Sort sort = Sort.by(Direction.DESC, "id");
+        PageRequest pageRequest = PageRequest.of(page, size, sort);
         Slice<Product> productSlices = productService.findBySellerIdAndStatusIds(memberId, statusIds, pageRequest);
 
         List<Product> products = productSlices.getContent();
