@@ -40,9 +40,8 @@ public class JwtProvider {
                 .compact();
     }
 
-    public Jwt reissueAccessToken(Map<String, Object> claims, String refreshToken) {
-        String accessToken = createToken(claims, getAccessTokenExpireDate());
-        return new Jwt(accessToken, refreshToken);
+    public String reissueAccessToken(Map<String, Object> claims) {
+        return createToken(claims, getAccessTokenExpireDate());
     }
 
     private Date getAccessTokenExpireDate() {
@@ -53,7 +52,7 @@ public class JwtProvider {
         return new Date(System.currentTimeMillis() + jwtProperties.getRefreshTokenExpirationTime());
     }
 
-    private Claims getClaims(String token) {
+    public Claims getClaims(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(key)
                 .build()
@@ -61,4 +60,7 @@ public class JwtProvider {
                 .getBody();
     }
 
+    public Date getExpiration(String token) { // TODO Date 타입이 시스템 시간이랑 일치하지 않을 수도 있는데, 관련해서 공부하고 처리 필요
+        return getClaims(token).getExpiration();
+    }
 }

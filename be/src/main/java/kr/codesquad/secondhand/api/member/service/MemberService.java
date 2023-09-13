@@ -3,6 +3,7 @@ package kr.codesquad.secondhand.api.member.service;
 import java.util.Optional;
 import kr.codesquad.secondhand.api.member.domain.Member;
 import kr.codesquad.secondhand.api.member.dto.response.MemberProfileResponse;
+import kr.codesquad.secondhand.api.member.exception.InvalidMemberIdException;
 import kr.codesquad.secondhand.api.member.repository.MemberRepository;
 import kr.codesquad.secondhand.api.oauth.domain.OAuthAttributes;
 import kr.codesquad.secondhand.api.oauth.domain.OAuthProfile;
@@ -35,13 +36,25 @@ public class MemberService {
         return memberRepository.getReferenceById(memberId);
     }
 
-    public Member findById(Long memberId){
-        return memberRepository.findById(memberId).orElseThrow();
+    public Member findById(Long memberId) {
+        return memberRepository.findById(memberId).orElseThrow(InvalidMemberIdException::new);
     }
 
     @Transactional
-    public MemberProfileResponse readMemberProfile(Long memberId){
+    public MemberProfileResponse readMemberProfile(Long memberId) {
         Member member = findById(memberId);
         return MemberProfileResponse.from(member);
+    }
+
+    @Transactional
+    public void updateMemberProfileImg(Long memberId, String newImageUrl) {
+        Member member = findById(memberId);
+        member.updateProfileImgUrl(newImageUrl);
+    }
+
+    @Transactional
+    public void updateMemberNickname(Long memberId, String newNickname) {
+        Member member = findById(memberId);
+        member.updateNickname(newNickname);
     }
 }

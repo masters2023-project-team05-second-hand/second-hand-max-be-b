@@ -4,8 +4,9 @@ import javax.validation.constraints.NotEmpty;
 import lombok.Getter;
 
 @Getter
-public class OAuthSignInRequest {
+public class SignOutRequest {
 
-    @NotEmpty
-    private String accessCode;
+    @NotEmpty(message = "refresh token이 비어있습니다.")
+    private String refreshToken;
+
 }

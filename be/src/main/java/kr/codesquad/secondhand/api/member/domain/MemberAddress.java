@@ -39,10 +39,6 @@ public class MemberAddress {
         this.isLastVisited = isLastVisited;
     }
 
-    public void updateLastVisited(boolean isLastVisited) {
-        this.isLastVisited = isLastVisited;
-    }
-
     public static List<MemberAddress> of(Member member, List<Address> addresses) {
         List<MemberAddress> memberAddresses = new ArrayList<>();
 
@@ -53,6 +49,10 @@ public class MemberAddress {
         }
 
         return memberAddresses;
+    }
+
+    public void updateLastVisited(boolean isLastVisited) {
+        this.isLastVisited = isLastVisited;
     }
 }
 

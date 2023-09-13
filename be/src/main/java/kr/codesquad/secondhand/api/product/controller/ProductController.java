@@ -1,5 +1,8 @@
 package kr.codesquad.secondhand.api.product.controller;
 
+import static kr.codesquad.secondhand.global.util.HttpAuthorizationUtils.extractMemberId;
+
+import javax.servlet.http.HttpServletRequest;
 import kr.codesquad.secondhand.api.product.dto.ProductCreateRequest;
 import kr.codesquad.secondhand.api.product.dto.ProductCreateResponse;
 import kr.codesquad.secondhand.api.product.dto.ProductReadResponse;
@@ -10,6 +13,7 @@ import kr.codesquad.secondhand.api.product.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -27,24 +31,26 @@ public class ProductController {
     private final ProductService productService;
 
     @PostMapping("/api/products")
-    public ResponseEntity<ProductCreateResponse> createProduct(@ModelAttribute ProductCreateRequest productCreateRequest) {
-        //TODO 인증 필터 구현 시 토큰에서 memberId 받아올 예정
-        Long memberId = 1L;
+    public ResponseEntity<ProductCreateResponse> createProduct(HttpServletRequest httpServletRequest,
+                                                               @Validated @ModelAttribute ProductCreateRequest productCreateRequest) {
+        Long memberId = extractMemberId(httpServletRequest);
         ProductCreateResponse productCreateResponse = productFacadeService.saveProduct(memberId, productCreateRequest);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(productCreateResponse);
     }
 
     @GetMapping("/api/products/{productId}")
-    public ResponseEntity<ProductReadResponse> readProduct(@PathVariable Long productId) {
-        ProductReadResponse productReadResponse = productFacadeService.readProduct(1L, productId); // TODO memberId 임시 처리
+    public ResponseEntity<ProductReadResponse> readProduct(HttpServletRequest httpServletRequest,
+                                                           @PathVariable Long productId) {
+        Long memberId = extractMemberId(httpServletRequest);
+        ProductReadResponse productReadResponse = productFacadeService.readProduct(memberId, productId);
         return ResponseEntity.ok()
                 .body(productReadResponse);
     }
 
     @PatchMapping("/api/products/{productId}")
     public ResponseEntity<String> updateProduct(@PathVariable Long productId,
-                                                @ModelAttribute ProductUpdateRequest productUpdateRequest) {
+                                                @Validated @ModelAttribute ProductUpdateRequest productUpdateRequest) {
         productFacadeService.updateProduct(productId, productUpdateRequest);
         return ResponseEntity.ok()
                 .build();
@@ -52,7 +58,7 @@ public class ProductController {
 
     @PatchMapping("/api/products/{productId}/status")
     public ResponseEntity<String> updateProductStatus(@PathVariable Long productId,
-                                                      @RequestBody ProductStatusUpdateRequest request) {
+                                                      @Validated @RequestBody ProductStatusUpdateRequest request) {
         productService.updateProductStatus(productId, request);
         return ResponseEntity.ok()
                 .build();

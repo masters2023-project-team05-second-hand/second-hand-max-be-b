@@ -3,9 +3,9 @@ package kr.codesquad.secondhand.global.exception;
 import lombok.Getter;
 
 @Getter
-public class CustomException extends Exception {
+public class CustomRuntimeException extends RuntimeException {
 
-    public CustomException(String message) {
+    public CustomRuntimeException(String message) {
         super(message);
     }
 }

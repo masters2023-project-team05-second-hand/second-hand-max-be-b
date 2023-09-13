@@ -1,23 +1,38 @@
 package kr.codesquad.secondhand.api.member.controller;
 
+import static kr.codesquad.secondhand.global.util.HttpAuthorizationUtils.extractAccessToken;
+import static kr.codesquad.secondhand.global.util.HttpAuthorizationUtils.extractMemberId;
+
 import java.util.List;
+import javax.servlet.http.HttpServletRequest;
+import kr.codesquad.secondhand.api.jwt.exception.TokenNotFoundException;
+import kr.codesquad.secondhand.api.jwt.service.JwtService;
+import kr.codesquad.secondhand.api.member.dto.MemberProfileImgUpdateDto;
+import kr.codesquad.secondhand.api.member.dto.ReissueAccessTokenDto;
 import kr.codesquad.secondhand.api.member.dto.request.LastVisitedUpdateRequest;
 import kr.codesquad.secondhand.api.member.dto.request.MemberAddressUpdateRequest;
+import kr.codesquad.secondhand.api.member.dto.request.MemberNicknameUpdateRequest;
 import kr.codesquad.secondhand.api.member.dto.request.OAuthSignInRequest;
+import kr.codesquad.secondhand.api.member.dto.request.SignOutRequest;
 import kr.codesquad.secondhand.api.member.dto.response.MemberAddressResponse;
 import kr.codesquad.secondhand.api.member.dto.response.MemberProfileResponse;
 import kr.codesquad.secondhand.api.member.dto.response.OAuthSignInResponse;
 import kr.codesquad.secondhand.api.member.service.MemberAddressService;
 import kr.codesquad.secondhand.api.member.service.MemberFacadeService;
+import kr.codesquad.secondhand.api.member.service.MemberProductFacadeService;
 import kr.codesquad.secondhand.api.member.service.MemberService;
+import kr.codesquad.secondhand.api.product.dto.ProductSlicesResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -25,26 +40,71 @@ import org.springframework.web.bind.annotation.RestController;
 public class MemberController {
 
     private final MemberFacadeService memberFacadeService;
+    private final MemberProductFacadeService memberProductFacadeService;
     private final MemberAddressService memberAddressService;
     private final MemberService memberService;
+    private final JwtService jwtService;
 
     /**
      * 로그인 요청
      */
     @PostMapping("/api/members/sign-in/{provider}")
-    public ResponseEntity<OAuthSignInResponse> login(@PathVariable String provider,
-                                                     @RequestBody OAuthSignInRequest request) {
+    public ResponseEntity<OAuthSignInResponse> signIn(@PathVariable String provider,
+                                                      @Validated @RequestBody OAuthSignInRequest request) {
 
-        OAuthSignInResponse oAuthSignInResponse = memberFacadeService.login(provider, request.getAccessCode());
+        OAuthSignInResponse oAuthSignInResponse = memberFacadeService.signIn(provider, request.getAccessCode());
         return ResponseEntity.ok()
                 .body(oAuthSignInResponse);
     }
 
+    @PostMapping("/api/sign-out")
+    public ResponseEntity<String> signOut(HttpServletRequest httpServletRequest,
+                                          @Validated @RequestBody SignOutRequest signOutRequest) throws TokenNotFoundException {
+        Long memberId = extractMemberId(httpServletRequest);
+        String accessToken = extractAccessToken(httpServletRequest);
+        memberFacadeService.signOut(memberId, accessToken, signOutRequest.getRefreshToken());
+        return ResponseEntity.ok()
+                .build();
+    }
+
+    @PostMapping("/api/reissue-access-token")
+    public ResponseEntity<ReissueAccessTokenDto.Response> reissueAccessToken(HttpServletRequest httpServletRequest,
+                                                                             @Validated @RequestBody ReissueAccessTokenDto.Request request) {
+        Long memberId = extractMemberId(httpServletRequest);
+        String refreshToken = jwtService.reissueAccessToken(memberId, request.getRefreshToken());
+        return ResponseEntity.ok()
+                .body(new ReissueAccessTokenDto.Response(refreshToken));
+    }
+
+    @GetMapping("/api/members")
+    public ResponseEntity<MemberProfileResponse> readMemberProfile(HttpServletRequest httpServletRequest) {
+        Long memberId = extractMemberId(httpServletRequest);
+        MemberProfileResponse memberProfileResponse = memberService.readMemberProfile(memberId);
+        return ResponseEntity.ok().body(memberProfileResponse);
+    }
+
+    @GetMapping("api/members/addresses")
+    public ResponseEntity<List<MemberAddressResponse>> readMemberAddress(HttpServletRequest httpServletRequest) {
+        Long memberId = extractMemberId(httpServletRequest);
+        List<MemberAddressResponse> memberAddressResponse = memberAddressService.readMemberAddresses(memberId);
+        return ResponseEntity.ok().body(memberAddressResponse);
+    }
+
+    @GetMapping("/api/members/sales")
+    public ResponseEntity<ProductSlicesResponse> readMemberSales(HttpServletRequest httpServletRequest,
+                                                                 @RequestParam List<Integer> statusId,
+                                                                 @RequestParam Integer page,
+                                                                 @RequestParam Integer size) {
+        Long memberId = extractMemberId(httpServletRequest);
+        ProductSlicesResponse productSlicesResponse = memberProductFacadeService.readMemberSales(
+                memberId, statusId, page, size);
+        return ResponseEntity.ok().body(productSlicesResponse);
+    }
+
     @PutMapping("/api/members/addresses")
-    public ResponseEntity<List<MemberAddressResponse>> updateMemberAddresses(
-            @RequestBody MemberAddressUpdateRequest memberAddressUpdateRequest) {
-        // 임시 id
-        Long memberId = 1L;
+    public ResponseEntity<List<MemberAddressResponse>> updateMemberAddresses(HttpServletRequest httpServletRequest,
+                                                                             @Validated @RequestBody MemberAddressUpdateRequest memberAddressUpdateRequest) {
+        Long memberId = extractMemberId(httpServletRequest);
         List<MemberAddressResponse> memberAddressResponses = memberFacadeService.updateMemberAddresses(
                 memberId,
                 memberAddressUpdateRequest.getAddressIds()
@@ -54,26 +114,29 @@ public class MemberController {
     }
 
     @PatchMapping("/api/members/addresses")
-    public ResponseEntity<String> updateLastVisitedAddress(
-            @RequestBody LastVisitedUpdateRequest lastVisitedUpdateRequest) {
-        // 임시 id
-        Long memberId = 1L;
+    public ResponseEntity<String> updateLastVisitedAddress(HttpServletRequest httpServletRequest,
+                                                           @RequestBody LastVisitedUpdateRequest lastVisitedUpdateRequest) {
+        Long memberId = extractMemberId(httpServletRequest);
         memberAddressService.updateLastVisitedAddress(memberId, lastVisitedUpdateRequest.getLastVisitedAddressId());
         return ResponseEntity.ok()
                 .build();
     }
 
-    @GetMapping("/api/members")
-    public ResponseEntity<MemberProfileResponse> readMemberProfile() {
-        Long memberId = 1L;
-        MemberProfileResponse memberProfileResponse = memberService.readMemberProfile(memberId);
-        return ResponseEntity.ok().body(memberProfileResponse);
+    @PatchMapping("api/members/profile-image")
+    public ResponseEntity<MemberProfileImgUpdateDto.Response> updateMemberProfileImg(
+            HttpServletRequest httpServletRequest,
+            @ModelAttribute MemberProfileImgUpdateDto.Request request) {
+        Long memberId = extractMemberId(httpServletRequest);
+        MemberProfileImgUpdateDto.Response response = memberFacadeService.updateMemberProfileImg(
+                memberId, request);
+        return ResponseEntity.ok().body(response);
     }
 
-    @GetMapping("api/members/addresses")
-    public ResponseEntity<List<MemberAddressResponse>> readMemberAddress() {
-        Long memberId = 1L;
-        List<MemberAddressResponse> memberAddressResponse = memberAddressService.readMemberAddresses(memberId);
-        return ResponseEntity.ok().body(memberAddressResponse);
+    @PatchMapping("api/members/nickname")
+    public ResponseEntity<String> updateMemberNickname(HttpServletRequest httpServletRequest,
+                                                     @Validated @RequestBody MemberNicknameUpdateRequest request) {
+        Long memberId = extractMemberId(httpServletRequest);
+        memberFacadeService.updateMemberNickname(memberId, request);
+        return ResponseEntity.ok().build();
     }
 }

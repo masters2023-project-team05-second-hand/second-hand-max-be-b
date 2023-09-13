@@ -44,7 +44,7 @@ public class ImageService {
                 .collect(Collectors.toUnmodifiableList());
     }
 
-    private URL uploadSingleImageToS3(MultipartFile multipartFile) {
+    public URL uploadSingleImageToS3(MultipartFile multipartFile) {
         String uuid = UUID.randomUUID().toString(); // 이미지 이름 중복 방지를 위한 고유한 이미지 이름 생성
         ObjectMetadata metadata = new ObjectMetadata();
         metadata.setContentLength(multipartFile.getSize());
@@ -60,17 +60,17 @@ public class ImageService {
     @Transactional
     public void updateImageUrls(Product product, List<MultipartFile> newImages, List<Long> deletedImageIds) {
         updateNewImagesIfExists(newImages, product);
-        deleteTargetImagesIfExists(product, deletedImageIds);
+        deleteTargetImagesIfExists(deletedImageIds);
     }
 
     private void updateNewImagesIfExists(List<MultipartFile> newImages, Product product) {
-        if (!newImages.isEmpty()) {
+        if (newImages != null && !newImages.isEmpty()) {
             saveProductImages(newImages, product);
         }
     }
 
-    private void deleteTargetImagesIfExists(Product product, List<Long> deletedImageIds) {
-        if (!deletedImageIds.isEmpty()) {
+    private void deleteTargetImagesIfExists(List<Long> deletedImageIds) {
+        if (deletedImageIds != null && !deletedImageIds.isEmpty()) {
             imageRepository.deleteAllById(deletedImageIds);
         }
     }

@@ -1,10 +1,13 @@
 package kr.codesquad.secondhand.api.product.service;
 
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Map;
+import kr.codesquad.secondhand.api.product.domain.Product;
+import kr.codesquad.secondhand.api.product.domain.ProductStats;
 import kr.codesquad.secondhand.api.product.repository.StatRedisRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -20,15 +23,17 @@ public class StatService {
         statRedisRepository.saveNewProductStats(key);
     }
 
-    public List<Integer> findProductStats(Long memberId, Long productId) {
+    public ProductStats findProductStats(Long memberId, Long productId) {
         increaseViews(memberId, productId);
         String productKey = productId.toString();
-        List<Object> stats = statRedisRepository.findProductStats(productKey);
-        return stats.stream()
-                .map(value -> Integer.parseInt(value.toString()))
-                .collect(Collectors.toUnmodifiableList());
+        return statRedisRepository.findProductStats(productKey);
     }
 
+    public Map<Long, ProductStats> findProductsStats(List<Product> products) {
+        return statRedisRepository.findProductsStats(products);
+    }
+
+    @Transactional
     public void increaseViews(Long memberId, Long productId) {
         String productKey = productId.toString();
         String memberViewedProductsKey = memberId.toString() + VIEWS_KEY;
@@ -47,6 +52,7 @@ public class StatService {
         return memberViewedProducts != null && memberViewedProducts.contains(productId);
     }
 
+    @Transactional
     public void addOrResetWishes(Long memberId, Long productId) {
         String productKey = productId.toString();
         String memberWishedProductsKey = memberId.toString() + WISHES_KEY;
