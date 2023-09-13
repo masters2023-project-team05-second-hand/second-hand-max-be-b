@@ -3,6 +3,7 @@ package kr.codesquad.secondhand.api.product.repository;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import kr.codesquad.secondhand.api.product.domain.Product;
 import kr.codesquad.secondhand.api.product.domain.ProductStats;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -32,11 +33,11 @@ public class StatRedisRepository {
         return ProductStats.from(stats);
     }
 
-    public Map<Long, ProductStats> findProductsStats(List<Long> productIds) {
-        return productIds.stream()
+    public Map<Long, ProductStats> findProductsStats(List<Product> products) {
+        return products.stream()
                 .collect(Collectors.toUnmodifiableMap(
-                        productId -> productId,
-                        productId -> findProductStats(productId.toString())
+                        product -> product.getId(),
+                        product -> findProductStats(product.getId().toString())
                 ));
     }
 
