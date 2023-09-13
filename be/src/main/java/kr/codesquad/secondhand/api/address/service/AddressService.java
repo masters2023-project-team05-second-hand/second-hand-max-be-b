@@ -2,8 +2,8 @@ package kr.codesquad.secondhand.api.address.service;
 
 import java.util.List;
 import kr.codesquad.secondhand.api.address.domain.Address;
+import kr.codesquad.secondhand.api.address.dto.AddressSliceResponse;
 import kr.codesquad.secondhand.api.address.repository.AddressRepositoryImpl;
-import kr.codesquad.secondhand.api.member.dto.response.AddressSliceResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
