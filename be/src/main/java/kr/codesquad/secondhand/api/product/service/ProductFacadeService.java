@@ -67,7 +67,7 @@ public class ProductFacadeService {
         ProductStats stats = statService.findProductStats(memberId, productId);
         Category category = Category.from(product.getCategoryId());
         Address address = product.getAddress();
-        return ProductReadResponse.of(isSeller, product, productImages, productStatuses, stats, category, address);
+        return ProductReadResponse.of(product, productImages, productStatuses, stats, category, address);
     }
 
     public List<ProductStatusesInfoResponse> readProductStatuses() {
