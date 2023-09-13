@@ -21,7 +21,7 @@ public class ProductSlicesResponse {
         this.hasNext = hasNext;
     }
 
-    public ProductSlicesResponse of(List<Product> products, Map<Long, ProductStats> stats, Boolean hasNext) {
+    public static ProductSlicesResponse of(List<Product> products, Map<Long, ProductStats> stats, Boolean hasNext) {
         List<ProductSlice> productSlices = products.stream()
                 .map(product -> {
                     Long productId = product.getId();
