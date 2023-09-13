@@ -24,16 +24,16 @@ public class ProductUpdateRequest {
     private final Long price;
     // TODO Multipart는 Bean Validation이 안먹혀서 Spring이 제공하는 다른 방법이 있는지 확인 필요, 아님 직접 검증하는 코드 구현
     private final List<MultipartFile> newImages;
-    private final List<Long> deletedImgIds;
+    private final List<Long> deletedImageIds;
 
     public ProductUpdateRequest(Long categoryId, Long addressId, String title, String content, Long price,
-                                List<MultipartFile> newImages, List<Long> deletedImgIds) {
+                                List<MultipartFile> newImages, List<Long> deletedImageIds) {
         this.categoryId = categoryId;
         this.addressId = addressId;
         this.title = title;
         this.content = content;
         this.price = price;
         this.newImages = newImages;
-        this.deletedImgIds = deletedImgIds;
+        this.deletedImageIds = deletedImageIds;
     }
 }

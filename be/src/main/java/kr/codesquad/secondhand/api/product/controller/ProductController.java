@@ -2,7 +2,9 @@ package kr.codesquad.secondhand.api.product.controller;
 
 import static kr.codesquad.secondhand.global.util.HttpAuthorizationUtils.extractMemberId;
 
+import java.util.List;
 import javax.servlet.http.HttpServletRequest;
+import kr.codesquad.secondhand.api.product.dto.ProductStatusesInfoResponse;
 import kr.codesquad.secondhand.api.product.dto.request.ProductCreateRequest;
 import kr.codesquad.secondhand.api.product.dto.request.ProductStatusUpdateRequest;
 import kr.codesquad.secondhand.api.product.dto.request.ProductUpdateRequest;
@@ -58,6 +60,12 @@ public class ProductController {
         ProductSlicesResponse response = productFacadeService.readProducts(cursor, addressId, categoryId, size);
         return ResponseEntity.ok()
                 .body(response);
+    }
+
+    @GetMapping("/api/statuses")
+    public ResponseEntity<List<ProductStatusesInfoResponse>> readProductStatuses() {
+        List<ProductStatusesInfoResponse> response = productFacadeService.readProductStatuses();
+        return ResponseEntity.ok().body(response);
     }
 
     @PatchMapping("/api/products/{productId}")
