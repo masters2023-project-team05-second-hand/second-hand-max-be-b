@@ -29,12 +29,16 @@ public class ProductService {
         return productRepository.findById(productId).orElseThrow();
     }
 
-    public Slice<Product> findByCategoryIdAndIdIn(List<Long> productIds, Long categoryId, Pageable pageable){
+    public Slice<Product> findByCategoryIdAndIdIn(List<Long> productIds, Long categoryId, Pageable pageable) {
         return productRepository.findByCategoryIdAndIdIn(productIds, categoryId, pageable);
     }
 
     public Slice<Product> findBySellerIdAndStatusIds(Long sellerId, List<Integer> statusIds, PageRequest pageRequest) {
         return productRepository.findBySellerIdAndStatusIds(sellerId, statusIds, pageRequest);
+    }
+
+    public List<Long> findCategoryIdsByIdIn(List<Long> productIds) {
+        return productRepository.findCategoryIdsByIdIn(productIds);
     }
 
     @Transactional

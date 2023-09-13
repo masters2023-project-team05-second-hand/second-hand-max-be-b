@@ -5,6 +5,7 @@ import static kr.codesquad.secondhand.global.util.HttpAuthorizationUtils.extract
 
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
+import kr.codesquad.secondhand.api.category.dto.CategorySummaryResponse;
 import kr.codesquad.secondhand.api.jwt.exception.TokenNotFoundException;
 import kr.codesquad.secondhand.api.jwt.service.JwtService;
 import kr.codesquad.secondhand.api.member.dto.MemberProfileImgUpdateDto;
@@ -110,6 +111,14 @@ public class MemberController {
         ProductSlicesResponse productSlicesResponse = memberProductFacadeService.readMemberWishlist(
                 memberId, categoryId, page, size);
         return ResponseEntity.ok().body(productSlicesResponse);
+    }
+
+    @GetMapping("/api/members/wishlist/categories")
+    public ResponseEntity<List<CategorySummaryResponse>> readMemberWishCategories(
+            HttpServletRequest httpServletRequest) {
+        Long memberId = extractMemberId(httpServletRequest);
+        List<CategorySummaryResponse> response = memberProductFacadeService.readMemberWishCategories(memberId);
+        return ResponseEntity.ok().body(response);
     }
 
     @PutMapping("/api/members/addresses")

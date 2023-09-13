@@ -19,4 +19,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     @Query("SELECT product FROM Product product WHERE (:categoryId = 0L OR product.categoryId = :categoryId) AND product.id IN :id")
     Slice<Product> findByCategoryIdAndIdIn(@Param("id") List<Long> id,
                                            @Param("categoryId") Long categoryId, Pageable pageable);
+
+    @Query("SELECT DISTINCT product.categoryId FROM  Product product WHERE product.id IN :id")
+    List<Long> findCategoryIdsByIdIn(@Param("id") List<Long> id);
 }

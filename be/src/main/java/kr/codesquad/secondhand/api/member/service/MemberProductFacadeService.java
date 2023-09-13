@@ -2,6 +2,8 @@ package kr.codesquad.secondhand.api.member.service;
 
 import java.util.List;
 import java.util.Map;
+import kr.codesquad.secondhand.api.category.domain.Category;
+import kr.codesquad.secondhand.api.category.dto.CategorySummaryResponse;
 import kr.codesquad.secondhand.api.product.domain.Product;
 import kr.codesquad.secondhand.api.product.domain.ProductStats;
 import kr.codesquad.secondhand.api.product.dto.ProductSlicesResponse;
@@ -47,5 +49,14 @@ public class MemberProductFacadeService {
         Map<Long, ProductStats> productStats = statService.findProductsStats(products);
 
         return ProductSlicesResponse.of(products, productStats, hasNext);
+    }
+
+    @Transactional
+    public List<CategorySummaryResponse> readMemberWishCategories(Long memberId) {
+        List<Long> wishProductIds = statService.findWishlistByMemberId(memberId);
+        List<Long> categoryIds = productService.findCategoryIdsByIdIn(wishProductIds);
+        List<Category> categories = Category.from(categoryIds);
+
+        return CategorySummaryResponse.from(categories);
     }
 }
