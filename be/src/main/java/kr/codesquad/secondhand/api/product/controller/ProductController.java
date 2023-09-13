@@ -8,6 +8,7 @@ import kr.codesquad.secondhand.api.product.dto.request.ProductStatusUpdateReques
 import kr.codesquad.secondhand.api.product.dto.request.ProductUpdateRequest;
 import kr.codesquad.secondhand.api.product.dto.response.ProductCreateResponse;
 import kr.codesquad.secondhand.api.product.dto.response.ProductReadResponse;
+import kr.codesquad.secondhand.api.product.dto.response.ProductSlicesResponse;
 import kr.codesquad.secondhand.api.product.service.ProductFacadeService;
 import kr.codesquad.secondhand.api.product.service.ProductService;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -46,6 +48,16 @@ public class ProductController {
         ProductReadResponse productReadResponse = productFacadeService.readProduct(memberId, productId);
         return ResponseEntity.ok()
                 .body(productReadResponse);
+    }
+
+    @GetMapping("/api/products")
+    public ResponseEntity<ProductSlicesResponse> readProducts(@RequestParam Long addressId,
+                                                              @RequestParam Long categoryId,
+                                                              @RequestParam Long cursor,
+                                                              @RequestParam Integer size) {
+        ProductSlicesResponse response = productFacadeService.readProducts(cursor, addressId, categoryId, size);
+        return ResponseEntity.ok()
+                .body(response);
     }
 
     @PatchMapping("/api/products/{productId}")
