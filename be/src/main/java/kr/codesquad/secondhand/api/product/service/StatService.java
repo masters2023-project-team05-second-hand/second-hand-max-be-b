@@ -33,6 +33,11 @@ public class StatService {
         return statRedisRepository.findProductsStats(products);
     }
 
+    public List<Long> findWishlistByMemberId(Long memberId){
+        List<Long> wishlist = statRedisRepository.findMemberWishedProducts(memberId);
+        return wishlist;
+    }
+
     @Transactional
     public void increaseViews(Long memberId, Long productId) {
         String productKey = productId.toString();

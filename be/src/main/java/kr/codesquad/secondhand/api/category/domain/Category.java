@@ -55,4 +55,10 @@ public enum Category {
                 .findAny()
                 .orElseThrow(InvalidCategoryIdException::new);
     }
+
+    public static List<Category> from(List<Long> categoryId) {
+        return categoryId.stream()
+                .map(Category::from)
+                .collect(Collectors.toUnmodifiableList());
+    }
 }
