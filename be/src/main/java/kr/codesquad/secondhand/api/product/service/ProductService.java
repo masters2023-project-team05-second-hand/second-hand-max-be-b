@@ -29,7 +29,7 @@ public class ProductService {
         return productRepository.findById(productId).orElseThrow();
     }
 
-    public Slice<Product> findByCategoryIdAndIdIn(List<Long> productIds, Long categoryId, Pageable pageable) {
+    public Slice<Product> findWishedProductByCategoryIdAndIdIn(List<Long> productIds, Long categoryId, Pageable pageable) {
         return productRepository.findByCategoryIdAndIdIn(productIds, categoryId, pageable);
     }
 

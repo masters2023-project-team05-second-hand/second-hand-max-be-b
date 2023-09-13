@@ -42,7 +42,7 @@ public class MemberProductFacadeService {
         Sort sort = Sort.by(Direction.DESC, "id");
         PageRequest pageRequest = PageRequest.of(page, size, sort);
         List<Long> productIds = statService.findWishlistByMemberId(memberId);
-        Slice<Product> productSlices = productService.findByCategoryIdAndIdIn(productIds, categoryId, pageRequest);
+        Slice<Product> productSlices = productService.findWishedProductByCategoryIdAndIdIn(productIds, categoryId, pageRequest);
 
         List<Product> products = productSlices.getContent();
         Boolean hasNext = productSlices.hasNext();

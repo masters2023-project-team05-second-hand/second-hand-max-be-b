@@ -65,7 +65,7 @@ public class StatRedisRepository {
     public List<Long> findMemberWishedProducts(Long memberId) {
         String memberWishedProductsKey = memberId.toString() + WISHES_KEY;
         List<String> result = redisTemplate.opsForList().range(memberWishedProductsKey, START, END);
-
+        // 반환 값 null 일 경우 다른팀과 협의 필요
         if (result == null) {
             return new ArrayList<>();
         }
