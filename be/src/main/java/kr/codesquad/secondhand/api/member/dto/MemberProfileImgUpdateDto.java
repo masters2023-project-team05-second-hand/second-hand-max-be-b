@@ -8,10 +8,10 @@ public class MemberProfileImgUpdateDto {
     @Getter
     public static class Request {
 
-        private final MultipartFile newProfileImage;
+        private final MultipartFile newProfileImg;
 
-        public Request(MultipartFile newProfileImage) {
-            this.newProfileImage = newProfileImage;
+        public Request(MultipartFile newProfileImg) {
+            this.newProfileImg = newProfileImg;
         }
     }
 
