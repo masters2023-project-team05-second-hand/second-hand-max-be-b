@@ -103,7 +103,7 @@ public class ProductFacadeService {
 
     private void updateProductImages(Product product, ProductUpdateRequest productUpdateRequest) {
         List<MultipartFile> newImages = productUpdateRequest.getNewImages();
-        List<Long> deleteImgIds = productUpdateRequest.getDeletedImgIds();
+        List<Long> deleteImgIds = productUpdateRequest.getDeletedImageIds();
         imageService.updateImageUrls(product, newImages, deleteImgIds);
     }
 
