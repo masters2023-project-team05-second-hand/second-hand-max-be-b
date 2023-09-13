@@ -101,6 +101,17 @@ public class MemberController {
         return ResponseEntity.ok().body(productSlicesResponse);
     }
 
+    @GetMapping("/api/members/wishlist")
+    public ResponseEntity<ProductSlicesResponse> readMemberWishlist(HttpServletRequest httpServletRequest,
+                                                                 @RequestParam Long categoryId,
+                                                                 @RequestParam Integer page,
+                                                                 @RequestParam Integer size) {
+        Long memberId = extractMemberId(httpServletRequest);
+        ProductSlicesResponse productSlicesResponse = memberProductFacadeService.readMemberWishlist(
+                memberId, categoryId, page, size);
+        return ResponseEntity.ok().body(productSlicesResponse);
+    }
+
     @PutMapping("/api/members/addresses")
     public ResponseEntity<List<MemberAddressResponse>> updateMemberAddresses(HttpServletRequest httpServletRequest,
                                                                              @Validated @RequestBody MemberAddressUpdateRequest memberAddressUpdateRequest) {

@@ -34,4 +34,18 @@ public class MemberProductFacadeService {
 
         return ProductSlicesResponse.of(products, productStats, hasNext);
     }
+
+    @Transactional
+    public ProductSlicesResponse readMemberWishlist(Long memberId, Long categoryId, Integer page, Integer size) {
+        Sort sort = Sort.by(Direction.DESC, "id");
+        PageRequest pageRequest = PageRequest.of(page, size, sort);
+        List<Long> productIds = statService.findWishlistByMemberId(memberId);
+        Slice<Product> productSlices = productService.findByCategoryIdAndIdIn(productIds, categoryId, pageRequest);
+
+        List<Product> products = productSlices.getContent();
+        Boolean hasNext = productSlices.hasNext();
+        Map<Long, ProductStats> productStats = statService.findProductsStats(products);
+
+        return ProductSlicesResponse.of(products, productStats, hasNext);
+    }
 }
