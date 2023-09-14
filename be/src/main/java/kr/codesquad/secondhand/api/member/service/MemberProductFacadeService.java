@@ -5,6 +5,7 @@ import java.util.Map;
 import kr.codesquad.secondhand.api.category.domain.Category;
 import kr.codesquad.secondhand.api.category.dto.CategorySummaryResponse;
 import kr.codesquad.secondhand.api.member.dto.request.WishProductRequest;
+import kr.codesquad.secondhand.api.member.dto.response.ProductWishStatusResponse;
 import kr.codesquad.secondhand.api.product.domain.Product;
 import kr.codesquad.secondhand.api.product.domain.ProductStats;
 import kr.codesquad.secondhand.api.product.dto.response.ProductSlicesResponse;
@@ -65,5 +66,12 @@ public class MemberProductFacadeService {
         List<Category> categories = Category.from(categoryIds);
 
         return CategorySummaryResponse.from(categories);
+    }
+
+    @Transactional
+    public ProductWishStatusResponse checkProductWishedStatus(Long memberId, Long productId) {
+        // Long to String Key값 변환 리팩토링 필요
+        Boolean isWished = statService.isWishedProductExists(memberId.toString() + "::wishes", productId.toString());
+        return new ProductWishStatusResponse(isWished);
     }
 }

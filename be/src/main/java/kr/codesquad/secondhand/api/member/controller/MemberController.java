@@ -18,6 +18,7 @@ import kr.codesquad.secondhand.api.member.dto.request.WishProductRequest;
 import kr.codesquad.secondhand.api.member.dto.response.MemberAddressResponse;
 import kr.codesquad.secondhand.api.member.dto.response.MemberProfileResponse;
 import kr.codesquad.secondhand.api.member.dto.response.OAuthSignInResponse;
+import kr.codesquad.secondhand.api.member.dto.response.ProductWishStatusResponse;
 import kr.codesquad.secondhand.api.member.service.MemberAddressService;
 import kr.codesquad.secondhand.api.member.service.MemberFacadeService;
 import kr.codesquad.secondhand.api.member.service.MemberProductFacadeService;
@@ -126,6 +127,14 @@ public class MemberController {
             HttpServletRequest httpServletRequest) {
         Long memberId = extractMemberId(httpServletRequest);
         List<CategorySummaryResponse> response = memberProductFacadeService.readMemberWishCategories(memberId);
+        return ResponseEntity.ok().body(response);
+    }
+
+    @GetMapping("/api/members/wishlist/{productId}")
+    public ResponseEntity<ProductWishStatusResponse> checkProductWishedStatus(HttpServletRequest httpServletRequest,
+                                                                              @PathVariable Long productId) {
+        Long memberId = extractMemberId(httpServletRequest);
+        ProductWishStatusResponse response = memberProductFacadeService.checkProductWishedStatus(memberId, productId);
         return ResponseEntity.ok().body(response);
     }
 

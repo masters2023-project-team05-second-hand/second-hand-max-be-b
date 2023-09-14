@@ -67,7 +67,7 @@ public class StatService {
         addWishes(productKey, memberWishedProductsKey);
     }
 
-    private Boolean isWishedProductExists(String memberWishedProductsKey, String productId) {
+    public Boolean isWishedProductExists(String memberWishedProductsKey, String productId) {
         List<String> memberViewedProducts = statRedisRepository.findMemberWishedProducts(memberWishedProductsKey);
         return memberViewedProducts != null && memberViewedProducts.contains(productId);
     }
