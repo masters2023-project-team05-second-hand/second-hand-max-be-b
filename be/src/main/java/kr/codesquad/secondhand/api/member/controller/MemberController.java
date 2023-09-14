@@ -113,7 +113,7 @@ public class MemberController {
 
     @GetMapping("/api/members/wishlist")
     public ResponseEntity<ProductSlicesResponse> readMemberWishlist(HttpServletRequest httpServletRequest,
-                                                                    @RequestParam Long categoryId,
+                                                                    @RequestParam(defaultValue = "0") Long categoryId,
                                                                     @RequestParam Integer page,
                                                                     @RequestParam Integer size) {
         Long memberId = extractMemberId(httpServletRequest);
