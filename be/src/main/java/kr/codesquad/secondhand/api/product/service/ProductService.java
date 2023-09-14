@@ -3,14 +3,12 @@ package kr.codesquad.secondhand.api.product.service;
 import java.util.List;
 import kr.codesquad.secondhand.api.product.domain.Product;
 import kr.codesquad.secondhand.api.product.domain.ProductStatus;
-import kr.codesquad.secondhand.api.product.dto.request.ProductStatusUpdateRequest;
 import kr.codesquad.secondhand.api.product.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -47,9 +45,7 @@ public class ProductService {
         return productRepository.findByAddressIdAndCategoryId(cursor, addressId, categoryId, pageRequest);
     }
 
-    @Transactional
-    public void updateProductStatus(Long productId, ProductStatusUpdateRequest request) {
-        ProductStatus productStatus = ProductStatus.from(request.getStatusId());
+    public void updateProductStatus(Long productId, ProductStatus productStatus) {
         Product product = productRepository.findById(productId).orElseThrow();
         product.updateStatus(productStatus);
     }
