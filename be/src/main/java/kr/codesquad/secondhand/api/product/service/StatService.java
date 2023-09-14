@@ -33,7 +33,7 @@ public class StatService {
         return statRedisRepository.findProductsStats(products);
     }
 
-    public List<Long> findWishlistByMemberId(Long memberId){
+    public List<Long> findWishlistByMemberId(Long memberId) {
         List<Long> wishlist = statRedisRepository.findMemberWishedProducts(memberId);
         return wishlist;
     }
@@ -57,7 +57,6 @@ public class StatService {
         return memberViewedProducts != null && memberViewedProducts.contains(productId);
     }
 
-    @Transactional
     public void addOrResetWishes(Long memberId, Long productId) {
         String productKey = productId.toString();
         String memberWishedProductsKey = memberId.toString() + WISHES_KEY;
@@ -68,7 +67,7 @@ public class StatService {
         addWishes(productKey, memberWishedProductsKey);
     }
 
-    private Boolean isWishedProductExists(String memberWishedProductsKey, String productId) {
+    public Boolean isWishedProductExists(String memberWishedProductsKey, String productId) {
         List<String> memberViewedProducts = statRedisRepository.findMemberWishedProducts(memberWishedProductsKey);
         return memberViewedProducts != null && memberViewedProducts.contains(productId);
     }
