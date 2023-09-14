@@ -54,7 +54,7 @@ public class ProductController {
 
     @GetMapping("/api/products")
     public ResponseEntity<ProductSlicesResponse> readProducts(@RequestParam Long addressId,
-                                                              @RequestParam Long categoryId,
+                                                              @RequestParam(required = false, defaultValue = "0") Long categoryId,
                                                               @RequestParam Long cursor,
                                                               @RequestParam Integer size) {
         ProductSlicesResponse response = productFacadeService.readProducts(cursor, addressId, categoryId, size);
