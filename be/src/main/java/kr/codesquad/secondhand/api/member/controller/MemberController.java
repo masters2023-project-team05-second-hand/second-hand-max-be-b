@@ -14,6 +14,7 @@ import kr.codesquad.secondhand.api.member.dto.request.MemberAddressUpdateRequest
 import kr.codesquad.secondhand.api.member.dto.request.MemberNicknameUpdateRequest;
 import kr.codesquad.secondhand.api.member.dto.request.OAuthSignInRequest;
 import kr.codesquad.secondhand.api.member.dto.request.SignOutRequest;
+import kr.codesquad.secondhand.api.member.dto.request.WishProductRequest;
 import kr.codesquad.secondhand.api.member.dto.response.MemberAddressResponse;
 import kr.codesquad.secondhand.api.member.dto.response.MemberProfileResponse;
 import kr.codesquad.secondhand.api.member.dto.response.OAuthSignInResponse;
@@ -76,6 +77,14 @@ public class MemberController {
                 .body(new ReissueAccessTokenDto.Response(refreshToken));
     }
 
+    @PostMapping("/api/members/wishlist")
+    public ResponseEntity<String> toggleWishProduct(HttpServletRequest httpServletRequest,
+                                                    @Validated @RequestBody WishProductRequest request) {
+        Long memberId = extractMemberId(httpServletRequest);
+        memberProductFacadeService.addOrResetWishes(memberId, request);
+        return ResponseEntity.ok().build();
+    }
+
     @GetMapping("/api/members")
     public ResponseEntity<MemberProfileResponse> readMemberProfile(HttpServletRequest httpServletRequest) {
         Long memberId = extractMemberId(httpServletRequest);
@@ -103,9 +112,9 @@ public class MemberController {
 
     @GetMapping("/api/members/wishlist")
     public ResponseEntity<ProductSlicesResponse> readMemberWishlist(HttpServletRequest httpServletRequest,
-                                                                 @RequestParam Long categoryId,
-                                                                 @RequestParam Integer page,
-                                                                 @RequestParam Integer size) {
+                                                                    @RequestParam Long categoryId,
+                                                                    @RequestParam Integer page,
+                                                                    @RequestParam Integer size) {
         Long memberId = extractMemberId(httpServletRequest);
         ProductSlicesResponse productSlicesResponse = memberProductFacadeService.readMemberWishlist(
                 memberId, categoryId, page, size);
@@ -144,7 +153,7 @@ public class MemberController {
 
     @PatchMapping("api/members/nickname")
     public ResponseEntity<String> updateMemberNickname(HttpServletRequest httpServletRequest,
-                                                     @Validated @RequestBody MemberNicknameUpdateRequest request) {
+                                                       @Validated @RequestBody MemberNicknameUpdateRequest request) {
         Long memberId = extractMemberId(httpServletRequest);
         memberFacadeService.updateMemberNickname(memberId, request);
         return ResponseEntity.ok().build();
