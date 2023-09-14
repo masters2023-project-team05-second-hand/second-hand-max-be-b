@@ -1,6 +1,8 @@
 package kr.codesquad.secondhand.api.product.controller;
 
 import static kr.codesquad.secondhand.global.util.HttpAuthorizationUtils.extractMemberId;
+import static kr.codesquad.secondhand.global.util.HttpAuthorizationUtils.getClientIp;
+import static kr.codesquad.secondhand.global.util.HttpAuthorizationUtils.isMember;
 
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
@@ -46,10 +48,15 @@ public class ProductController {
     @GetMapping("/api/products/{productId}")
     public ResponseEntity<ProductReadResponse> readProduct(HttpServletRequest httpServletRequest,
                                                            @PathVariable Long productId) {
-        Long memberId = extractMemberId(httpServletRequest);
-        ProductReadResponse productReadResponse = productFacadeService.readProduct(memberId, productId);
+        if (isMember(httpServletRequest)) {
+            Long memberId = extractMemberId(httpServletRequest);
+            return ResponseEntity.ok()
+                    .body(productFacadeService.readProduct(memberId, productId));
+        }
+
+        String clientIP = getClientIp(httpServletRequest);
         return ResponseEntity.ok()
-                .body(productReadResponse);
+                .body(productFacadeService.readProduct(clientIP, productId));
     }
 
     @GetMapping("/api/products")

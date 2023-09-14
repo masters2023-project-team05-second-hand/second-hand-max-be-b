@@ -59,10 +59,21 @@ public class ProductFacadeService {
 
     @Transactional
     public ProductReadResponse readProduct(Long memberId, Long productId) {
+        statService.increaseViews(memberId, productId);
+        return toProductReadResponse(productId);
+    }
+
+    @Transactional
+    public ProductReadResponse readProduct(String clientIP, Long productId) {
+        statService.increaseViews(clientIP, productId);
+        return toProductReadResponse(productId);
+    }
+
+    private ProductReadResponse toProductReadResponse(Long productId) {
         return ProductReadResponse.of(
                 productService.findById(productId),
                 imageService.findAllByProductId(productId),
-                statService.findProductStats(memberId, productId),
+                statService.findProductStats(productId),
                 Category.from(productService.findById(productId).getCategoryId()),
                 productService.findById(productId).getAddress()
         );

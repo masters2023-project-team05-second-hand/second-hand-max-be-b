@@ -34,8 +34,7 @@ public class AuthorizationFilter implements Filter {
             "/",
             "/api/addresses",
             "/api/categories",
-//            "/api/products*" 상세 조회 버그 때문에 수정 필요
-            // 지금 상품 상제 조회 memberId NPE 이슈 때문에 주석 처리해놔서 지금 미로그인시 메인 페이지 조회가 안됨
+            "/api/products*"
     };
 
     private static final String[] POST_WHITE_LIST = new String[]{
