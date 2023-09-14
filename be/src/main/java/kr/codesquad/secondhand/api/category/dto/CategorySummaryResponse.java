@@ -5,6 +5,9 @@ import java.util.stream.Collectors;
 import kr.codesquad.secondhand.api.category.domain.Category;
 import lombok.Getter;
 
+/**
+ * 상품 상세 조회, 관심 상품 목록 조회에서 공통으로 사용
+ */
 @Getter
 public class CategorySummaryResponse {
 
