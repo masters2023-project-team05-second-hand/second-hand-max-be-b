@@ -23,8 +23,7 @@ public class StatService {
         statRedisRepository.saveNewProductStats(key);
     }
 
-    public ProductStats findProductStats(Long memberId, Long productId) {
-        increaseViews(memberId, productId);
+    public ProductStats findProductStats(Long productId) {
         String productKey = productId.toString();
         return statRedisRepository.findProductStats(productKey);
     }
@@ -42,6 +41,13 @@ public class StatService {
     public void increaseViews(Long memberId, Long productId) {
         String productKey = productId.toString();
         String memberViewedProductsKey = memberId.toString() + VIEWS_KEY;
+        increaseViewsAndViewedProductsIfNotExists(productKey, memberViewedProductsKey);
+    }
+
+    @Transactional
+    public void increaseViews(String clientIP, Long productId) {
+        String productKey = productId.toString();
+        String memberViewedProductsKey = clientIP + VIEWS_KEY;
         increaseViewsAndViewedProductsIfNotExists(productKey, memberViewedProductsKey);
     }
 
