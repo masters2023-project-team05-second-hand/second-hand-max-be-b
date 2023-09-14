@@ -19,6 +19,10 @@ public class CategorySummaryResponse {
         this.name = name;
     }
 
+    public static CategorySummaryResponse from(Category category){
+        return new CategorySummaryResponse(category.getId(), category.getName());
+    }
+
     public static List<CategorySummaryResponse> from(List<Category> categories){
         return categories.stream()
                 .map(category -> new CategorySummaryResponse(category.getId(), category.getName()))

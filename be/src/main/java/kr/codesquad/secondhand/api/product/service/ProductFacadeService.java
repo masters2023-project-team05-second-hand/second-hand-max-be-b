@@ -9,7 +9,6 @@ import kr.codesquad.secondhand.api.category.domain.Category;
 import kr.codesquad.secondhand.api.member.domain.Member;
 import kr.codesquad.secondhand.api.member.service.MemberService;
 import kr.codesquad.secondhand.api.product.domain.Product;
-import kr.codesquad.secondhand.api.product.domain.ProductImage;
 import kr.codesquad.secondhand.api.product.domain.ProductStats;
 import kr.codesquad.secondhand.api.product.domain.ProductStatus;
 import kr.codesquad.secondhand.api.product.dto.ProductStatusesInfoResponse;
@@ -60,14 +59,13 @@ public class ProductFacadeService {
 
     @Transactional
     public ProductReadResponse readProduct(Long memberId, Long productId) {
-        Product product = productService.findById(productId);
-        boolean isSeller = product.isSellerIdEqualsTo(memberId);
-        List<ProductImage> productImages = imageService.findAllByProductId(productId);
-        List<ProductStatus> productStatuses = ProductStatus.findAll();
-        ProductStats stats = statService.findProductStats(memberId, productId);
-        Category category = Category.from(product.getCategoryId());
-        Address address = product.getAddress();
-        return ProductReadResponse.of(product, productImages, productStatuses, stats, category, address);
+        return ProductReadResponse.of(
+                productService.findById(productId),
+                imageService.findAllByProductId(productId),
+                statService.findProductStats(memberId, productId),
+                Category.from(productService.findById(productId).getCategoryId()),
+                productService.findById(productId).getAddress()
+        );
     }
 
     public List<ProductStatusesInfoResponse> readProductStatuses() {
