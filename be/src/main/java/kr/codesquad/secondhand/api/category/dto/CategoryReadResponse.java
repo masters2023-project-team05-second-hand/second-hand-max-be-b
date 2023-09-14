@@ -30,11 +30,7 @@ public class CategoryReadResponse {
 
     public static List<CategoryReadResponse> from(List<Category> categories) {
         return categories.stream()
-                .map(category -> CategoryReadResponse.builder()
-                        .id(category.getId())
-                        .name(category.getName())
-                        .imgUrl(category.getImgUrl())
-                        .build())
+                .map(CategoryReadResponse::from)
                 .collect(Collectors.toUnmodifiableList());
     }
 }

@@ -25,7 +25,7 @@ public class CategorySummaryResponse {
 
     public static List<CategorySummaryResponse> from(List<Category> categories){
         return categories.stream()
-                .map(category -> new CategorySummaryResponse(category.getId(), category.getName()))
+                .map(CategorySummaryResponse::from)
                 .collect(Collectors.toUnmodifiableList());
     }
 }
