@@ -1,4 +1,4 @@
-package kr.codesquad.secondhand.api.member.dto.response;
+package kr.codesquad.secondhand.api.address.dto;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -11,15 +11,16 @@ public class AddressSliceResponse {
     private final List<AddressesResponse> addresses;
     private final Boolean hasNext;
 
-    public AddressSliceResponse(List<AddressesResponse> addresses, Boolean hasNext) {
+    private AddressSliceResponse(List<AddressesResponse> addresses, Boolean hasNext) {
         this.addresses = addresses;
         this.hasNext = hasNext;
     }
 
     public static AddressSliceResponse of(List<Address> addresses, Boolean hasNext) {
-        return new AddressSliceResponse(addresses.stream()
+        List<AddressesResponse> addressesResponses = addresses.stream()
                 .map(AddressesResponse::from)
-                .collect(Collectors.toUnmodifiableList()), hasNext);
+                .collect(Collectors.toUnmodifiableList());
+        return new AddressSliceResponse(addressesResponses, hasNext);
     }
 
     @Getter
