@@ -75,9 +75,4 @@ public class Product {
     public void updateStatus(ProductStatus productStatus) {
         this.statusId = productStatus.getId();
     }
-
-    public boolean isSellerIdEqualsTo(Long memberId) {
-        return seller.getId()
-                .equals(memberId);
-    }
 }

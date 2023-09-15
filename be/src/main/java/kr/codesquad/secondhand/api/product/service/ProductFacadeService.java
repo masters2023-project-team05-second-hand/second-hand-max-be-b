@@ -13,6 +13,7 @@ import kr.codesquad.secondhand.api.product.domain.ProductStats;
 import kr.codesquad.secondhand.api.product.domain.ProductStatus;
 import kr.codesquad.secondhand.api.product.dto.ProductStatusesInfoResponse;
 import kr.codesquad.secondhand.api.product.dto.request.ProductCreateRequest;
+import kr.codesquad.secondhand.api.product.dto.request.ProductStatusUpdateRequest;
 import kr.codesquad.secondhand.api.product.dto.request.ProductUpdateRequest;
 import kr.codesquad.secondhand.api.product.dto.response.ProductCreateResponse;
 import kr.codesquad.secondhand.api.product.dto.response.ProductReadResponse;
@@ -114,6 +115,12 @@ public class ProductFacadeService {
         List<MultipartFile> newImages = productUpdateRequest.getNewImages();
         List<Long> deleteImgIds = productUpdateRequest.getDeletedImageIds();
         imageService.updateImageUrls(product, newImages, deleteImgIds);
+    }
+
+    @Transactional
+    public void updateProductStatus(Long productId, ProductStatusUpdateRequest request) {
+        ProductStatus productStatus = ProductStatus.from(request.getStatusId());
+        productService.updateProductStatus(productId, productStatus);
     }
 
     @Transactional
