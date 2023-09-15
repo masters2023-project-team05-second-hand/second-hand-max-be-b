@@ -13,19 +13,14 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class StatService {
 
-    private static final String VIEWS_KEY = "::views";
-    private static final String WISHES_KEY = "::wishes";
-
     private final StatRedisRepository statRedisRepository;
 
     public void saveNewProductStats(Long productId) {
-        String key = productId.toString();
-        statRedisRepository.saveNewProductStats(key);
+        statRedisRepository.saveNewProductStats(productId);
     }
 
     public ProductStats findProductStats(Long productId) {
-        String productKey = productId.toString();
-        return statRedisRepository.findProductStats(productKey);
+        return statRedisRepository.findProductStats(productId);
     }
 
     public Map<Long, ProductStats> findProductsStats(List<Product> products) {
@@ -38,53 +33,47 @@ public class StatService {
     }
 
     @Transactional
-    public void increaseViews(Long memberId, Long productId) {
-        String productKey = productId.toString();
-        String memberViewedProductsKey = memberId.toString() + VIEWS_KEY;
-        increaseViewsAndViewedProductsIfNotExists(productKey, memberViewedProductsKey);
+    public void increaseViews(Long productId, Long memberId) {
+        increaseViewsAndViewedProductsIfNotExists(productId, memberId.toString());
     }
 
     @Transactional
     public void increaseViews(String clientIP, Long productId) {
-        String productKey = productId.toString();
-        String memberViewedProductsKey = clientIP + VIEWS_KEY;
-        increaseViewsAndViewedProductsIfNotExists(productKey, memberViewedProductsKey);
+        increaseViewsAndViewedProductsIfNotExists(productId, clientIP);
     }
 
-    private void increaseViewsAndViewedProductsIfNotExists(String productKey, String memberViewedProductsKey) {
-        if (!isViewedProductExists(memberViewedProductsKey, productKey)) {
-            statRedisRepository.increaseViews(productKey);
-            statRedisRepository.saveMemberViewedProducts(memberViewedProductsKey, productKey);
+    private void increaseViewsAndViewedProductsIfNotExists(Long productId, String memberId) {
+        if (!isViewedProductExists(memberId, productId)) {
+            statRedisRepository.increaseViews(productId);
+            statRedisRepository.saveMemberViewedProducts(memberId, productId);
         }
     }
 
-    private Boolean isViewedProductExists(String memberViewedProductsKey, String productId) {
-        List<String> memberViewedProducts = statRedisRepository.findMemberViewedProducts(memberViewedProductsKey);
+    private Boolean isViewedProductExists(String memberId, Long productId) {
+        List<String> memberViewedProducts = statRedisRepository.findMemberViewedProducts(memberId);
         return memberViewedProducts != null && memberViewedProducts.contains(productId);
     }
 
     public void addOrResetWishes(Long memberId, Long productId) {
-        String productKey = productId.toString();
-        String memberWishedProductsKey = memberId.toString() + WISHES_KEY;
-        if (isWishedProductExists(memberWishedProductsKey, productKey)) {
-            resetWishes(productKey, memberWishedProductsKey);
+        if (isWishedProductExists(memberId, productId)) {
+            resetWishes(productId, memberId);
             return;
         }
-        addWishes(productKey, memberWishedProductsKey);
+        addWishes(productId, memberId);
     }
 
-    public Boolean isWishedProductExists(String memberWishedProductsKey, String productId) {
-        List<String> memberViewedProducts = statRedisRepository.findMemberWishedProducts(memberWishedProductsKey);
+    public Boolean isWishedProductExists(Long memberId, Long productId) {
+        List<Long> memberViewedProducts = statRedisRepository.findMemberWishedProducts(memberId);
         return memberViewedProducts != null && memberViewedProducts.contains(productId);
     }
 
-    private void addWishes(String productKey, String memberWishedProductsKey) {
-        statRedisRepository.increaseWishes(productKey);
-        statRedisRepository.saveMemberWishedProducts(memberWishedProductsKey, productKey);
+    private void addWishes(Long productId, Long memberId) {
+        statRedisRepository.increaseWishes(productId);
+        statRedisRepository.saveMemberWishedProducts(memberId, productId);
     }
 
-    private void resetWishes(String productKey, String memberWishedProductsKey) {
-        statRedisRepository.decreaseWishes(productKey);
-        statRedisRepository.deleteMemberWishedProducts(memberWishedProductsKey, productKey);
+    private void resetWishes(Long memberId, Long productId) {
+        statRedisRepository.decreaseWishes(productId);
+        statRedisRepository.deleteMemberWishedProducts(memberId, productId);
     }
 }

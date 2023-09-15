@@ -14,7 +14,6 @@ import kr.codesquad.secondhand.api.product.dto.response.ProductCreateResponse;
 import kr.codesquad.secondhand.api.product.dto.response.ProductReadResponse;
 import kr.codesquad.secondhand.api.product.dto.response.ProductSlicesResponse;
 import kr.codesquad.secondhand.api.product.service.ProductFacadeService;
-import kr.codesquad.secondhand.api.product.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,7 +33,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class ProductController {
 
     private final ProductFacadeService productFacadeService;
-    private final ProductService productService;
 
     @PostMapping("/api/products")
     public ResponseEntity<ProductCreateResponse> createProduct(HttpServletRequest httpServletRequest,
@@ -86,7 +84,7 @@ public class ProductController {
     @PatchMapping("/api/products/{productId}/status")
     public ResponseEntity<String> updateProductStatus(@PathVariable Long productId,
                                                       @Validated @RequestBody ProductStatusUpdateRequest request) {
-        productService.updateProductStatus(productId, request);
+        productFacadeService.updateProductStatus(productId, request);
         return ResponseEntity.ok()
                 .build();
     }
