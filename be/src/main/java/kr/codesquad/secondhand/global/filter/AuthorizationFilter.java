@@ -34,7 +34,8 @@ public class AuthorizationFilter implements Filter {
             "/",
             "/api/addresses",
             "/api/categories",
-//            "/api/products/*" 상세 조회 버그 때문에 수정 필요
+            "/api/products*",
+            "/api/statuses"
     };
 
     private static final String[] POST_WHITE_LIST = new String[]{
@@ -54,6 +55,14 @@ public class AuthorizationFilter implements Filter {
         HttpServletResponse httpServletResponse = (HttpServletResponse) servletResponse;
 
         if (isGetRequestInWhiteList(httpServletRequest) || isPostRequestInWhiteList(httpServletRequest)) {
+            // TODO 화이트리스트 + 로그인 경우 회원 정보를 담을 수 없어 임시 처리, 리팩토링 필요
+            if (containsBearerToken(httpServletRequest)) {
+                try {
+                    setAttributesFromAccessToken(httpServletRequest);
+                } catch (TokenNotFoundException e) {
+                    throw new RuntimeException(e);
+                }
+            }
             chain.doFilter(servletRequest, servletResponse);
             return;
         }

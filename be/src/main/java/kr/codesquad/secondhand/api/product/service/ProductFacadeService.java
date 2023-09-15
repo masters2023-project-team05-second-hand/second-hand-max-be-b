@@ -2,20 +2,24 @@ package kr.codesquad.secondhand.api.product.service;
 
 import java.net.URL;
 import java.util.List;
+import java.util.Map;
 import kr.codesquad.secondhand.api.address.domain.Address;
 import kr.codesquad.secondhand.api.address.service.AddressService;
 import kr.codesquad.secondhand.api.category.domain.Category;
 import kr.codesquad.secondhand.api.member.domain.Member;
 import kr.codesquad.secondhand.api.member.service.MemberService;
 import kr.codesquad.secondhand.api.product.domain.Product;
-import kr.codesquad.secondhand.api.product.domain.ProductImage;
 import kr.codesquad.secondhand.api.product.domain.ProductStats;
 import kr.codesquad.secondhand.api.product.domain.ProductStatus;
-import kr.codesquad.secondhand.api.product.dto.ProductCreateRequest;
-import kr.codesquad.secondhand.api.product.dto.ProductCreateResponse;
-import kr.codesquad.secondhand.api.product.dto.ProductReadResponse;
-import kr.codesquad.secondhand.api.product.dto.ProductUpdateRequest;
+import kr.codesquad.secondhand.api.product.dto.ProductStatusesInfoResponse;
+import kr.codesquad.secondhand.api.product.dto.request.ProductCreateRequest;
+import kr.codesquad.secondhand.api.product.dto.request.ProductStatusUpdateRequest;
+import kr.codesquad.secondhand.api.product.dto.request.ProductUpdateRequest;
+import kr.codesquad.secondhand.api.product.dto.response.ProductCreateResponse;
+import kr.codesquad.secondhand.api.product.dto.response.ProductReadResponse;
+import kr.codesquad.secondhand.api.product.dto.response.ProductSlicesResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -56,14 +60,42 @@ public class ProductFacadeService {
 
     @Transactional
     public ProductReadResponse readProduct(Long memberId, Long productId) {
-        Product product = productService.findById(productId);
-        boolean isSeller = product.isSellerIdEqualsTo(memberId);
-        List<ProductImage> productImages = imageService.findAllByProductId(productId);
+        statService.increaseViews(memberId, productId);
+        return toProductReadResponse(productId);
+    }
+
+    @Transactional
+    public ProductReadResponse readProduct(String clientIP, Long productId) {
+        statService.increaseViews(clientIP, productId);
+        return toProductReadResponse(productId);
+    }
+
+    private ProductReadResponse toProductReadResponse(Long productId) {
+        return ProductReadResponse.of(
+                productService.findById(productId),
+                imageService.findAllByProductId(productId),
+                statService.findProductStats(productId),
+                Category.from(productService.findById(productId).getCategoryId()),
+                productService.findById(productId).getAddress()
+        );
+    }
+
+    public List<ProductStatusesInfoResponse> readProductStatuses() {
         List<ProductStatus> productStatuses = ProductStatus.findAll();
-        ProductStats stats = statService.findProductStats(memberId, productId);
-        Category category = Category.from(product.getCategoryId());
-        Address address = product.getAddress();
-        return ProductReadResponse.of(isSeller, product, productImages, productStatuses, stats, category, address);
+        return ProductStatusesInfoResponse.from(productStatuses);
+    }
+
+    @Transactional
+    public ProductSlicesResponse readProducts(Long cursor, Long addressId, Long categoryId, Integer size) {
+        Slice<Product> productSlices = productService.findByAddressIdAndCategoryId(
+                cursor, addressId, categoryId, size
+        );
+
+        List<Product> products = productSlices.getContent();
+        Boolean hasNext = productSlices.hasNext();
+        Map<Long, ProductStats> productStats = statService.findProductsStats(products);
+
+        return ProductSlicesResponse.of(products, productStats, hasNext);
     }
 
     @Transactional
@@ -81,8 +113,14 @@ public class ProductFacadeService {
 
     private void updateProductImages(Product product, ProductUpdateRequest productUpdateRequest) {
         List<MultipartFile> newImages = productUpdateRequest.getNewImages();
-        List<Long> deleteImgIds = productUpdateRequest.getDeletedImgIds();
+        List<Long> deleteImgIds = productUpdateRequest.getDeletedImageIds();
         imageService.updateImageUrls(product, newImages, deleteImgIds);
+    }
+
+    @Transactional
+    public void updateProductStatus(Long productId, ProductStatusUpdateRequest request) {
+        ProductStatus productStatus = ProductStatus.from(request.getStatusId());
+        productService.updateProductStatus(productId, productStatus);
     }
 
     @Transactional

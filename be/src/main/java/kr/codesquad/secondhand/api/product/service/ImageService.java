@@ -64,13 +64,13 @@ public class ImageService {
     }
 
     private void updateNewImagesIfExists(List<MultipartFile> newImages, Product product) {
-        if (newImages != null && !newImages.isEmpty()) {
+        if (newImages != null) {
             saveProductImages(newImages, product);
         }
     }
 
     private void deleteTargetImagesIfExists(List<Long> deletedImageIds) {
-        if (deletedImageIds != null && !deletedImageIds.isEmpty()) {
+        if (deletedImageIds != null) {
             imageRepository.deleteAllById(deletedImageIds);
         }
     }

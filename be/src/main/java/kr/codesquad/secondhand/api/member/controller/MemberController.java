@@ -5,23 +5,25 @@ import static kr.codesquad.secondhand.global.util.HttpAuthorizationUtils.extract
 
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
+import kr.codesquad.secondhand.api.category.dto.CategorySummaryResponse;
 import kr.codesquad.secondhand.api.jwt.exception.TokenNotFoundException;
 import kr.codesquad.secondhand.api.jwt.service.JwtService;
 import kr.codesquad.secondhand.api.member.dto.MemberProfileImgUpdateDto;
 import kr.codesquad.secondhand.api.member.dto.ReissueAccessTokenDto;
-import kr.codesquad.secondhand.api.member.dto.request.LastVisitedUpdateRequest;
 import kr.codesquad.secondhand.api.member.dto.request.MemberAddressUpdateRequest;
 import kr.codesquad.secondhand.api.member.dto.request.MemberNicknameUpdateRequest;
 import kr.codesquad.secondhand.api.member.dto.request.OAuthSignInRequest;
 import kr.codesquad.secondhand.api.member.dto.request.SignOutRequest;
+import kr.codesquad.secondhand.api.member.dto.request.WishProductRequest;
 import kr.codesquad.secondhand.api.member.dto.response.MemberAddressResponse;
 import kr.codesquad.secondhand.api.member.dto.response.MemberProfileResponse;
 import kr.codesquad.secondhand.api.member.dto.response.OAuthSignInResponse;
+import kr.codesquad.secondhand.api.member.dto.response.ProductWishStatusResponse;
 import kr.codesquad.secondhand.api.member.service.MemberAddressService;
 import kr.codesquad.secondhand.api.member.service.MemberFacadeService;
 import kr.codesquad.secondhand.api.member.service.MemberProductFacadeService;
 import kr.codesquad.secondhand.api.member.service.MemberService;
-import kr.codesquad.secondhand.api.product.dto.ProductSlicesResponse;
+import kr.codesquad.secondhand.api.product.dto.response.ProductSlicesResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -76,6 +78,14 @@ public class MemberController {
                 .body(new ReissueAccessTokenDto.Response(refreshToken));
     }
 
+    @PostMapping("/api/members/wishlist")
+    public ResponseEntity<String> toggleWishProduct(HttpServletRequest httpServletRequest,
+                                                    @Validated @RequestBody WishProductRequest request) {
+        Long memberId = extractMemberId(httpServletRequest);
+        memberProductFacadeService.addOrResetWishes(memberId, request);
+        return ResponseEntity.ok().build();
+    }
+
     @GetMapping("/api/members")
     public ResponseEntity<MemberProfileResponse> readMemberProfile(HttpServletRequest httpServletRequest) {
         Long memberId = extractMemberId(httpServletRequest);
@@ -101,6 +111,33 @@ public class MemberController {
         return ResponseEntity.ok().body(productSlicesResponse);
     }
 
+    @GetMapping("/api/members/wishlist")
+    public ResponseEntity<ProductSlicesResponse> readMemberWishlist(HttpServletRequest httpServletRequest,
+                                                                    @RequestParam(defaultValue = "0") Long categoryId,
+                                                                    @RequestParam Integer page,
+                                                                    @RequestParam Integer size) {
+        Long memberId = extractMemberId(httpServletRequest);
+        ProductSlicesResponse productSlicesResponse = memberProductFacadeService.readMemberWishlist(
+                memberId, categoryId, page, size);
+        return ResponseEntity.ok().body(productSlicesResponse);
+    }
+
+    @GetMapping("/api/members/wishlist/categories")
+    public ResponseEntity<List<CategorySummaryResponse>> readMemberWishCategories(
+            HttpServletRequest httpServletRequest) {
+        Long memberId = extractMemberId(httpServletRequest);
+        List<CategorySummaryResponse> response = memberProductFacadeService.readMemberWishCategories(memberId);
+        return ResponseEntity.ok().body(response);
+    }
+
+    @GetMapping("/api/members/wishlist/{productId}")
+    public ResponseEntity<ProductWishStatusResponse> checkProductWishedStatus(HttpServletRequest httpServletRequest,
+                                                                              @PathVariable Long productId) {
+        Long memberId = extractMemberId(httpServletRequest);
+        ProductWishStatusResponse response = memberProductFacadeService.checkProductWishedStatus(memberId, productId);
+        return ResponseEntity.ok().body(response);
+    }
+
     @PutMapping("/api/members/addresses")
     public ResponseEntity<List<MemberAddressResponse>> updateMemberAddresses(HttpServletRequest httpServletRequest,
                                                                              @Validated @RequestBody MemberAddressUpdateRequest memberAddressUpdateRequest) {
@@ -111,15 +148,6 @@ public class MemberController {
         );
         return ResponseEntity.ok()
                 .body(memberAddressResponses);
-    }
-
-    @PatchMapping("/api/members/addresses")
-    public ResponseEntity<String> updateLastVisitedAddress(HttpServletRequest httpServletRequest,
-                                                           @RequestBody LastVisitedUpdateRequest lastVisitedUpdateRequest) {
-        Long memberId = extractMemberId(httpServletRequest);
-        memberAddressService.updateLastVisitedAddress(memberId, lastVisitedUpdateRequest.getLastVisitedAddressId());
-        return ResponseEntity.ok()
-                .build();
     }
 
     @PatchMapping("api/members/profile-image")
@@ -134,7 +162,7 @@ public class MemberController {
 
     @PatchMapping("api/members/nickname")
     public ResponseEntity<String> updateMemberNickname(HttpServletRequest httpServletRequest,
-                                                     @Validated @RequestBody MemberNicknameUpdateRequest request) {
+                                                       @Validated @RequestBody MemberNicknameUpdateRequest request) {
         Long memberId = extractMemberId(httpServletRequest);
         memberFacadeService.updateMemberNickname(memberId, request);
         return ResponseEntity.ok().build();
