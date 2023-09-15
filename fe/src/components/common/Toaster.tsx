@@ -5,7 +5,7 @@ import { HEIGHT } from "@styles/constants";
 import { useAtomValue, useSetAtom } from "jotai";
 import { useEffect, useState } from "react";
 import { Toaster as ToasterType, useToasterAtom } from "store/toaster";
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
 
 export default function Toaster() {
   const toasts = useAtomValue(useToasterAtom);
@@ -21,7 +21,7 @@ export default function Toaster() {
 
 function Toast({ id, type, title, message }: ToasterType) {
   const setToaster = useSetAtom(useToasterAtom);
-  const [opacity, setOpacity] = useState(0.2);
+  const [opacity, setOpacity] = useState(0);
 
   useEffect(() => {
     setOpacity(1);
@@ -63,12 +63,34 @@ function Toast({ id, type, title, message }: ToasterType) {
 const TOAST_DURATION = 3000;
 const ANIMATION_DURATION = 1000;
 
+const fadeIn = keyframes`
+  from {
+    opacity: 0;
+    transform: translateY(50%);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0%);
+  }
+`;
+
+const fadeOut = keyframes`
+  from {
+    opacity: 1;
+    transform: translateY(0%);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(50%);
+  }
+`;
+
 const StyledToaster = styled.div`
   position: fixed;
   display: flex;
   flex-direction: column;
   gap: 8px;
-  bottom: ${HEIGHT.navigationBar}px;
+  bottom: ${HEIGHT.navigationBar + 24}px;
   left: calc(50% - 160px);
   z-index: 100;
 `;
@@ -79,10 +101,9 @@ const StyledToast = styled.div<{
 }>`
   opacity: ${({ $opacity }) => $opacity};
   transition: all ${ANIMATION_DURATION}ms ease-in-out;
-  transform: translateY(
-    ${({ $animationDirection }) =>
-      $animationDirection === "enter" ? "-50%" : "50%"}
-  );
+  animation: ${({ $animationDirection }) =>
+      $animationDirection === "enter" ? fadeIn : fadeOut}
+    ${ANIMATION_DURATION}ms ease-in-out;
 
   .toast-container {
     width: 330px;
@@ -91,7 +112,8 @@ const StyledToast = styled.div<{
     justify-content: center;
     gap: 8px;
     padding: 16px 0;
-    background-color: ${({ theme: { color } }) => color.neutralOverlay};
+    background-color: ${({ theme: { color } }) => color.neutralBackgroundWeak};
+    border: 1px solid ${({ theme: { color } }) => color.neutralBorder};
     border-radius: ${({ theme: { radius } }) => radius[8]};
   }
 `;

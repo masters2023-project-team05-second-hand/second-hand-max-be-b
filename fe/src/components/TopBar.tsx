@@ -24,9 +24,11 @@ export default function TopBar({
       $backgroundColor={backgroundColor}
       $isWithBorder={isWithBorder}
       $isScrolled={isScrolled}>
-      <Title>
-        <span>{title}</span>
-      </Title>
+      {title && (
+        <Title>
+          <span>{title}</span>
+        </Title>
+      )}
       <Buttons>
         <div>{leftBtn}</div>
         <div>{rightBtn}</div>
@@ -59,6 +61,7 @@ const StyledTopBar = styled.header<{
   border-bottom: ${({ $isWithBorder, theme: { color } }) =>
     $isWithBorder ? `0.8px solid ${color.neutralBorder}` : "none"};
   transition: background-color 0.5s linear;
+  z-index: 100;
 `;
 
 const Title = styled.div`

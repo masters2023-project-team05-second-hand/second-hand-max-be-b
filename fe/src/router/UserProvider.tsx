@@ -1,22 +1,30 @@
-import { useUserInfoQuery } from "@api/queries";
+import { useUserInfoQuery } from "@api/user/queries";
 import { useToast } from "@hooks/useToast";
-import React, { useEffect } from "react";
-import { useSetAddresses, useSetMember } from "store";
-export default function UserProvider({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  const accessToken = localStorage.getItem("accessToken");
+import { ROUTE_PATH } from "@router/constants";
+import { useEffect } from "react";
+import { Navigate, Outlet } from "react-router-dom";
+import {
+  useIsLoginValue,
+  useSetAddresses,
+  useSetCurrentAddressId,
+  useSetMember,
+} from "store";
+
+export default function UserProvider() {
+  const isLogin = useIsLoginValue();
 
   const setMember = useSetMember();
   const setAddresses = useSetAddresses();
+  const setCurrentAddressId = useSetCurrentAddressId();
 
   const { toast } = useToast();
 
   const [memberResult, memberAddressResult] = useUserInfoQuery({
-    enabled: !!accessToken,
+    enabled: isLogin,
   });
+
+  const isFirstUser =
+    memberAddressResult.isSuccess && !memberAddressResult.data.length;
 
   useEffect(() => {
     if (memberResult.isSuccess) {
@@ -40,7 +48,14 @@ export default function UserProvider({
           name: address.name,
         }))
       );
+
+      // 유저가 다른 브라우저에서 로그인 한 경우 필요
+      const currentAddressId =
+        localStorage.getItem("currentAddressId") ??
+        memberAddressResult.data[0].id;
+      setCurrentAddressId(Number(currentAddressId));
     }
+
     if (memberAddressResult.isError) {
       toast({
         type: "error",
@@ -48,7 +63,7 @@ export default function UserProvider({
         message: "유저 주소를 조회하는데 실패했습니다. 새로고침 해주세요.",
       });
     }
-  }, [memberAddressResult, setAddresses, toast]);
+  }, [memberAddressResult, setAddresses, setCurrentAddressId, toast]);
 
-  return children;
+  return isFirstUser ? <Navigate to={ROUTE_PATH.register} /> : <Outlet />;
 }

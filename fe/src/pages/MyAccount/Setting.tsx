@@ -1,32 +1,36 @@
 import UserAccount from "@components/UserAccount";
 import Button from "@components/common/Buttons/Button";
-import { ROUTE_PATH } from "@router/constants";
 import { Main } from "@styles/common";
-import { postLogout } from "api";
+import { useMutation } from "@tanstack/react-query";
+import { postLogout } from "api/user";
 import { useNavigate } from "react-router-dom";
-import { useAddressList, useMember } from "store";
+import { useSetIsLogin, useSetMember } from "store";
 
 export default function Setting() {
   const navigate = useNavigate();
-  const refreshToken = localStorage.getItem("refreshToken");
+  const setMember = useSetMember();
+  const setIsLogin = useSetIsLogin();
 
-  const [, setMember] = useMember();
-  const [, setAddresses] = useAddressList();
+  // TODO: 개선 필요
+  const { mutate: mutateLogout } = useMutation(postLogout, {
+    onSuccess: () => {
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("refreshToken");
 
-  const onLogout = () => {
-    refreshToken && postLogout({ refreshToken });
+      // 로그아웃 시 세션 스토리지에 저장된 currentAddressId를 로컬 스토리지에 저장
+      const currentAddressId = sessionStorage.getItem("currentAddressId");
+      localStorage.setItem("currentAddressId", currentAddressId || "");
 
-    localStorage.removeItem("accessToken");
-    localStorage.removeItem("refreshToken");
-
-    setMember({
-      nickname: "",
-      profileImgUrl: "",
-    });
-    setAddresses([]);
-
-    navigate(ROUTE_PATH.account);
-  };
+      setIsLogin(false);
+      setMember({
+        id: -1,
+        nickname: "",
+        profileImgUrl: "",
+      });
+      // TODO: 로그아웃 시 전역 상태 초기화 필요 (현재 임시로 새로고침 되도록 설정)
+      navigate(0);
+    },
+  });
 
   return (
     <Main>
@@ -38,7 +42,7 @@ export default function Setting() {
         fontName="availableStrong16"
         color="accentText"
         radius={8}
-        onClick={onLogout}
+        onClick={() => mutateLogout()}
       />
     </Main>
   );

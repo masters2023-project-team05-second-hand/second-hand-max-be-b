@@ -71,12 +71,6 @@ export default createGlobalStyle`
     text-decoration: none;
   }
 
-  html {
-    box-sizing: border-box;
-    background: url("../../src/assets/image/gaji.png") repeat center;
-    background-size: 200px;
-  }
-
   * {
     font-family: 'Noto Sans KR', sans-serif;
     &::before,

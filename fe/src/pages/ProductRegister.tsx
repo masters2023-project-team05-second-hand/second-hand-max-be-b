@@ -1,6 +1,6 @@
-import { patchProduct, postProduct } from "@api/index";
-import { useProductDetailQuery } from "@api/queries";
-import { AddressInfo, CategoryInfo } from "@api/type";
+import { patchProduct, postProduct } from "@api/product/index";
+import { useProductDetailQuery } from "@api/product/queries";
+import { AddressInfo } from "@api/type";
 import ProductRegisterAddress from "@components/ProductRegister/ProductRegisterAddress";
 import ProductRegisterCategory from "@components/ProductRegister/ProductRegisterCategory";
 import ProductRegisterContent from "@components/ProductRegister/ProductRegisterContent";
@@ -9,13 +9,15 @@ import ProductRegisterImage from "@components/ProductRegister/ProductRegisterIma
 import ProductRegisterPrice from "@components/ProductRegister/ProductRegisterPrice";
 import ProductRegisterTitle from "@components/ProductRegister/ProductRegisterTitle";
 import {
-  DEFAULT_CATEGORY,
+  DEFAULT_CATEGORY_ID,
   DEFAULT_SELECTED_ADDRESS_INDEX,
 } from "@components/ProductRegister/constants";
 import { ProductInfo } from "@components/ProductRegister/type";
 import { Error, Loading } from "@components/common/Guide";
+import { useToast } from "@hooks/useToast";
+import { ROUTE_PATH } from "@router/constants";
 import { Page } from "@styles/common";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAddressListValue, useCurrentAddressIdValue } from "store";
@@ -23,12 +25,14 @@ import { styled } from "styled-components";
 
 export default function ProductRegister() {
   const navigate = useNavigate();
+  const { toast } = useToast();
   const { productId } = useParams();
   const addressList = useAddressListValue();
   const currentAddressId = useCurrentAddressIdValue();
   const [selectedAddressId, setSelectedAddressId] = useState<number | null>(
     currentAddressId
   );
+  const queryClient = useQueryClient();
 
   // Todo: 상태 분리하기 & 상태 관리 라이브러리 쓰기
   const [productInfo, setProductInfo] = useState<ProductInfo>({
@@ -36,7 +40,7 @@ export default function ProductRegister() {
     newImages: [],
     deletedImageIds: [],
     title: "",
-    category: DEFAULT_CATEGORY,
+    categoryId: DEFAULT_CATEGORY_ID,
     price: "",
     content: "",
     address:
@@ -45,7 +49,7 @@ export default function ProductRegister() {
   });
 
   const { data, isSuccess, isLoading, isError } = useProductDetailQuery(
-    Number(productId),
+    productId!,
     !!productId
   );
 
@@ -57,14 +61,16 @@ export default function ProductRegister() {
       setProductInfo((prev) => {
         return {
           ...prev,
-          images: data.data.images,
-          title: data.data.product.title,
-          category: data.data.product.category,
-          price: data.data.product.price.toString(),
-          content: data.data.product.contents,
-          address: data.data.product.address,
+          images: data.images,
+          title: data.product.title,
+          categoryId: data.product.category.id,
+          price: data.product.price?.toString() ?? "",
+          content: data.product.contents,
+          address: data.product.address,
         };
       });
+
+      setSelectedAddressId(data.product.address.id);
     }
   }, [isSuccess, data]);
 
@@ -79,13 +85,18 @@ export default function ProductRegister() {
 
     formData.append("title", productInfo.title);
     formData.append("content", productInfo.content);
-    formData.append("categoryId", productInfo.category.id.toString());
-    formData.append("addressId", productInfo.address.id.toString());
+    formData.append("categoryId", JSON.stringify(productInfo.categoryId));
+    formData.append("addressId", JSON.stringify(productInfo.address.id));
     formData.append("price", price);
 
     newProductMutation.mutate(formData, {
       onSuccess: (res) => {
-        navigate(`/product-detail/${res.data.productId}`);
+        navigate(`${ROUTE_PATH.detail}/${res.data.productId}`, {
+          state: { prevRoute: ROUTE_PATH.home },
+        });
+        queryClient.invalidateQueries({
+          queryKey: ["getProductDetail", productId],
+        });
       },
       onError: () => {
         return (
@@ -109,21 +120,26 @@ export default function ProductRegister() {
       formData.append("newImages", image.image);
     });
 
-    formData.append(
-      "deletedImageIds",
-      productInfo.deletedImageIds?.toString() ?? ""
-    );
+    if (productInfo.deletedImageIds?.length) {
+      formData.append("deletedImageIds", productInfo.deletedImageIds?.join());
+    }
+
     formData.append("title", productInfo.title);
     formData.append("content", productInfo.content);
-    formData.append("categoryId", productInfo.category.id.toString());
-    formData.append("addressId", productInfo.address.id.toString());
+    formData.append("categoryId", JSON.stringify(productInfo.categoryId));
+    formData.append("addressId", JSON.stringify(productInfo.address.id));
     formData.append("price", price);
 
     editProductMutation.mutate(
-      { productId: Number(productId), productInfo: formData },
+      { productId: productId, productInfo: formData },
       {
         onSuccess: () => {
-          navigate(`/product-detail/${productId}`);
+          navigate(`${ROUTE_PATH.detail}/${productId}`, {
+            state: { prevRoute: ROUTE_PATH.home },
+          });
+          queryClient.invalidateQueries({
+            queryKey: ["getProductDetail", productId],
+          });
         },
         onError: () => {
           return (
@@ -175,6 +191,16 @@ export default function ProductRegister() {
   const onRemoveImage = (id: number) => {
     const isNewImage = productInfo.newImages?.find((image) => image.id === id);
 
+    if (productInfo.newImages?.length === 1) {
+      toast({
+        type: "error",
+        title: "사진 삭제 실패",
+        message: "사진은 한 개 이상 필요합니다.",
+      });
+
+      return;
+    }
+
     if (!isNewImage) {
       setProductInfo((prev) => {
         return {
@@ -201,18 +227,11 @@ export default function ProductRegister() {
     }));
   };
 
-  const onChangeCategory = (
-    id: number,
-    categories: Pick<CategoryInfo, "id" | "name">[]
-  ) => {
-    const selectedCategory = categories.find((category) => category.id === id);
-
-    if (selectedCategory) {
-      setProductInfo((prev) => ({
-        ...prev,
-        category: selectedCategory,
-      }));
-    }
+  const onChangeCategory = (categoryId: number) => {
+    setProductInfo((prev) => ({
+      ...prev,
+      categoryId,
+    }));
   };
 
   const onChangePrice = (price: string) => {
@@ -278,7 +297,7 @@ export default function ProductRegister() {
               />
               {productInfo.title && (
                 <ProductRegisterCategory
-                  category={productInfo.category}
+                  categoryId={productInfo.categoryId}
                   onChange={onChangeCategory}
                 />
               )}
@@ -293,13 +312,11 @@ export default function ProductRegister() {
               onChange={onChangeContent}
             />
           </Main>
-          {selectedAddressId && (
-            <ProductRegisterAddress
-              selectedAddressId={selectedAddressId}
-              address={productInfo.address}
-              onChange={onChangeAddress}
-            />
-          )}
+          <ProductRegisterAddress
+            selectedAddressId={selectedAddressId}
+            address={productInfo.address}
+            onChange={onChangeAddress}
+          />
         </>
       )}
     </Page>

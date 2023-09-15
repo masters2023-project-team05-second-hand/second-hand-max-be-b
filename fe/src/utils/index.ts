@@ -14,6 +14,6 @@ export const getFormattedPrice = (inputValue: string) => {
 
     return krw;
   } else {
-    return "";
+    return ""; // Notice: inputValue의 length가 0일 경우 NaN 방지
   }
 };

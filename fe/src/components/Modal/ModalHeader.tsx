@@ -24,7 +24,7 @@ export default function ModalHeader({
 }
 
 const StyledModalHeader = styled.header`
-  height: 5%;
+  height: 32px;
   display: flex;
   justify-content: space-between;
   align-items: center;

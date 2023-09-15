@@ -4,7 +4,7 @@ import { ListItem, ListPanel } from "../Modal.style";
 type CategoryModalContentProps = {
   categories: CategoryInfo[];
   selectedId: number;
-  onClickCategory: (id: number, categories: CategoryInfo[]) => void;
+  onClickCategory: (id: number) => void;
 };
 
 type CategoryListItemProps = {
@@ -26,7 +26,7 @@ export default function CategoryModalContent({
           category={category}
           isSelected={category.id === selectedId}
           onClick={() => {
-            onClickCategory(category.id, categories);
+            onClickCategory(category.id);
           }}
         />
       ))}

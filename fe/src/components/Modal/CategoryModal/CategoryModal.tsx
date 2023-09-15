@@ -1,14 +1,11 @@
+import { CategoryInfo } from "@api/type";
+import useOutsideClick from "@hooks/useOutsideClick";
 import Modal from "../Modal";
 import CategoryModalContent from "./CategoryModalContent";
-import useOutsideClick from "@hooks/useOutsideClick";
-import { CategoryInfo } from "@api/type";
 
 type CategoryModalProps = {
   selectedId: number;
-  onSelectCategory: (
-    id: number,
-    categories: Pick<CategoryInfo, "id" | "name">[]
-  ) => void;
+  onSelectCategory: (id: number) => void;
   closeHandler: () => void;
   categories: CategoryInfo[];
 };
@@ -21,18 +18,15 @@ export default function CategoryModal({
 }: CategoryModalProps) {
   const { ref: categoryRef } = useOutsideClick<HTMLDivElement>(closeHandler);
 
-  const onClickCategory = (
-    id: number,
-    categories: Pick<CategoryInfo, "id" | "name">[]
-  ) => {
-    onSelectCategory(id, categories);
+  const onClickCategory = (id: number) => {
+    onSelectCategory(id);
     closeHandler();
   };
 
   return (
     <Modal
       ref={categoryRef}
-      headerProps={{
+      header={{
         title: "카테고리",
         closeHandler,
       }}

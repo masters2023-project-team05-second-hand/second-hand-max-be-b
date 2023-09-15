@@ -2,6 +2,7 @@ import React from "react";
 import { styled } from "styled-components";
 import { PLACE_HOLDER } from "./constants";
 import { AddressInfo } from "@api/type";
+import useAutoHeight from "@hooks/useAutoHeight";
 
 export default function ProductRegisterContent({
   content,
@@ -12,25 +13,17 @@ export default function ProductRegisterContent({
   address?: AddressInfo;
   onChange: (content: string) => void;
 }) {
-  const textAreaRef = React.useRef<HTMLTextAreaElement>(null);
-
-  const onContentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    onChange(e.target.value);
-
-    if (textAreaRef.current) {
-      textAreaRef.current.style.height = "auto";
-      textAreaRef.current.style.height = `${textAreaRef.current.scrollHeight}px`;
-    }
-  };
+  const { ref: textAreaRef, onChange: onContentChange } =
+    useAutoHeight<HTMLTextAreaElement>(onChange);
 
   return (
     <Content
-      placeholder={PLACE_HOLDER.CONTENT(
-        address?.name ?? PLACE_HOLDER.DEFAULT_PLACE
+      placeholder={PLACE_HOLDER.content(
+        address?.name ?? PLACE_HOLDER.defaultPlace
       )}
       value={content}
       onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
-        onContentChange(e)
+        onContentChange(e.target.value)
       }
       ref={textAreaRef}
     />

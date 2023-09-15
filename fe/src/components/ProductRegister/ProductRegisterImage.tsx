@@ -106,12 +106,4 @@ const ImageList = styled.ul`
   &::-webkit-scrollbar {
     display: none;
   }
-
-  &:hover {
-    cursor: grab;
-  }
-
-  &:active {
-    cursor: grabbing;
-  }
 `;

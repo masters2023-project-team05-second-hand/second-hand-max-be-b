@@ -5,7 +5,7 @@ import {
   KakaoButton,
 } from "@components/common/Buttons/SocialButtons";
 import { Main } from "@styles/common";
-import { GITHUB_LOGIN_URL, KAKAO_LOGIN_URL } from "api/constants";
+import { GITHUB_LOGIN_URL, KAKAO_LOGIN_URL } from "api/user/constants";
 import styled from "styled-components";
 
 export default function Login() {

@@ -1,7 +1,7 @@
+import { patchUserProfile } from "@api/user";
 import { ReactComponent as CameraIcon } from "@assets/icon/camera.svg";
 import { useToast } from "@hooks/useToast";
 import { useMutation } from "@tanstack/react-query";
-import { postUserProfile } from "api";
 import { useMember } from "store";
 import styled from "styled-components";
 
@@ -9,15 +9,15 @@ export default function ProfileUploadButton() {
   const [member, setMember] = useMember();
   const { toast } = useToast();
 
-  const userProfileMutation = useMutation(postUserProfile);
+  const { mutate: mutateUserProfile } = useMutation(patchUserProfile);
 
   const onChangeProfileImage = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
 
     if (file) {
-      userProfileMutation.mutate(file, {
+      mutateUserProfile(file, {
         onSuccess: ({ data }) => {
-          const newProfileImageUrl = data.profileImgUrl;
+          const newProfileImageUrl = data.updatedImgUrl;
           setMember({
             ...member,
             profileImgUrl: newProfileImageUrl,

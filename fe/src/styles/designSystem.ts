@@ -100,7 +100,7 @@ export const designSystem = {
     accentTextWeak:
       "invert(0%) sepia(90%) saturate(7500%) hue-rotate(167deg) brightness(83%) contrast(109%)",
     accentPrimary:
-      "invert(38%) sepia(22%) saturate(3963%) hue-rotate(220deg) brightness(85%) contrast(97%)",
+      "invert(85%) sepia(43%) saturate(5784%) hue-rotate(215deg) brightness(93%) contrast(83%)",
     accentSecondary:
       "invert(87%) sepia(23%) saturate(4965%) hue-rotate(359deg) brightness(101%) contrast(104%)",
 

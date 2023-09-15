@@ -1,33 +1,47 @@
+import { useCategoryQuery } from "@api/product/queries";
 import { CategoryInfo } from "@api/type";
 import { ReactComponent as ChevronRightIcon } from "@assets/icon/chevron-right.svg";
+import CategoryModal from "@components/Modal/CategoryModal/CategoryModal";
 import Button from "@components/common/Buttons/Button";
+import { TabButtons } from "@components/common/TabButtons";
 import { useEffect, useState } from "react";
 import { styled } from "styled-components";
-import CategoryModal from "@components/Modal/CategoryModal/CategoryModal";
-import { useCategoryQuery } from "@api/queries";
-import { Error, Loading } from "@components/common/Guide";
+import { RANDOM_CATEGORY_COUNT } from "./constants";
+import { useToast } from "@hooks/useToast";
 
 export default function ProductRegisterCategory({
-  category,
+  categoryId,
   onChange,
 }: {
-  category: Pick<CategoryInfo, "id" | "name">;
-  onChange: (
-    id: number,
-    categories: Pick<CategoryInfo, "id" | "name">[]
-  ) => void;
+  categoryId: number;
+  onChange: (categoryId: number) => void;
 }) {
+  const { toast } = useToast();
   const [randomCategories, setRandomCategories] = useState<CategoryInfo[]>([]);
   const [isOpen, setIsOpen] = useState(false);
-  const { data, isSuccess, isError, isLoading } = useCategoryQuery();
+  const { data, isSuccess, isError } = useCategoryQuery();
+
+  useEffect(() => {
+    if (isError) {
+      toast({
+        type: "error",
+        title: "카테고리 목록 조회 실패",
+        message: "카테고리 목록 조회에 실패했습니다.",
+      });
+    }
+  }, [isError, toast]);
 
   useEffect(() => {
     if (data && isSuccess) {
-      const randomCategories = getRandomCategories(category.id, data);
+      const selectedCategory = data.find(
+        (category) => category.id === categoryId
+      );
+      const randomCategories = getRandomCategories(categoryId, data);
 
-      setRandomCategories(randomCategories);
+      selectedCategory &&
+        setRandomCategories([selectedCategory, ...randomCategories]);
     }
-  }, [category.id, isSuccess, data]);
+  }, [categoryId, isSuccess, data]);
 
   const toggleCategoryModal = () => {
     setIsOpen(!isOpen);
@@ -35,48 +49,26 @@ export default function ProductRegisterCategory({
 
   return (
     <Category>
-      {isLoading ? (
-        <Loading
-          messages={[
-            "카테고리 목록을 불러오는 중입니다.",
-            "새로고침을 하지 마세요!",
-          ]}
+      {randomCategories.length && (
+        <TabButtons
+          className="tab"
+          activeTabId={categoryId}
+          tabList={randomCategories}
+          onTabClick={onChange}
         />
-      ) : isError ? (
-        <Error
-          messages={[
-            "카테고리 목록을 불러오는데 실패했어요.",
-            "잠시 후 다시 시도해주세요.",
-          ]}
+      )}
+      <Button
+        size={{ width: 24, height: 24 }}
+        leftIcon={<ChevronRightIcon />}
+        onClick={toggleCategoryModal}
+      />
+      {isSuccess && isOpen && (
+        <CategoryModal
+          selectedId={categoryId}
+          onSelectCategory={onChange}
+          closeHandler={toggleCategoryModal}
+          categories={data}
         />
-      ) : (
-        <>
-          <CategoryList>
-            <SelectedCategory>{category.name}</SelectedCategory>
-            <ul>
-              {randomCategories.map((category) => (
-                <RandomCategory
-                  key={category.id}
-                  onClick={() => onChange(category.id, randomCategories)}>
-                  {category.name}
-                </RandomCategory>
-              ))}
-            </ul>
-          </CategoryList>
-          <Button
-            size={{ width: 24, height: 24 }}
-            leftIcon={<ChevronRightIcon />}
-            onClick={toggleCategoryModal}
-          />
-          {isOpen && (
-            <CategoryModal
-              selectedId={category.id}
-              onSelectCategory={onChange}
-              closeHandler={toggleCategoryModal}
-              categories={data}
-            />
-          )}
-        </>
       )}
     </Category>
   );
@@ -86,16 +78,14 @@ function getRandomCategories(
   id: number,
   categories: CategoryInfo[]
 ): CategoryInfo[] {
-  const shuffledCategories = categories.sort(() => Math.random() - 0.5);
-  const slicedCategories = shuffledCategories.slice(0, 2);
-
-  const isContainSelectedCategory = slicedCategories.some(
-    (randomCategory) => randomCategory.id === id
+  const withOutSelectedCategory = categories.filter(
+    (category) => category.id !== id
   );
 
-  if (isContainSelectedCategory) {
-    return getRandomCategories(id, categories);
-  }
+  const shuffledCategories = withOutSelectedCategory.sort(
+    () => Math.random() - 0.5
+  );
+  const slicedCategories = shuffledCategories.slice(0, RANDOM_CATEGORY_COUNT);
 
   return slicedCategories;
 }
@@ -104,31 +94,8 @@ const Category = styled.div`
   display: flex;
   justify-content: space-between;
   height: 32px;
-`;
 
-const CategoryList = styled.div`
-  display: flex;
-  gap: 4px;
-
-  ul {
-    display: flex;
-    gap: 4px;
+  .tab {
+    margin: 0;
   }
-`;
-
-const SelectedCategory = styled.button`
-  padding: 0 16px;
-  border-radius: ${({ theme: { radius } }) => radius[50]};
-  color: ${({ theme: { color } }) => color.accentText};
-  background-color: ${({ theme: { color } }) => color.accentPrimary};
-  font: ${({ theme: { font } }) => font.displayDefault12};
-`;
-
-const RandomCategory = styled.button`
-  padding: 0 16px;
-  border-radius: ${({ theme: { radius } }) => radius[50]};
-  color: ${({ theme: { color } }) => color.accentTextWeak};
-  background-color: ${({ theme: { color } }) => color.accentText};
-  font: ${({ theme: { font } }) => font.displayDefault12};
-  border: ${({ theme: { color } }) => `1px solid ${color.neutralBorder}`};
 `;

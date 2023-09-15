@@ -54,7 +54,7 @@ const NAVIGATION = [
 ];
 
 const StyledNavigationBar = styled.ul`
-  width: ${WIDTH.app}px;
+  width: ${WIDTH.page}px;
   position: fixed;
   bottom: 0;
   display: flex;
@@ -63,6 +63,7 @@ const StyledNavigationBar = styled.ul`
   align-items: center;
   border-top: 0.8px solid ${({ theme: { color } }) => color.neutralBorder};
   background-color: ${({ theme: { color } }) => color.neutralBackground};
+  box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.2);
 
   .active {
     color: ${({ theme: { color } }) => color.neutralTextStrong};

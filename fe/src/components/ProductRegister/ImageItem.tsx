@@ -28,6 +28,22 @@ export default function ImageItem({ image, onRemoveImage }: ImageItemProps) {
 const StyledImageItem = styled.li`
   position: relative;
 
+  &::before {
+    content: "";
+    position: absolute;
+    left: 30%;
+    width: 100%;
+    height: 100%;
+  }
+
+  &:hover {
+    cursor: grab;
+  }
+
+  &:active {
+    cursor: grabbing;
+  }
+
   .delete {
     position: absolute;
     top: -10px;

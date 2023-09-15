@@ -11,7 +11,7 @@ export const ROUTE_PATH = {
   },
   register: "/register",
   new: "/product-new",
-  edit: "/product-edit/:productId",
+  edit: "/product-edit",
   category: "/category",
-  detail: "/product-detail/:productId",
+  detail: "/product-detail",
 };

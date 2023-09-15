@@ -1,11 +1,11 @@
 import { useState } from "react";
-import { useMember } from "store";
+import { useMemberValue } from "store";
 import styled from "styled-components";
 import { NameEditor } from "./NameEditor";
 import ProfileUploadButton from "./ProfileUploadButton";
 
 export default function UserAccount() {
-  const [member] = useMember();
+  const member = useMemberValue();
   const [status, setStatus] = useState<"viewer" | "editor">("viewer");
   const isEditing = status === "editor";
 

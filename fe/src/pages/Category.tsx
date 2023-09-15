@@ -1,4 +1,4 @@
-import { useCategoryQuery } from "@api/queries";
+import { useCategoryQuery } from "@api/product/queries";
 import { ReactComponent as ChevronLeftIcon } from "@assets/icon/chevron-left.svg";
 import CategoryList from "@components/Category";
 import TopBar from "@components/TopBar";

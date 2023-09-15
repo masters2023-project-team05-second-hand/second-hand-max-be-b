@@ -4,17 +4,21 @@ import Alert from "@components/common/Alert/Alert";
 import Button from "@components/common/Buttons/Button";
 import { AddressInfo } from "api/type";
 import { useState } from "react";
-import { useAddressList, useCurrentAddressId } from "store";
 import styled from "styled-components";
 
 export default function AddressIndicatorList({
+  currentAddresses,
+  currentSelectedAddressId,
+  changeCurrentAddresses,
+  changeCurrentAddressId,
   openAddressSearch,
 }: {
+  currentAddresses: AddressInfo[];
+  currentSelectedAddressId: number;
+  changeCurrentAddresses: (newAddresses: AddressInfo[]) => void;
+  changeCurrentAddressId: (newAddressId: number) => void;
   openAddressSearch: () => void;
 }) {
-  const [addresses, setAddresses] = useAddressList();
-  const [currentAddressId, setCurrentAddressId] = useCurrentAddressId();
-
   const [isRemoveAlertOpen, setIsRemoveAlertOpen] = useState(false);
   const [removeTargetAddress, setRemoveTargetAddress] =
     useState<AddressInfo | null>(null);
@@ -22,7 +26,7 @@ export default function AddressIndicatorList({
   const openRemoveAlert = () => setIsRemoveAlertOpen(true);
   const closeRemoveAlert = () => setIsRemoveAlertOpen(false);
 
-  const isOnlyOneAddress = addresses.length === 1;
+  const isOnlyOneAddress = currentAddresses.length === 1;
   const alertMessage = isOnlyOneAddress
     ? "동네는 최소 1개 이상 선택해야 해요. 동네를 다시 선택하시겠어요?"
     : `${removeTargetAddress?.name}을 삭제하시겠어요?`;
@@ -33,11 +37,11 @@ export default function AddressIndicatorList({
   };
 
   const onRemoveAddress = () => {
-    const newAddresses = addresses.filter(
+    const newAddresses = currentAddresses.filter(
       ({ id }) => id !== removeTargetAddress?.id
     );
-    setAddresses(newAddresses);
-    setCurrentAddressId(newAddresses[0].id);
+    changeCurrentAddresses(newAddresses);
+    changeCurrentAddressId(newAddresses[0].id);
   };
 
   return (
@@ -47,11 +51,11 @@ export default function AddressIndicatorList({
         <span>최대 2개까지 설정 가능해요.</span>
       </NoticeText>
       <div className="button-wrapper">
-        {addresses.map(({ id, name }) => (
+        {currentAddresses.map(({ id, name }) => (
           <AddressIndicator
             key={id}
-            $active={id === currentAddressId}
-            onClick={() => setCurrentAddressId(id)}>
+            $active={id === currentSelectedAddressId}
+            onClick={() => changeCurrentAddressId(id)}>
             <span>{name}</span>
             <Button
               leftIcon={<CircleXIcon />}
@@ -97,6 +101,7 @@ const StyledAddressIndicatorList = styled.div`
   flex-direction: column;
   align-items: center;
   gap: 2rem;
+  height: 600px;
 
   .button-wrapper {
     display: flex;

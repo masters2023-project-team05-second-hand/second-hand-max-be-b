@@ -1,7 +1,7 @@
 import { MutableRefObject, useEffect, useRef, useState } from "react";
 
 type ScrollReturnType = {
-  scrollY: number | undefined;
+  scrollY: number;
   ref: MutableRefObject<HTMLDivElement | null>;
 };
 
@@ -19,7 +19,7 @@ export default function useScroll(): ScrollReturnType {
     };
 
     watchScroll();
-  });
+  }, []);
 
   return {
     scrollY,

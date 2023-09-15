@@ -1,29 +1,32 @@
-import { useAddressesInfiniteQuery } from "@api/queries";
+import { useAddressesInfiniteQuery } from "@api/product/queries";
 import { ListItem, ListPanel } from "@components/Modal/Modal.style";
 import { Error, Loading } from "@components/common/Guide";
 import { useIntersect } from "@hooks/useIntersect";
+import { Target } from "@styles/common";
 import { AddressInfo } from "api/type";
-import { useAddressList, useSetCurrentAddressId } from "store";
 import styled from "styled-components";
 
 export default function AddressSearch({
-  userAddressIDs,
+  currentAddressIDs,
+  currentAddresses,
   closeAddressSearch,
+  changeCurrentAddresses,
+  changeCurrentAddressId,
 }: {
-  userAddressIDs: number[];
+  currentAddressIDs: number[];
+  currentAddresses: AddressInfo[];
   closeAddressSearch: () => void;
+  changeCurrentAddresses: (newAddresses: AddressInfo[]) => void;
+  changeCurrentAddressId: (newAddressId: number) => void;
 }) {
-  const [addresses, setAddresses] = useAddressList();
-  const setCurrentAddressId = useSetCurrentAddressId();
-
   const onAddAddress = (item: AddressInfo) => {
-    const isMaxAddressCount = addresses.length === 2;
-    const isAlreadyAdded = addresses.some(({ id }) => id === item.id);
+    const isMaxAddressCount = currentAddressIDs.length === 2;
+    const isAlreadyAdded = currentAddressIDs.some((id) => id === item.id);
 
     if (isAlreadyAdded || isMaxAddressCount) return;
 
-    setAddresses([...addresses, item]);
-    setCurrentAddressId(item.id);
+    changeCurrentAddresses([...currentAddresses, item]);
+    changeCurrentAddressId(item.id);
   };
 
   const { data, status, isFetching, hasNextPage, fetchNextPage } =
@@ -51,7 +54,7 @@ export default function AddressSearch({
             addresses.map(({ id, name }) => (
               <ListItem
                 key={id}
-                $active={userAddressIDs.includes(id)}
+                $active={currentAddressIDs.includes(id)}
                 onClick={() => {
                   onAddAddress({ id, name });
                   closeAddressSearch();
@@ -78,8 +81,4 @@ const SearchBar = styled.input`
     font: ${({ theme: { font } }) => font.availableDefault16};
     color: ${({ theme: { color } }) => color.neutralTextWeak};
   }
-`;
-
-const Target = styled.div`
-  height: 1px;
 `;

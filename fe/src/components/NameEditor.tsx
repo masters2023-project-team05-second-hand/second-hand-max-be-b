@@ -1,4 +1,4 @@
-import { patchNickname } from "@api/index";
+import { patchNickname } from "@api/user";
 import useOutsideClick from "@hooks/useOutsideClick";
 import { useToast } from "@hooks/useToast";
 import { useMutation } from "@tanstack/react-query";
@@ -14,33 +14,41 @@ export const NameEditor = ({
   const [member, setMember] = useMember();
   const [newNickname, setNewNickname] = useState(member?.nickname);
 
-  const userNicknameMutation = useMutation(patchNickname);
+  const { mutate: mutateUserNickname } = useMutation(patchNickname);
   const { toast } = useToast();
 
   const editNickname = () => {
     const isEditedNickname = newNickname !== member?.nickname;
     const isNicknameEmpty = newNickname === "";
 
-    if (isEditedNickname && !isNicknameEmpty) {
-      userNicknameMutation.mutate(newNickname, {
-        onSuccess: () => {
-          setMember({
-            ...member,
-            nickname: newNickname,
-          });
-          onOutsideClick();
-        },
-        onError: () =>
-          toast({
-            type: "error",
-            title: "닉네임 변경 실패",
-            message: "닉네임 변경에 실패했습니다. 잠시 후 다시 시도해주세요.",
-          }),
-      });
+    if (!isEditedNickname || isNicknameEmpty) {
+      onOutsideClick();
       return;
     }
 
-    onOutsideClick();
+    mutateUserNickname(newNickname, {
+      onSuccess: () => {
+        setMember({
+          ...member,
+          nickname: newNickname,
+        });
+        toast({
+          type: "success",
+          title: "닉네임 변경 성공",
+          message: "닉네임이 변경되었습니다.",
+        });
+      },
+      onError: () => {
+        toast({
+          type: "error",
+          title: "닉네임 변경 실패",
+          message: "닉네임 변경에 실패했습니다. 잠시 후 다시 시도해주세요.",
+        });
+      },
+      onSettled: () => {
+        onOutsideClick();
+      },
+    });
   };
 
   const { ref: nameRef } = useOutsideClick<HTMLInputElement>(editNickname);

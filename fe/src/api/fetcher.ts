@@ -1,6 +1,7 @@
-import { postRefreshToken } from "api";
+import { postRefreshToken } from "api/user";
 import axios, { AxiosError } from "axios";
-import { API_PATH, BASE_API_URL } from "./constants";
+import { BASE_API_URL, ERROR_CODE } from "./constants";
+import { USER_API_PATH } from "./user/constants";
 
 export const fetcher = axios.create({
   baseURL: BASE_API_URL,
@@ -24,15 +25,17 @@ fetcher.interceptors.request.use(
 fetcher.interceptors.response.use(
   (response) => response,
   (error: AxiosError) => {
-    if (error.response?.status !== 401) {
+    if (error.response?.status !== ERROR_CODE.UNAUTHORIZED) {
       return Promise.reject(error);
     }
+
     try {
       const originalRequest = error.config;
 
-      if (originalRequest && originalRequest.url !== API_PATH.refresh) {
+      if (originalRequest && originalRequest.url !== USER_API_PATH.refresh) {
         return refreshAccessToken().then(() => fetcher(originalRequest));
       }
+
       return Promise.reject();
     } catch {
       console.error("error", "네트워크 오류가 발생했습니다.");

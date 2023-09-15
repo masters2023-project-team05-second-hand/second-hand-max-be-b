@@ -1,4 +1,4 @@
-import { AddressInfo, CategoryInfo } from "@api/type";
+import { AddressInfo } from "@api/type";
 
 export type ProductAddress = {
   id: number;
@@ -25,7 +25,7 @@ export type ProductInfo = {
   newImages?: ProductNewImage[];
   deletedImageIds?: number[];
   title: string;
-  category: Pick<CategoryInfo, "id" | "name">;
+  categoryId: number;
   price: string;
   content: string;
   address: AddressInfo;

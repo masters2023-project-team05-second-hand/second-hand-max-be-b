@@ -1,12 +1,12 @@
 import NavigationBar from "@components/NavigationBar";
 import TopBar from "@components/TopBar";
 import { Page } from "@styles/common";
-import { useMember } from "store";
+import { useIsLoginValue } from "store";
 import Login from "./Login";
 import Setting from "./Setting";
 
 export default function MyAccount() {
-  const [member] = useMember();
+  const isLogin = useIsLoginValue();
 
   return (
     <Page>
@@ -15,8 +15,8 @@ export default function MyAccount() {
         backgroundColor="neutralBackgroundBlur"
         isWithBorder={true}
       />
-      {member.nickname && <Setting />}
-      {!member.nickname && <Login />}
+      {isLogin && <Setting />}
+      {!isLogin && <Login />}
       <NavigationBar />
     </Page>
   );

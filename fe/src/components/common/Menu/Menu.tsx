@@ -1,51 +1,59 @@
 import useOutsideClick from "@hooks/useOutsideClick";
 import { styled } from "styled-components";
 import MenuItem from "./MenuItem";
-import { MenuItemInfo } from "./type";
-
-type MenuProps = {
-  itemList: MenuItemInfo[];
-  withShadow?: boolean;
-  positionX?: "left" | "right";
-  positionY?: "top" | "bottom";
-  closeMenuHandler: () => void;
-};
+import { MenuProps } from "./type";
+import { createPortal } from "react-dom";
+import { Dim } from "@styles/common";
+import { useId } from "react";
 
 export default function Menu({
   itemList,
   withShadow,
-  positionX,
-  positionY,
+  position,
   closeMenuHandler,
-}: MenuProps) {
+}: MenuProps & {
+  position: {
+    left?: number | null;
+    right?: number | null;
+    top?: number | null;
+    bottom?: number | null;
+  };
+  closeMenuHandler: () => void;
+}) {
   const { ref: menuRef } = useOutsideClick<HTMLDivElement>(closeMenuHandler);
+  const id = useId();
 
-  return (
-    <StyledMenu
-      $withShadow={withShadow}
-      $positionX={positionX}
-      $positionY={positionY}
-      ref={menuRef}>
-      <ul>
-        {itemList.map((item) => (
-          <MenuItem key={item.id} {...item} />
-        ))}
-      </ul>
-    </StyledMenu>
+  return createPortal(
+    <Dim>
+      <StyledMenu $withShadow={withShadow} $position={position} ref={menuRef}>
+        <ul>
+          {itemList.map((item) => (
+            <MenuItem key={id + item.name} {...item} />
+          ))}
+        </ul>
+      </StyledMenu>
+    </Dim>,
+    document.getElementById("modal-root")!
   );
 }
 
 const StyledMenu = styled.div<{
   $withShadow?: boolean;
-  $positionX?: "left" | "right";
-  $positionY?: "top" | "bottom";
+  $position?: {
+    left?: number | null;
+    right?: number | null;
+    top?: number | null;
+    bottom?: number | null;
+  };
 }>`
-  position: absolute;
+  position: fixed;
   width: 240px;
   overflow: hidden;
   z-index: 2;
-  ${({ $positionX }) => ($positionX === "left" ? `left: 16px` : "right: 16px")};
-  ${({ $positionY }) => ($positionY === "top" ? `top: 56px` : "bottom: 56px")};
+  left: ${({ $position }) => $position && $position.left}px;
+  right: ${({ $position }) => $position && $position.right}px;
+  top: ${({ $position }) => $position && $position.top}px;
+  bottom: ${({ $position }) => $position && $position.bottom}px;
   background-color: ${({ theme: { color } }) => color.neutralBackground};
   border: ${({ theme: { color } }) => `0.8px solid ${color.neutralBorder}`};
   border-radius: 12px;

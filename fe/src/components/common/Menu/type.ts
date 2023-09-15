@@ -1,3 +1,5 @@
+import { HTMLAttributes } from "react";
+
 export type MenuItemInfo = {
   id?: number;
   name: string;
@@ -5,3 +7,10 @@ export type MenuItemInfo = {
   isSelected?: boolean;
   isWarning?: boolean;
 };
+
+export type MenuProps = {
+  itemList: MenuItemInfo[];
+  withShadow?: boolean;
+};
+
+export type MenuIndicatorProps = MenuProps & HTMLAttributes<HTMLDivElement>;

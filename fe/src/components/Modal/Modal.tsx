@@ -6,16 +6,16 @@ import ModalHeader, { ModalHeaderProps } from "./ModalHeader";
 
 type ModalProps = {
   ref: LegacyRef<HTMLDivElement>;
-  headerProps: ModalHeaderProps;
+  header: ModalHeaderProps;
   content: React.ReactNode;
 };
 
 const Modal = React.forwardRef<HTMLDivElement, ModalProps>(
-  ({ headerProps, content }, ref) => {
+  ({ header, content }, ref) => {
     return createPortal(
       <Dim>
         <StyledModal ref={ref}>
-          <ModalHeader {...headerProps} />
+          <ModalHeader {...header} />
           <ModalContent>{content}</ModalContent>
         </StyledModal>
       </Dim>,
@@ -26,23 +26,21 @@ const Modal = React.forwardRef<HTMLDivElement, ModalProps>(
 
 const StyledModal = styled.div`
   position: fixed;
-  top: calc(50% - 350px);
+  top: calc(50% - 300px);
   left: calc(50% - 160px);
   width: 320px;
-  height: 700px;
   background-color: ${({ theme: { color } }) => color.neutralBackground};
   border-radius: ${({ theme: { radius } }) => radius[16]};
   box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
 `;
 
 const ModalContent = styled.main`
-  min-height: 264px;
   max-height: 600px;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding: 0px 24px;
+  padding: 0 1.5rem;
 `;
 
 export default Modal;
