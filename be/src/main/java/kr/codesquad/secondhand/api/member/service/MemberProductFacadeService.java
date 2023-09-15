@@ -70,8 +70,7 @@ public class MemberProductFacadeService {
 
     @Transactional
     public ProductWishStatusResponse checkProductWishedStatus(Long memberId, Long productId) {
-        // Long to String Key값 변환 리팩토링 필요
-        Boolean isWished = statService.isWishedProductExists(memberId.toString() + "::wishes", productId.toString());
+        Boolean isWished = statService.isWishedProductExists(memberId, productId);
         return new ProductWishStatusResponse(isWished);
     }
 }

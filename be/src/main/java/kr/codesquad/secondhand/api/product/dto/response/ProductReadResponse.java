@@ -21,6 +21,7 @@ public class ProductReadResponse {
     private final List<ProductImageResponse> images;
     private final ProductStatsResponse stats;
 
+    @Builder
     private ProductReadResponse(ProductResponse product, List<ProductImageResponse> images,
                                 ProductStatsResponse stats) {
         this.product = product;
@@ -30,16 +31,12 @@ public class ProductReadResponse {
 
     public static ProductReadResponse of(Product product, List<ProductImage> productImages, ProductStats stats,
                                          Category category, Address address) {
-        return new ProductReadResponse(
-                ProductResponse.from(
-                        product,
-                        CategorySummaryResponse.from(category),
-                        AddressResponse.from(address),
-                        SellerResponse.from(product.getSeller())
-                ),
-                ProductImageResponse.from(productImages),
-                ProductStatsResponse.from(stats)
-        );
+        return ProductReadResponse.builder()
+                .product(ProductResponse.from(product, CategorySummaryResponse.from(category),
+                        AddressResponse.from(address), SellerResponse.from(product.getSeller())))
+                .images(ProductImageResponse.from(productImages))
+                .stats(ProductStatsResponse.from(stats))
+                .build();
     }
 
     @Getter
