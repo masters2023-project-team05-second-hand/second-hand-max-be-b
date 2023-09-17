@@ -1,11 +1,12 @@
-package kr.codesquad.secondhand.api.product.service;
+package kr.codesquad.secondhand.api.image.service;
 
 import java.net.URL;
 import java.util.List;
 import java.util.stream.Collectors;
+import kr.codesquad.secondhand.api.image.repository.ImageRepository;
+import kr.codesquad.secondhand.api.image.util.ImageUploader;
 import kr.codesquad.secondhand.api.product.domain.Product;
 import kr.codesquad.secondhand.api.product.domain.ProductImage;
-import kr.codesquad.secondhand.api.product.repository.ImageRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;

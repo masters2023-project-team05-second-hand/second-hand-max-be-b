@@ -1,4 +1,4 @@
-package kr.codesquad.secondhand.api.product.config;
+package kr.codesquad.secondhand.api.image.config;
 
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;

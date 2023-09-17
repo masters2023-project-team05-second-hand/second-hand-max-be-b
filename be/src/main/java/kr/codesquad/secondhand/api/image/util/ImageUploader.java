@@ -1,4 +1,4 @@
-package kr.codesquad.secondhand.api.product.service;
+package kr.codesquad.secondhand.api.image.util;
 
 import java.net.URL;
 import org.springframework.web.multipart.MultipartFile;
