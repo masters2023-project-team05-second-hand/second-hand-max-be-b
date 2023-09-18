@@ -61,7 +61,7 @@ public class ProductFacadeService {
 
     @Transactional
     public ProductReadResponse readProduct(Long memberId, Long productId) {
-        statService.increaseViews(memberId, productId);
+        statService.increaseViews(productId, memberId);
         return toProductReadResponse(productId);
     }
 
