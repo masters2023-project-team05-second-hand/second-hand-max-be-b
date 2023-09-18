@@ -19,20 +19,23 @@ public class StatRedisRepository {
     private static final Integer START = 0;
     private static final Integer END = -1;
     private static final String DEFAULT_COUNT = "0";
-    private static final String VIEWS_KEY = "::views";
-    private static final String WISHES_KEY = "::wishes";
+    private static final String VIEWS_FIELD = "::views";
+    private static final String WISHES_FIELD = "::wishes";
+    private static final String VIEWS_KEY = "views::";
+    private static final String WISHES_KEY = "wishes::";
+    private static final String PRODUCT_KEY = "product::";
 
     private final RedisTemplate<String, String> redisTemplate;
 
     public void saveNewProductStats(Long productId) {
-        String productKey = productId.toString();
-        redisTemplate.opsForHash().put(productKey, VIEWS_KEY, DEFAULT_COUNT);
-        redisTemplate.opsForHash().put(productKey, WISHES_KEY, DEFAULT_COUNT);
+        String productKey = generateProductKey(productId);
+        redisTemplate.opsForHash().put(productKey, VIEWS_FIELD, DEFAULT_COUNT);
+        redisTemplate.opsForHash().put(productKey, WISHES_FIELD, DEFAULT_COUNT);
     }
 
     public ProductStats findProductStats(Long productId) {
-        String productKey = productId.toString();
-        List<Object> stats = redisTemplate.opsForHash().multiGet(productKey, List.of(VIEWS_KEY, WISHES_KEY));
+        String productKey = generateProductKey(productId);
+        List<Object> stats = redisTemplate.opsForHash().multiGet(productKey, List.of(VIEWS_FIELD, WISHES_FIELD));
         return ProductStats.from(stats);
     }
 
@@ -45,28 +48,34 @@ public class StatRedisRepository {
     }
 
     public void increaseViews(Long productId) {
-        String productKey = productId.toString();
-        redisTemplate.opsForHash().increment(productKey, VIEWS_KEY, INCREMENT_COUNT);
+        String productKey = generateProductKey(productId);
+        redisTemplate.opsForHash().increment(productKey, VIEWS_FIELD, INCREMENT_COUNT);
     }
 
-    public List<String> findMemberViewedProducts(String memberKey) {
-        String memberViewedKey = memberKey.toString() + VIEWS_KEY;
-        return redisTemplate.opsForList().range(memberViewedKey, START, END);
+    public List<Long> findMemberViewedProducts(String memberKey) {
+        String memberViewedKey = generateMemberViewedProductsKey(memberKey);
+        List<String> result = redisTemplate.opsForList().range(memberViewedKey, START, END);
+        if (result == null) {
+            return new ArrayList<>();
+        }
+        return result.stream()
+                .map(Long::valueOf)
+                .collect(Collectors.toUnmodifiableList());
     }
 
     public void saveMemberViewedProducts(String memberKey, Long productId) {
-        String memberViewedKey = memberKey + VIEWS_KEY;
-        String productKey = productId.toString();
-        redisTemplate.opsForList().rightPush(memberViewedKey, productKey);
+        String memberViewedKey = generateMemberViewedProductsKey(memberKey);
+        String productValue = productId.toString();
+        redisTemplate.opsForList().rightPush(memberViewedKey, productValue);
     }
 
     public void increaseWishes(Long productId) {
-        String productKey = productId.toString();
-        redisTemplate.opsForHash().increment(productKey, WISHES_KEY, INCREMENT_COUNT);
+        String productKey = generateProductKey(productId);
+        redisTemplate.opsForHash().increment(productKey, WISHES_FIELD, INCREMENT_COUNT);
     }
 
     public List<Long> findMemberWishedProducts(Long memberId) {
-        String memberWishedProductsKey = memberId.toString() + WISHES_KEY;
+        String memberWishedProductsKey = generateMemberWishedProductsKey(memberId);
         List<String> result = redisTemplate.opsForList().range(memberWishedProductsKey, START, END);
         if (result == null) {
             return new ArrayList<>();
@@ -77,19 +86,31 @@ public class StatRedisRepository {
     }
 
     public void saveMemberWishedProducts(Long memberId, Long productId) {
-        String memberWishedProductsKey = memberId.toString() + WISHES_KEY;
-        String productKey = productId.toString();
-        redisTemplate.opsForList().rightPush(memberWishedProductsKey, productKey);
+        String memberWishedProductsKey = generateMemberWishedProductsKey(memberId);
+        String productValue = productId.toString();
+        redisTemplate.opsForList().rightPush(memberWishedProductsKey, productValue);
     }
 
     public void deleteMemberWishedProducts(Long memberId, Long productId) {
-        String memberWishedProductsKey = memberId.toString() + WISHES_KEY;
-        String productKey = productId.toString();
-        redisTemplate.opsForList().remove(memberWishedProductsKey, Long.parseLong(DEFAULT_COUNT), productKey);
+        String memberWishedProductsKey = generateMemberWishedProductsKey(memberId);
+        String productValue = productId.toString();
+        redisTemplate.opsForList().remove(memberWishedProductsKey, Long.parseLong(DEFAULT_COUNT), productValue);
     }
 
     public void decreaseWishes(Long productId) {
-        String productKey = productId.toString();
-        redisTemplate.opsForHash().increment(productKey, WISHES_KEY, DECREMENT_COUNT);
+        String productKey = generateProductKey(productId);
+        redisTemplate.opsForHash().increment(productKey, WISHES_FIELD, DECREMENT_COUNT);
+    }
+
+    private String generateProductKey(Long productId) {
+        return PRODUCT_KEY + productId;
+    }
+
+    private String generateMemberViewedProductsKey(String memberId) {
+        return VIEWS_KEY + memberId;
+    }
+
+    private String generateMemberWishedProductsKey(Long memberId) {
+        return WISHES_KEY + memberId.toString();
     }
 }

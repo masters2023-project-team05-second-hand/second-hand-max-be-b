@@ -50,7 +50,7 @@ public class StatService {
     }
 
     private Boolean isViewedProductExists(String memberId, Long productId) {
-        List<String> memberViewedProducts = statRedisRepository.findMemberViewedProducts(memberId);
+        List<Long> memberViewedProducts = statRedisRepository.findMemberViewedProducts(memberId);
         return memberViewedProducts != null && memberViewedProducts.contains(productId);
     }
 
