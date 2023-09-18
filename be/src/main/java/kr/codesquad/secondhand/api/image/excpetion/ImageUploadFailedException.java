@@ -1,4 +1,6 @@
-package kr.codesquad.secondhand.api.product.exception;
+package kr.codesquad.secondhand.api.image.excpetion;
+
+import kr.codesquad.secondhand.api.product.exception.ProductImageException;
 
 public class ImageUploadFailedException extends ProductImageException {
 

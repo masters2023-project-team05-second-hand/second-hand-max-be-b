@@ -1,4 +1,4 @@
-package kr.codesquad.secondhand.api.product.repository;
+package kr.codesquad.secondhand.api.image.repository;
 
 import java.net.URL;
 import java.util.List;
