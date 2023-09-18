@@ -1,10 +1,15 @@
 package kr.codesquad.secondhand.api.product.repository;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 import kr.codesquad.secondhand.api.product.domain.Product;
+import kr.codesquad.secondhand.api.product.domain.ProductStat;
 import kr.codesquad.secondhand.api.product.domain.ProductStats;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -33,10 +38,23 @@ public class StatRedisRepository {
         redisTemplate.opsForHash().put(productKey, WISHES_FIELD, DEFAULT_COUNT);
     }
 
+    //ProductStat 엔티티 추가로 삭제하고 뜯어 고칠지?
     public ProductStats findProductStats(Long productId) {
         String productKey = generateProductKey(productId);
         List<Object> stats = redisTemplate.opsForHash().multiGet(productKey, List.of(VIEWS_FIELD, WISHES_FIELD));
         return ProductStats.from(stats);
+    }
+
+    public ProductStat findProductStat(Long productId) {
+        String productKey = generateProductKey(productId);
+        List<Object> stats = redisTemplate.opsForHash().multiGet(productKey, List.of(VIEWS_FIELD, WISHES_FIELD));
+        Integer viewCount = Integer.parseInt(stats.get(0).toString());
+        Integer wishCount = Integer.parseInt(stats.get(1).toString());
+        return ProductStat.builder()
+                .id(productId)
+                .viewCount(viewCount)
+                .wishCount(wishCount)
+                .build();
     }
 
     public Map<Long, ProductStats> findProductsStats(List<Product> products) {
@@ -45,6 +63,20 @@ public class StatRedisRepository {
                         product -> product.getId(),
                         product -> findProductStats(product.getId()))
                 );
+    }
+
+    //해쉬맵 키 상수 처리 해줄지? 고민 : 지금도 상수가 너무 많다는 생각이 듬
+    public Map<String, Set<Long>> getKeys() {
+        Map<String, Set<Long>> keys = new HashMap<>();
+        keys.put("product", stringCollectionToLongSet(redisTemplate.keys(PRODUCT_KEY)));
+
+        Set<Long> viewsKey = stringCollectionToLongSet(redisTemplate.keys(VIEWS_KEY));
+        Set<Long> wishesKey = stringCollectionToLongSet(redisTemplate.keys(WISHES_KEY));
+        Set<Long> memberStatLogKey = new HashSet<>(viewsKey);
+        memberStatLogKey.addAll(wishesKey);
+
+        keys.put("member", memberStatLogKey);
+        return keys;
     }
 
     public void increaseViews(Long productId) {
@@ -58,9 +90,7 @@ public class StatRedisRepository {
         if (result == null) {
             return new ArrayList<>();
         }
-        return result.stream()
-                .map(Long::valueOf)
-                .collect(Collectors.toUnmodifiableList());
+        return stringCollectionToLongList(result);
     }
 
     public void saveMemberViewedProducts(String memberKey, Long productId) {
@@ -80,9 +110,7 @@ public class StatRedisRepository {
         if (result == null) {
             return new ArrayList<>();
         }
-        return result.stream()
-                .map(Long::valueOf)
-                .collect(Collectors.toUnmodifiableList());
+        return stringCollectionToLongList(result);
     }
 
     public void saveMemberWishedProducts(Long memberId, Long productId) {
@@ -112,5 +140,27 @@ public class StatRedisRepository {
 
     private String generateMemberWishedProductsKey(Long memberId) {
         return WISHES_KEY + memberId.toString();
+    }
+
+    private List<Long> stringCollectionToLongList(Collection<String> data) {
+        if (data == null) {
+            return new ArrayList<>();
+        }
+        return data.stream()
+                .map(Long::valueOf)
+                .collect(Collectors.toUnmodifiableList());
+    }
+
+    private Set<Long> stringCollectionToLongSet(Collection<String> data) {
+        if (data == null) {
+            return new HashSet<>();
+        }
+        return data.stream()
+                .map(Long::valueOf)
+                .collect(Collectors.toUnmodifiableSet());
+    }
+
+    public void flushAllRedis() {
+        redisTemplate.getConnectionFactory().getConnection().flushAll();
     }
 }
