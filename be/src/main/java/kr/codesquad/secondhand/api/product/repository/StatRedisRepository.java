@@ -68,10 +68,9 @@ public class StatRedisRepository {
     //해쉬맵 키 상수 처리 해줄지? 고민 : 지금도 상수가 너무 많다는 생각이 듬
     public Map<String, Set<Long>> getKeys() {
         Map<String, Set<Long>> keys = new HashMap<>();
-        keys.put("product", stringCollectionToLongSet(redisTemplate.keys(PRODUCT_KEY)));
-
-        Set<Long> viewsKey = stringCollectionToLongSet(redisTemplate.keys(VIEWS_KEY));
-        Set<Long> wishesKey = stringCollectionToLongSet(redisTemplate.keys(WISHES_KEY));
+        keys.put("product", stringCollectionToLongSet(redisTemplate.keys(PRODUCT_KEY+"*"), PRODUCT_KEY));
+        Set<Long> viewsKey = stringCollectionToLongSet(redisTemplate.keys(VIEWS_KEY+"*"), VIEWS_KEY);
+        Set<Long> wishesKey = stringCollectionToLongSet(redisTemplate.keys(WISHES_KEY+"*"), WISHES_KEY);
         Set<Long> memberStatLogKey = new HashSet<>(viewsKey);
         memberStatLogKey.addAll(wishesKey);
 
@@ -151,13 +150,14 @@ public class StatRedisRepository {
                 .collect(Collectors.toUnmodifiableList());
     }
 
-    private Set<Long> stringCollectionToLongSet(Collection<String> data) {
+    private Set<Long> stringCollectionToLongSet(Collection<String> data, String key) {
         if (data == null) {
             return new HashSet<>();
         }
         return data.stream()
+                .map(datum -> datum.substring(key.length()))
                 .map(Long::valueOf)
-                .collect(Collectors.toUnmodifiableSet());
+                .collect(Collectors.toSet());
     }
 
     public void flushAllRedis() {
