@@ -3,7 +3,7 @@ spring:
     group:
       stage: db-stage, jasypt, oauth2-stage, jwt, s3-stage, redis-stage
       prod: db-prod, jasypt, oauth2-prod, jwt, s3-prod, redis-prod
-      test:
+      test: jasypt, jwt, s3-stage, test
     active: stage
   jpa:
     properties:
