@@ -8,9 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-import kr.codesquad.secondhand.api.product.domain.Product;
 import kr.codesquad.secondhand.api.product.domain.ProductStat;
-import kr.codesquad.secondhand.api.product.domain.ProductStats;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Repository;
@@ -24,8 +22,6 @@ public class StatRedisRepository {
     private static final Integer START = 0;
     private static final Integer END = -1;
     private static final String DEFAULT_COUNT = "0";
-    private static final String VIEWS_FIELD = "::views";
-    private static final String WISHES_FIELD = "::wishes";
     private static final String VIEWS_KEY = "views::";
     private static final String WISHES_KEY = "wishes::";
     private static final String PRODUCT_KEY = "product::";
@@ -34,20 +30,13 @@ public class StatRedisRepository {
 
     public void saveNewProductStats(Long productId) {
         String productKey = generateProductKey(productId);
-        redisTemplate.opsForHash().put(productKey, VIEWS_FIELD, DEFAULT_COUNT);
-        redisTemplate.opsForHash().put(productKey, WISHES_FIELD, DEFAULT_COUNT);
-    }
-
-    //ProductStat 엔티티 추가로 삭제하고 뜯어 고칠지?
-    public ProductStats findProductStats(Long productId) {
-        String productKey = generateProductKey(productId);
-        List<Object> stats = redisTemplate.opsForHash().multiGet(productKey, List.of(VIEWS_FIELD, WISHES_FIELD));
-        return ProductStats.from(stats);
+        redisTemplate.opsForHash().put(productKey, VIEWS_KEY, DEFAULT_COUNT);
+        redisTemplate.opsForHash().put(productKey, WISHES_KEY, DEFAULT_COUNT);
     }
 
     public ProductStat findProductStat(Long productId) {
         String productKey = generateProductKey(productId);
-        List<Object> stats = redisTemplate.opsForHash().multiGet(productKey, List.of(VIEWS_FIELD, WISHES_FIELD));
+        List<Object> stats = redisTemplate.opsForHash().multiGet(productKey, List.of(VIEWS_KEY, WISHES_KEY));
         Integer viewCount = Integer.parseInt(stats.get(0).toString());
         Integer wishCount = Integer.parseInt(stats.get(1).toString());
         return ProductStat.builder()
@@ -57,20 +46,12 @@ public class StatRedisRepository {
                 .build();
     }
 
-    public Map<Long, ProductStats> findProductsStats(List<Product> products) {
-        return products.stream()
-                .collect(Collectors.toUnmodifiableMap(
-                        product -> product.getId(),
-                        product -> findProductStats(product.getId()))
-                );
-    }
-
     //해쉬맵 키 상수 처리 해줄지? 고민 : 지금도 상수가 너무 많다는 생각이 듬
     public Map<String, Set<Long>> getKeys() {
         Map<String, Set<Long>> keys = new HashMap<>();
-        keys.put("product", stringCollectionToLongSet(redisTemplate.keys(PRODUCT_KEY+"*"), PRODUCT_KEY));
-        Set<Long> viewsKey = stringCollectionToLongSet(redisTemplate.keys(VIEWS_KEY+"*"), VIEWS_KEY);
-        Set<Long> wishesKey = stringCollectionToLongSet(redisTemplate.keys(WISHES_KEY+"*"), WISHES_KEY);
+        keys.put("product", stringCollectionToLongSet(redisTemplate.keys(PRODUCT_KEY + "*"), PRODUCT_KEY));
+        Set<Long> viewsKey = stringCollectionToLongSet(redisTemplate.keys(VIEWS_KEY + "*"), VIEWS_KEY);
+        Set<Long> wishesKey = stringCollectionToLongSet(redisTemplate.keys(WISHES_KEY + "*"), WISHES_KEY);
         Set<Long> memberStatLogKey = new HashSet<>(viewsKey);
         memberStatLogKey.addAll(wishesKey);
 
@@ -80,7 +61,7 @@ public class StatRedisRepository {
 
     public void increaseViews(Long productId) {
         String productKey = generateProductKey(productId);
-        redisTemplate.opsForHash().increment(productKey, VIEWS_FIELD, INCREMENT_COUNT);
+        redisTemplate.opsForHash().increment(productKey, VIEWS_KEY, INCREMENT_COUNT);
     }
 
     public List<Long> findMemberViewedProducts(String memberKey) {
@@ -100,7 +81,7 @@ public class StatRedisRepository {
 
     public void increaseWishes(Long productId) {
         String productKey = generateProductKey(productId);
-        redisTemplate.opsForHash().increment(productKey, WISHES_FIELD, INCREMENT_COUNT);
+        redisTemplate.opsForHash().increment(productKey, WISHES_KEY, INCREMENT_COUNT);
     }
 
     public List<Long> findMemberWishedProducts(Long memberId) {
@@ -126,7 +107,7 @@ public class StatRedisRepository {
 
     public void decreaseWishes(Long productId) {
         String productKey = generateProductKey(productId);
-        redisTemplate.opsForHash().increment(productKey, WISHES_FIELD, DECREMENT_COUNT);
+        redisTemplate.opsForHash().increment(productKey, WISHES_KEY, DECREMENT_COUNT);
     }
 
     private String generateProductKey(Long productId) {

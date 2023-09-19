@@ -1,6 +1,6 @@
 package kr.codesquad.secondhand.api.product.dto.response;
 
-import kr.codesquad.secondhand.api.product.domain.ProductStats;
+import kr.codesquad.secondhand.api.product.domain.ProductStat;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -16,7 +16,7 @@ public class ProductStatsResponse {
         this.wishCount = wishCount;
     }
 
-    public static ProductStatsResponse from(ProductStats stats) {
+    public static ProductStatsResponse from(ProductStat stats) {
         return ProductStatsResponse.builder()
                 .viewCount(stats.getViewCount())
                 .wishCount(stats.getWishCount())

@@ -10,7 +10,7 @@ import kr.codesquad.secondhand.api.image.service.ImageService;
 import kr.codesquad.secondhand.api.member.domain.Member;
 import kr.codesquad.secondhand.api.member.service.MemberService;
 import kr.codesquad.secondhand.api.product.domain.Product;
-import kr.codesquad.secondhand.api.product.domain.ProductStats;
+import kr.codesquad.secondhand.api.product.domain.ProductStat;
 import kr.codesquad.secondhand.api.product.domain.ProductStatus;
 import kr.codesquad.secondhand.api.product.dto.ProductStatusesInfoResponse;
 import kr.codesquad.secondhand.api.product.dto.request.ProductCreateRequest;
@@ -75,7 +75,7 @@ public class ProductFacadeService {
         return ProductReadResponse.of(
                 productService.findById(productId),
                 imageService.findAllByProductId(productId),
-                statService.findProductStats(productId),
+                statService.findProductStat(productId),
                 Category.from(productService.findById(productId).getCategoryId()),
                 productService.findById(productId).getAddress()
         );
@@ -94,7 +94,7 @@ public class ProductFacadeService {
 
         List<Product> products = productSlices.getContent();
         Boolean hasNext = productSlices.hasNext();
-        Map<Long, ProductStats> productStats = statService.findProductsStats(products);
+        Map<Long, ProductStat> productStats = statService.findProductsStats(products);
 
         return ProductSlicesResponse.of(products, productStats, hasNext);
     }

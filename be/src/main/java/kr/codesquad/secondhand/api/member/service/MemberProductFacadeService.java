@@ -7,7 +7,7 @@ import kr.codesquad.secondhand.api.category.dto.CategorySummaryResponse;
 import kr.codesquad.secondhand.api.member.dto.request.WishProductRequest;
 import kr.codesquad.secondhand.api.member.dto.response.ProductWishStatusResponse;
 import kr.codesquad.secondhand.api.product.domain.Product;
-import kr.codesquad.secondhand.api.product.domain.ProductStats;
+import kr.codesquad.secondhand.api.product.domain.ProductStat;
 import kr.codesquad.secondhand.api.product.dto.response.ProductSlicesResponse;
 import kr.codesquad.secondhand.api.product.service.ProductService;
 import kr.codesquad.secondhand.api.product.service.StatService;
@@ -39,7 +39,7 @@ public class MemberProductFacadeService {
 
         List<Product> products = productSlices.getContent();
         Boolean hasNext = productSlices.hasNext();
-        Map<Long, ProductStats> productStats = statService.findProductsStats(products);
+        Map<Long, ProductStat> productStats = statService.findProductsStats(products);
 
         return ProductSlicesResponse.of(products, productStats, hasNext);
     }
@@ -54,7 +54,7 @@ public class MemberProductFacadeService {
 
         List<Product> products = productSlices.getContent();
         Boolean hasNext = productSlices.hasNext();
-        Map<Long, ProductStats> productStats = statService.findProductsStats(products);
+        Map<Long, ProductStat> productStats = statService.findProductsStats(products);
 
         return ProductSlicesResponse.of(products, productStats, hasNext);
     }

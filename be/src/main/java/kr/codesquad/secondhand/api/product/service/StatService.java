@@ -5,10 +5,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 import kr.codesquad.secondhand.api.member.domain.MemberStatLog;
 import kr.codesquad.secondhand.api.product.domain.Product;
 import kr.codesquad.secondhand.api.product.domain.ProductStat;
-import kr.codesquad.secondhand.api.product.domain.ProductStats;
 import kr.codesquad.secondhand.api.product.repository.StatRedisRepository;
 import kr.codesquad.secondhand.global.exception.CustomRuntimeException;
 import lombok.RequiredArgsConstructor;
@@ -25,16 +25,17 @@ public class StatService {
         statRedisRepository.saveNewProductStats(productId);
     }
 
-    public ProductStats findProductStats(Long productId) {
-        return statRedisRepository.findProductStats(productId);
-    }
-
     public ProductStat findProductStat(Long productId) {
         return statRedisRepository.findProductStat(productId);
     }
 
-    public Map<Long, ProductStats> findProductsStats(List<Product> products) {
-        return statRedisRepository.findProductsStats(products);
+    public Map<Long, ProductStat> findProductsStats(List<Product> products) {
+        return products.stream()
+                .map(product -> statRedisRepository.findProductStat(product.getId()))
+                .collect(Collectors.toUnmodifiableMap(
+                        productStat -> productStat.getId(),
+                        productStat -> productStat)
+                );
     }
 
     public List<Long> findWishlistByMemberId(Long memberId) {
