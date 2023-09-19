@@ -26,10 +26,6 @@ public class MemberProductFacadeService {
     private final ProductService productService;
     private final StatService statService;
 
-    @Transactional
-    public void addOrResetWishes(Long memberId, WishProductRequest request) {
-        statService.addOrResetWishes(memberId, request.getProductId());
-    }
 
     @Transactional
     public ProductSlicesResponse readMemberSales(Long memberId, List<Integer> statusIds, Integer page, Integer size) {

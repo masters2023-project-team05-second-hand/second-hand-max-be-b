@@ -14,6 +14,7 @@ import kr.codesquad.secondhand.api.product.dto.response.ProductCreateResponse;
 import kr.codesquad.secondhand.api.product.dto.response.ProductReadResponse;
 import kr.codesquad.secondhand.api.product.dto.response.ProductSlicesResponse;
 import kr.codesquad.secondhand.api.product.service.ProductFacadeService;
+import kr.codesquad.secondhand.api.product.service.StatControlFacadeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,6 +34,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class ProductController {
 
     private final ProductFacadeService productFacadeService;
+    private final StatControlFacadeService statControlFacadeService;
 
     @PostMapping("/api/products")
     public ResponseEntity<ProductCreateResponse> createProduct(HttpServletRequest httpServletRequest,
@@ -48,13 +50,14 @@ public class ProductController {
                                                            @PathVariable Long productId) {
         if (isMember(httpServletRequest)) {
             Long memberId = extractMemberId(httpServletRequest);
+            statControlFacadeService.increaseViews(productId, memberId);
             return ResponseEntity.ok()
-                    .body(productFacadeService.readProduct(memberId, productId));
+                    .body(productFacadeService.readProduct(productId));
         }
-
+        //TODO 구현 필요
         String clientIP = getClientIp(httpServletRequest);
         return ResponseEntity.ok()
-                .body(productFacadeService.readProduct(clientIP, productId));
+                .body(productFacadeService.readProduct(productId));
     }
 
     @GetMapping("/api/products")
