@@ -1,6 +1,7 @@
 package kr.codesquad.secondhand.api.member.service;
 
 import java.util.List;
+import java.util.Optional;
 import kr.codesquad.secondhand.api.member.domain.MemberStatLog;
 import kr.codesquad.secondhand.api.member.repository.MemberStatLogRepository;
 import lombok.RequiredArgsConstructor;
@@ -16,5 +17,9 @@ public class MemberStatLogService {
     @Transactional
     public void saveAll(List<MemberStatLog> memberStatLogs) {
         memberStatLogRepository.saveAll(memberStatLogs);
+    }
+
+    public Optional<MemberStatLog> findById(Long id) {
+        return memberStatLogRepository.findById(id);
     }
 }
