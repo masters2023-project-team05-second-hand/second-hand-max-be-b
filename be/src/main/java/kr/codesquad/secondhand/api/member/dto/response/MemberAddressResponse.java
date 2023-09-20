@@ -4,13 +4,18 @@ import java.util.List;
 import java.util.stream.Collectors;
 import kr.codesquad.secondhand.api.address.domain.Address;
 import kr.codesquad.secondhand.api.member.domain.MemberAddress;
+import lombok.AccessLevel;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
+@EqualsAndHashCode
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class MemberAddressResponse {
 
-    private final Long id;
-    private final String name;
+    private Long id;
+    private String name;
 
     public MemberAddressResponse(Long id, String name) {
         this.id = id;

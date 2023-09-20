@@ -19,4 +19,8 @@ public class Address {
 
     private String name;
 
+    public Address(Long id, String name) {
+        this.id = id;
+        this.name = name;
+    }
 }
