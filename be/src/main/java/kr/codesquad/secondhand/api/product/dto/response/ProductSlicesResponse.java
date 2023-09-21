@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import kr.codesquad.secondhand.api.product.domain.Product;
-import kr.codesquad.secondhand.api.product.domain.ProductStats;
+import kr.codesquad.secondhand.api.product.domain.ProductStat;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -24,11 +24,11 @@ public class ProductSlicesResponse {
         this.hasNext = hasNext;
     }
 
-    public static ProductSlicesResponse of(List<Product> products, Map<Long, ProductStats> stats, Boolean hasNext) {
+    public static ProductSlicesResponse of(List<Product> products, Map<Long, ProductStat> stats, Boolean hasNext) {
         List<ProductSlice> productSlices = products.stream()
                 .map(product -> {
                     Long productId = product.getId();
-                    ProductStats productStats = stats.get(productId);
+                    ProductStat productStats = stats.get(productId);
                     return ProductSlice.of(product, productStats);
                 })
                 .collect(Collectors.toUnmodifiableList());
@@ -50,7 +50,7 @@ public class ProductSlicesResponse {
 
         @Builder
         private ProductSlice(Long productId, Long sellerId, URL thumbnailUrl, String title, String addressName,
-                            Timestamp createdTime, Long price, Integer statusId, ProductStatsResponse stats) {
+                             Timestamp createdTime, Long price, Integer statusId, ProductStatsResponse stats) {
             this.productId = productId;
             this.sellerId = sellerId;
             this.thumbnailUrl = thumbnailUrl;
@@ -62,7 +62,7 @@ public class ProductSlicesResponse {
             this.stats = stats;
         }
 
-        public static ProductSlice of(Product product, ProductStats stats) {
+        public static ProductSlice of(Product product, ProductStat stats) {
             return ProductSlice.builder()
                     .productId(product.getId())
                     .sellerId(product.getSeller().getId())
@@ -76,5 +76,4 @@ public class ProductSlicesResponse {
                     .build();
         }
     }
-
 }

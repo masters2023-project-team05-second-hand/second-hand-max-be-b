@@ -10,7 +10,7 @@ import kr.codesquad.secondhand.api.image.service.ImageService;
 import kr.codesquad.secondhand.api.member.domain.Member;
 import kr.codesquad.secondhand.api.member.service.MemberService;
 import kr.codesquad.secondhand.api.product.domain.Product;
-import kr.codesquad.secondhand.api.product.domain.ProductStats;
+import kr.codesquad.secondhand.api.product.domain.ProductStat;
 import kr.codesquad.secondhand.api.product.domain.ProductStatus;
 import kr.codesquad.secondhand.api.product.dto.ProductStatusesInfoResponse;
 import kr.codesquad.secondhand.api.product.dto.request.ProductCreateRequest;
@@ -36,7 +36,7 @@ public class ProductFacadeService {
     private final ImageService imageService;
     private final AddressService addressService;
     private final MemberService memberService;
-    private final StatService statService;
+    private final ProductStatService productStatService;
 
     @Transactional
     public ProductCreateResponse saveProduct(Long memberId, ProductCreateRequest productCreateRequest) {
@@ -47,7 +47,7 @@ public class ProductFacadeService {
         // 주의: 상품 저장 시 순서(상품 Insert -> 상품 이미지 Insert), 순서 바뀌면 ProductImage 의 product_id 에서 NPE 발생함
         Long productId = productService.saveProduct(product);
         imageService.saveProductImages(productCreateRequest.getImages(), product);
-        statService.saveNewProductStats(productId);
+        productStatService.saveNewProductStats(productId);
         return new ProductCreateResponse(productId);
     }
 
@@ -60,22 +60,11 @@ public class ProductFacadeService {
     }
 
     @Transactional
-    public ProductReadResponse readProduct(Long memberId, Long productId) {
-        statService.increaseViews(memberId, productId);
-        return toProductReadResponse(productId);
-    }
-
-    @Transactional
-    public ProductReadResponse readProduct(String clientIP, Long productId) {
-        statService.increaseViews(clientIP, productId);
-        return toProductReadResponse(productId);
-    }
-
-    private ProductReadResponse toProductReadResponse(Long productId) {
+    public ProductReadResponse readProduct(Long productId) {
         return ProductReadResponse.of(
                 productService.findById(productId),
                 imageService.findAllByProductId(productId),
-                statService.findProductStats(productId),
+                productStatService.findProductStat(productId),
                 Category.from(productService.findById(productId).getCategoryId()),
                 productService.findById(productId).getAddress()
         );
@@ -94,7 +83,7 @@ public class ProductFacadeService {
 
         List<Product> products = productSlices.getContent();
         Boolean hasNext = productSlices.hasNext();
-        Map<Long, ProductStats> productStats = statService.findProductsStats(products);
+        Map<Long, ProductStat> productStats = productStatService.findProductsStats(products);
 
         return ProductSlicesResponse.of(products, productStats, hasNext);
     }

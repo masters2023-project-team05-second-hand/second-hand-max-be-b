@@ -10,7 +10,7 @@ import kr.codesquad.secondhand.api.category.dto.CategorySummaryResponse;
 import kr.codesquad.secondhand.api.member.domain.Member;
 import kr.codesquad.secondhand.api.product.domain.Product;
 import kr.codesquad.secondhand.api.product.domain.ProductImage;
-import kr.codesquad.secondhand.api.product.domain.ProductStats;
+import kr.codesquad.secondhand.api.product.domain.ProductStat;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -29,7 +29,7 @@ public class ProductReadResponse {
         this.stats = stats;
     }
 
-    public static ProductReadResponse of(Product product, List<ProductImage> productImages, ProductStats stats,
+    public static ProductReadResponse of(Product product, List<ProductImage> productImages, ProductStat stats,
                                          Category category, Address address) {
         return ProductReadResponse.builder()
                 .product(ProductResponse.from(product, CategorySummaryResponse.from(category),

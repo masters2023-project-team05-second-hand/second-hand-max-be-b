@@ -24,6 +24,7 @@ import kr.codesquad.secondhand.api.member.service.MemberFacadeService;
 import kr.codesquad.secondhand.api.member.service.MemberProductFacadeService;
 import kr.codesquad.secondhand.api.member.service.MemberService;
 import kr.codesquad.secondhand.api.product.dto.response.ProductSlicesResponse;
+import kr.codesquad.secondhand.api.product.service.StatControlFacadeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -44,6 +45,7 @@ public class MemberController {
     private final MemberFacadeService memberFacadeService;
     private final MemberProductFacadeService memberProductFacadeService;
     private final MemberAddressService memberAddressService;
+    private final StatControlFacadeService statControlFacadeService;
     private final MemberService memberService;
     private final JwtService jwtService;
 
@@ -61,7 +63,8 @@ public class MemberController {
 
     @PostMapping("/api/sign-out")
     public ResponseEntity<String> signOut(HttpServletRequest httpServletRequest,
-                                          @Validated @RequestBody SignOutRequest signOutRequest) throws TokenNotFoundException {
+                                          @Validated @RequestBody SignOutRequest signOutRequest)
+            throws TokenNotFoundException {
         Long memberId = extractMemberId(httpServletRequest);
         String accessToken = extractAccessToken(httpServletRequest);
         memberFacadeService.signOut(memberId, accessToken, signOutRequest.getRefreshToken());
@@ -82,7 +85,7 @@ public class MemberController {
     public ResponseEntity<String> toggleWishProduct(HttpServletRequest httpServletRequest,
                                                     @Validated @RequestBody WishProductRequest request) {
         Long memberId = extractMemberId(httpServletRequest);
-        memberProductFacadeService.addOrResetWishes(memberId, request);
+        statControlFacadeService.addOrResetWishes(memberId, request);
         return ResponseEntity.ok().build();
     }
 
