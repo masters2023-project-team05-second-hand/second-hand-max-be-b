@@ -3,13 +3,18 @@ package kr.codesquad.secondhand.api.product.dto;
 import java.util.List;
 import java.util.stream.Collectors;
 import kr.codesquad.secondhand.api.product.domain.ProductStatus;
+import lombok.AccessLevel;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
+@EqualsAndHashCode
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ProductStatusesInfoResponse {
 
-    private final Integer id;
-    private final String type;
+    private Integer id;
+    private String type;
 
     public ProductStatusesInfoResponse(Integer id, String type) {
         this.id = id;
