@@ -3,15 +3,20 @@ package kr.codesquad.secondhand.api.category.dto;
 import java.util.List;
 import java.util.stream.Collectors;
 import kr.codesquad.secondhand.api.category.domain.Category;
+import lombok.AccessLevel;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
+@EqualsAndHashCode
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class CategoryReadResponse {
 
-    private final Long id;
-    private final String name;
-    private final String imgUrl;
+    private Long id;
+    private String name;
+    private String imgUrl;
 
     @Builder
     private CategoryReadResponse(Long id, String name, String imgUrl) {
