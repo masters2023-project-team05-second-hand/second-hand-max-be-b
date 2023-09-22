@@ -5,6 +5,7 @@ import { BottomBar } from "@styles/common";
 import { useAddressListValue } from "store";
 import { styled } from "styled-components";
 import { PLACE_HOLDER } from "./constants";
+import { getFormattedAddress } from "@utils/index";
 
 type ProductRegisterAddressProps = {
   selectedAddressId: number | null;
@@ -21,7 +22,7 @@ export default function ProductRegisterAddress({
 
   const addressMenuList = addressList.map((address) => ({
     id: address.id,
-    name: address.name,
+    name: getFormattedAddress(address.name),
     onClick: () => {
       onChange(addressList, address.id);
     },
@@ -33,7 +34,9 @@ export default function ProductRegisterAddress({
       <MenuIndicator itemList={addressMenuList} withShadow={true}>
         <AddressButton>
           <MapIcon />
-          <span>{address?.name ?? PLACE_HOLDER.address}</span>
+          <span>
+            {getFormattedAddress(address?.name) ?? PLACE_HOLDER.address}
+          </span>
         </AddressButton>
       </MenuIndicator>
     </BottomBar>

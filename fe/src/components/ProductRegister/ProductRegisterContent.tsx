@@ -3,6 +3,7 @@ import { styled } from "styled-components";
 import { PLACE_HOLDER } from "./constants";
 import { AddressInfo } from "@api/type";
 import useAutoHeight from "@hooks/useAutoHeight";
+import { getFormattedAddress } from "@utils/index";
 
 export default function ProductRegisterContent({
   content,
@@ -19,7 +20,7 @@ export default function ProductRegisterContent({
   return (
     <Content
       placeholder={PLACE_HOLDER.content(
-        address?.name ?? PLACE_HOLDER.defaultPlace
+        getFormattedAddress(address?.name) ?? PLACE_HOLDER.defaultPlace
       )}
       value={content}
       onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>

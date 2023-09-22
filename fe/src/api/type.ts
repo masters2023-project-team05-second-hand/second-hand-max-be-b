@@ -1,6 +1,7 @@
 export type Tokens = {
   accessToken: string;
   refreshToken: string;
+  expirationTime: number;
 };
 
 export type Member = {

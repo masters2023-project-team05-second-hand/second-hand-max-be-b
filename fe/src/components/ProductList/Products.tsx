@@ -4,8 +4,10 @@ import { styled } from "styled-components";
 
 export default function Products({
   productList,
+  invalidateQueryKey,
 }: {
   productList: ProductItem[][];
+  invalidateQueryKey: readonly unknown[];
 }) {
   return (
     <StyledProductList>
@@ -13,7 +15,7 @@ export default function Products({
         products.map((productItem: ProductItem) => (
           <ProductListItem
             key={productItem.productId}
-            productItem={productItem}
+            {...{ productItem, invalidateQueryKey }}
           />
         ))
       )}

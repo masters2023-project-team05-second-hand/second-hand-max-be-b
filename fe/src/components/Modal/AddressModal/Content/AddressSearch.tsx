@@ -4,6 +4,8 @@ import { Error, Loading } from "@components/common/Guide";
 import { useIntersect } from "@hooks/useIntersect";
 import { Target } from "@styles/common";
 import { AddressInfo } from "api/type";
+import { debounce } from "lodash";
+import { useEffect, useState } from "react";
 import styled from "styled-components";
 
 export default function AddressSearch({
@@ -19,6 +21,32 @@ export default function AddressSearch({
   changeCurrentAddresses: (newAddresses: AddressInfo[]) => void;
   changeCurrentAddressId: (newAddressId: number) => void;
 }) {
+  const [userInput, setUserInput] = useState("");
+
+  // TODO: 검색어 쿼리를 위한 상태를 따로 만들어야 할까? 다른 방법은?
+  const [searchWord, setSearchWord] = useState("");
+  const {
+    data: addressList,
+    status,
+    isFetching,
+    hasNextPage,
+    fetchNextPage,
+  } = useAddressesInfiniteQuery({ searchWord });
+
+  useEffect(() => {
+    const DEBOUNCE_TIME = 500;
+
+    const debounceChangeSearchWord = debounce(() => {
+      setSearchWord(userInput);
+    }, DEBOUNCE_TIME);
+
+    debounceChangeSearchWord();
+
+    return () => {
+      debounceChangeSearchWord.cancel();
+    };
+  }, [userInput]);
+
   const onAddAddress = (item: AddressInfo) => {
     const isMaxAddressCount = currentAddressIDs.length === 2;
     const isAlreadyAdded = currentAddressIDs.some((id) => id === item.id);
@@ -29,28 +57,30 @@ export default function AddressSearch({
     changeCurrentAddressId(item.id);
   };
 
-  const { data, status, isFetching, hasNextPage, fetchNextPage } =
-    useAddressesInfiniteQuery();
-
-  const ref = useIntersect((entry, observer) => {
-    observer.unobserve(entry.target);
-    if (hasNextPage && !isFetching) {
+  const targetRef = useIntersect(() => {
+    if (hasNextPage) {
       fetchNextPage();
     }
   });
 
-  // TODO: 동네 검색
+  const onChangeSearchWord = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setUserInput(e.target.value);
+  };
 
   return (
     <>
-      <SearchBar placeholder="동명(읍, 면)으로 검색(ex. 서초동)" />
+      <SearchBar
+        placeholder="동명(읍, 면)으로 검색(ex. 서초동)"
+        value={userInput}
+        onChange={onChangeSearchWord}
+      />
       {status === "loading" && <Loading messages={["로딩중..."]} />}
       {status === "error" && (
         <Error messages={["잠시 후 다시 시도해주세요."]} />
       )}
       {status === "success" && (
         <ListPanel>
-          {data.pages.map(({ addresses }) =>
+          {addressList.pages.map(({ addresses }) =>
             addresses.map(({ id, name }) => (
               <ListItem
                 key={id}
@@ -63,7 +93,11 @@ export default function AddressSearch({
               </ListItem>
             ))
           )}
-          <Target ref={ref} />
+          {isFetching ? (
+            <Loading messages={["주소 목록 로딩 중"]} />
+          ) : (
+            <Target ref={targetRef} />
+          )}
         </ListPanel>
       )}
     </>

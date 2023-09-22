@@ -19,23 +19,23 @@ export default function useMenuPosition(): ReturnType {
   const calcPosition = (e: React.MouseEvent) => {
     const refPositionInfo = ref.current?.getBoundingClientRect();
 
-    const HALF_OF_X = window.innerWidth / 2;
+    const halfOfX = window.innerWidth / 2;
     const HALF_OF_PAGE = WIDTH.page / 2;
 
-    const CLICK_X = e.clientX;
-    const CLICK_Y = e.clientY;
+    const clickX = e.clientX;
+    const clickY = e.clientY;
 
-    const left = HALF_OF_X - HALF_OF_PAGE + WIDTH.menuMarginX;
-    const right = HALF_OF_X - HALF_OF_PAGE + WIDTH.menuMarginX;
+    const left = halfOfX - HALF_OF_PAGE + WIDTH.menuMarginX;
+    const right = halfOfX - HALF_OF_PAGE + WIDTH.menuMarginX;
     const top = refPositionInfo!.top + HEIGHT.menuMarginY;
     const bottom =
       window.innerHeight -
       refPositionInfo!.bottom +
       (refPositionInfo!.height - refPositionInfo!.height + HEIGHT.menuMarginY);
 
-    const isOverHalfOfX = CLICK_X > HALF_OF_X;
+    const isOverHalfOfX = clickX > halfOfX;
     const isOverY =
-      CLICK_Y > window.innerHeight - (HEIGHT.menuMax + HEIGHT.navigationBar);
+      clickY > window.innerHeight - (HEIGHT.menuMax + HEIGHT.navigationBar);
 
     setPosition({
       left: isOverHalfOfX ? null : left,

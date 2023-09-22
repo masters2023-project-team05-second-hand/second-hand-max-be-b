@@ -1,10 +1,9 @@
-import { ReactComponent as CircleXIcon } from "@assets/icon/circle-x-filled.svg";
-import { ReactComponent as PlusIcon } from "@assets/icon/plus.svg";
-import Alert from "@components/common/Alert/Alert";
-import Button from "@components/common/Buttons/Button";
 import { AddressInfo } from "api/type";
 import { useState } from "react";
 import styled from "styled-components";
+import AddressRemoveAlert from "../AddressRemoveAlert";
+import { AddressAddButton, AddressRemoveButton } from "../Buttons";
+import { getFormattedAddress } from "@utils/index";
 
 export default function AddressIndicatorList({
   currentAddresses,
@@ -27,9 +26,7 @@ export default function AddressIndicatorList({
   const closeRemoveAlert = () => setIsRemoveAlertOpen(false);
 
   const isOnlyOneAddress = currentAddresses.length === 1;
-  const alertMessage = isOnlyOneAddress
-    ? "동네는 최소 1개 이상 선택해야 해요. 동네를 다시 선택하시겠어요?"
-    : `${removeTargetAddress?.name}을 삭제하시겠어요?`;
+  const isFullAddress = currentAddresses.length === 2;
 
   const onRemoveClick = (address: AddressInfo) => {
     setRemoveTargetAddress(address);
@@ -51,45 +48,29 @@ export default function AddressIndicatorList({
         <span>최대 2개까지 설정 가능해요.</span>
       </NoticeText>
       <div className="button-wrapper">
-        {currentAddresses.map(({ id, name }) => (
+        {currentAddresses.map((address) => (
           <AddressIndicator
-            key={id}
-            $active={id === currentSelectedAddressId}
-            onClick={() => changeCurrentAddressId(id)}>
-            <span>{name}</span>
-            <Button
-              leftIcon={<CircleXIcon />}
-              color="accentText"
-              onClick={(e) => {
-                e.stopPropagation();
-                onRemoveClick({ id, name });
-              }}
-            />
+            key={address.id}
+            $active={address.id === currentSelectedAddressId}
+            onClick={() => changeCurrentAddressId(address.id)}>
+            <span>{getFormattedAddress(address.name)}</span>
+            <AddressRemoveButton {...{ address, onRemoveClick }} />
           </AddressIndicator>
         ))}
-        <Button
-          size={{ width: 288, height: 56 }}
-          leftIcon={<PlusIcon />}
-          fontName="availableStrong16"
-          color="accentTextWeak"
-          borderColor="neutralBorder"
-          radius={8}
-          value="추가"
+        <AddressAddButton
+          disabled={isFullAddress}
           onClick={openAddressSearch}
         />
       </div>
-      {isRemoveAlertOpen && !isOnlyOneAddress && (
-        <Alert
-          message={alertMessage}
-          onDeleteClick={onRemoveAddress}
-          closeAlertHandler={closeRemoveAlert}
-        />
-      )}
-      {isRemoveAlertOpen && isOnlyOneAddress && (
-        <Alert
-          message={alertMessage}
-          onConfirmClick={openAddressSearch}
-          closeAlertHandler={closeRemoveAlert}
+      {isRemoveAlertOpen && removeTargetAddress && (
+        <AddressRemoveAlert
+          {...{
+            isOnlyOneAddress,
+            targetAddressName: removeTargetAddress.name,
+            onConfirmClick: openAddressSearch,
+            onDeleteClick: onRemoveAddress,
+            closeAlertHandler: closeRemoveAlert,
+          }}
         />
       )}
     </StyledAddressIndicatorList>

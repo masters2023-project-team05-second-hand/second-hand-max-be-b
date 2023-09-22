@@ -14,11 +14,15 @@ import {
   getStatuses,
   patchProductStatus,
 } from ".";
+import { productKeys } from "./../queryKeys";
 
-export const useAddressesInfiniteQuery = (option?: { size: number }) => {
+export const useAddressesInfiniteQuery = (option?: {
+  searchWord?: string;
+  size?: number;
+}) => {
   return useInfiniteQuery({
-    queryKey: ["addresses"],
-    queryFn: ({ pageParam }) => getAddresses(pageParam, option?.size),
+    ...productKeys.addresses(option?.searchWord),
+    queryFn: ({ pageParam }) => getAddresses(pageParam, option),
     getNextPageParam: (lastPage, allPages) =>
       lastPage.hasNext ? allPages.length : undefined,
   });
@@ -26,15 +30,15 @@ export const useAddressesInfiniteQuery = (option?: { size: number }) => {
 
 export const useCategoryQuery = () => {
   return useQuery({
-    queryKey: ["getCategories"],
+    ...productKeys.categories,
     queryFn: getCategories,
     staleTime: Infinity,
   });
 };
 
-export const useProductDetailQuery = (id: string, enabled: boolean) => {
+export const useProductDetailQuery = (id: number, enabled: boolean) => {
   return useQuery({
-    queryKey: ["getProductDetail", id],
+    ...productKeys.detail(id),
     queryFn: () => getProductDetail(id),
     enabled,
     staleTime: Infinity,
@@ -46,9 +50,9 @@ export const useDeleteProductQuery = ({
   onSuccess,
   invalidateQueryKey,
 }: {
-  productId: string;
+  productId: number;
   onSuccess?: () => void;
-  invalidateQueryKey?: string[];
+  invalidateQueryKey?: readonly unknown[];
 }) => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -81,7 +85,7 @@ export const useDeleteProductQuery = ({
 
 export const useProductStatusesQuery = () => {
   return useQuery({
-    queryKey: ["getStatuses"],
+    ...productKeys.statuses,
     queryFn: () => getStatuses(),
     staleTime: Infinity,
   });
@@ -92,7 +96,7 @@ export const useMutateProductStatus = ({
   invalidateQueryKey,
 }: {
   onSettled?: () => void;
-  invalidateQueryKey?: string[];
+  invalidateQueryKey?: readonly unknown[];
 }) => {
   const queryClient = useQueryClient();
   const { toast } = useToast();
@@ -104,7 +108,8 @@ export const useMutateProductStatus = ({
         title: "상태 변경 완료",
         message: "상태 변경이 완료되었습니다.",
       });
-      queryClient.invalidateQueries({ queryKey: invalidateQueryKey });
+      invalidateQueryKey &&
+        queryClient.invalidateQueries({ queryKey: invalidateQueryKey });
     },
     onError: () => {
       toast({
@@ -122,12 +127,12 @@ export const useGetProductListInfiniteQuery = ({
   categoryId,
   size,
 }: {
-  addressId: number | null;
-  categoryId: number | null;
+  addressId: number;
+  categoryId?: number;
   size?: number;
 }) => {
   return useInfiniteQuery({
-    queryKey: ["getProduct", addressId, categoryId, size],
+    ...productKeys.products(addressId, categoryId, size),
     queryFn: ({ pageParam }) =>
       getProduct({ addressId, categoryId, cursor: pageParam, size }),
     getNextPageParam: (lastPage) => {

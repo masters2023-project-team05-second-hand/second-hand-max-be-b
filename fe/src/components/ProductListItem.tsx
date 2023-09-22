@@ -3,77 +3,131 @@ import { ReactComponent as HeartIcon } from "@assets/icon/heart.svg";
 import { ReactComponent as MessageIcon } from "@assets/icon/message.svg";
 import ProductStatus from "@components/ProductStatus";
 import { ROUTE_PATH } from "@router/constants";
+import { convertPastTimestamp } from "@utils/time";
 import { useNavigate } from "react-router-dom";
-import { useMemberValue } from "store";
+import { useMemberValue, useStatusesValue } from "store";
 import { styled } from "styled-components";
 import ProductMoreButton from "./ProductMoreButton";
-import { convertPastTimestamp } from "@utils/time";
+import { TextBold, TextDefault, TextWeak } from "@styles/common";
+import { useState } from "react";
+import {
+  useDeleteProductQuery,
+  useMutateProductStatus,
+} from "@api/product/queries";
+import Alert from "./common/Alert/Alert";
+import { MenuItemInfo } from "./common/Menu/type";
+import { getFormattedAddress } from "@utils/index";
 
 type ProductListItemProps = {
   productItem: ProductItem;
+  invalidateQueryKey: readonly unknown[];
 };
 
-export default function ProductListItem({ productItem }: ProductListItemProps) {
+export default function ProductListItem({
+  productItem,
+  invalidateQueryKey,
+}: ProductListItemProps) {
   const navigate = useNavigate();
   const { id: memberId } = useMemberValue();
+  const productStatuses = useStatusesValue();
+  const [isDeleteAlertOpen, setIsDeleteAlertOpen] = useState(false);
+
+  const { onDeleteProduct } = useDeleteProductQuery({
+    productId: productItem.productId,
+    invalidateQueryKey,
+  });
+  const { mutate: mutateProductStatus } = useMutateProductStatus({
+    invalidateQueryKey,
+  });
 
   const onProductClick = () => {
-    navigate(`${ROUTE_PATH.detail}/${productItem.productId}`);
+    navigate(ROUTE_PATH.detail + `/${productItem.productId}`);
   };
+
+  const getProductStatusList = (): MenuItemInfo[] => {
+    return productStatuses.length
+      ? productStatuses
+          .filter((status) => status.id !== productItem.statusId)
+          .map((productStatus) => ({
+            name: `${productStatus.type} 상태로 전환`,
+            onClick: () => {
+              mutateProductStatus({
+                productId: productItem.productId,
+                statusId: productStatus.id,
+              });
+            },
+          }))
+      : [];
+  };
+
+  const openDeleteAlert = () => setIsDeleteAlertOpen(true);
+  const closeDeleteAlert = () => setIsDeleteAlertOpen(false);
 
   const isSeller = productItem.sellerId === memberId;
   const productPrice = productItem.price?.toLocaleString("ko-KR");
 
   return (
-    <StyledProductListItem onClick={onProductClick}>
-      <Product>
-        <ProductImage src={productItem.thumbnailUrl} />
-        <ProductInfo>
-          <div className="info-main">
-            <div className="info-top">
-              <TextDefault>{productItem.title}</TextDefault>
-              {isSeller && (
-                <ProductMoreButton
-                  productId={productItem.productId + ""}
-                  currentStatusId={productItem.statusId}
-                />
+    <>
+      <StyledProductListItem onClick={onProductClick}>
+        <Product>
+          <ProductImage src={productItem.thumbnailUrl} />
+          <ProductInfo>
+            <div className="info-main">
+              <div className="info-top">
+                <TextDefault>{productItem.title}</TextDefault>
+                {isSeller && (
+                  <ProductMoreButton
+                    productId={productItem.productId}
+                    statusListItems={getProductStatusList()}
+                    openDeleteAlert={openDeleteAlert}
+                  />
+                )}
+              </div>
+              <div className="info-middle">
+                <TextWeak>
+                  {getFormattedAddress(productItem.addressName)}
+                </TextWeak>
+                <TextWeak>・</TextWeak>
+                <TextWeak>
+                  {convertPastTimestamp(productItem.createdTime)}
+                </TextWeak>
+              </div>
+              <div className="info-bottom">
+                <ProductStatus id={productItem.statusId} />
+                <TextBold>
+                  {productPrice ? `${productPrice} 원` : "가격미정"}
+                </TextBold>
+              </div>
+            </div>
+            <div className="info-history">
+              {!!productItem.stats.chatCount && (
+                <>
+                  <History>
+                    <MessageIcon />
+                    <TextWeak>{productItem.stats.chatCount}</TextWeak>
+                  </History>
+                </>
+              )}
+              {!!productItem.stats.wishCount && (
+                <>
+                  <History>
+                    <HeartIcon />
+                    <TextWeak>{productItem.stats.wishCount}</TextWeak>
+                  </History>
+                </>
               )}
             </div>
-            <div className="info-middle">
-              <TextWeak>{productItem.addressName}</TextWeak>
-              <TextWeak>・</TextWeak>
-              <TextWeak>
-                {convertPastTimestamp(productItem.createdTime)}
-              </TextWeak>
-            </div>
-            <div className="info-bottom">
-              <ProductStatus id={productItem.statusId} />
-              <TextBold>
-                {productPrice ? `${productPrice} 원` : "가격미정"}
-              </TextBold>
-            </div>
-          </div>
-          <div className="info-history">
-            {!!productItem.stats.chatCount && (
-              <>
-                <History>
-                  <MessageIcon />
-                  <TextWeak>{productItem.stats.chatCount}</TextWeak>
-                </History>
-              </>
-            )}
-            {!!productItem.stats.wishCount && (
-              <>
-                <History>
-                  <HeartIcon />
-                  <TextWeak>{productItem.stats.wishCount}</TextWeak>
-                </History>
-              </>
-            )}
-          </div>
-        </ProductInfo>
-      </Product>
-    </StyledProductListItem>
+          </ProductInfo>
+        </Product>
+      </StyledProductListItem>
+      {isDeleteAlertOpen && (
+        <Alert
+          message={"상품을 삭제하시겠어요?"}
+          onDeleteClick={onDeleteProduct}
+          closeAlertHandler={closeDeleteAlert}
+        />
+      )}
+    </>
   );
 }
 
@@ -144,26 +198,6 @@ const ProductInfo = styled.div`
     gap: 8px;
     margin-left: auto;
   }
-`;
-
-const TextDefault = styled.span`
-  display: block;
-  max-width: 200px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  color: ${({ theme: { color } }) => color.neutralText};
-  font: ${({ theme: { font } }) => font.displayDefault16};
-`;
-
-const TextWeak = styled.span`
-  color: ${({ theme: { color } }) => color.neutralTextWeak};
-  font: ${({ theme: { font } }) => font.displayDefault12};
-`;
-
-const TextBold = styled.span`
-  color: ${({ theme: { color } }) => color.neutralTextStrong};
-  font: ${({ theme: { font } }) => font.displayStrong16};
 `;
 
 const History = styled.div`

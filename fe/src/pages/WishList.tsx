@@ -1,3 +1,4 @@
+import { userKeys } from "@api/queryKeys";
 import {
   useUserLikeCategories,
   useUserWishlistInfiniteQuery,
@@ -32,9 +33,8 @@ export default function WishList() {
     setActiveTabId(tabId);
   };
 
-  const targetRef = useIntersect((entry, observer) => {
-    observer.unobserve(entry.target);
-    if (hasNextPage && !isFetching) {
+  const targetRef = useIntersect(() => {
+    if (hasNextPage) {
       fetchNextPage();
     }
   });
@@ -85,8 +85,15 @@ export default function WishList() {
             )}
             <Products
               productList={categoryProducts.pages.map((page) => page.products)}
+              invalidateQueryKey={
+                userKeys.wishlistProduct(activeTabId).queryKey
+              }
             />
-            <Target ref={targetRef} />
+            {isFetching ? (
+              <Loading messages={["상품 목록 로딩 중"]} />
+            ) : (
+              <Target ref={targetRef} />
+            )}
           </PageContent>
         ))}
       <NavigationBar />

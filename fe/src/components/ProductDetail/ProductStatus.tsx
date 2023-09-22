@@ -1,8 +1,8 @@
-import { useProductStatusesQuery } from "@api/product/queries";
 import { ReactComponent as ChevronDownIcon } from "@assets/icon/chevron-down.svg";
 import ProductStatusModal from "@components/Modal/ProductStatusModal/ProductStatusModal";
 import Button from "@components/common/Buttons/Button";
 import { useState } from "react";
+import { useStatusesValue } from "store";
 import styled from "styled-components";
 
 export default function ProductStatus({
@@ -10,7 +10,7 @@ export default function ProductStatus({
 }: {
   currentStatusId: number;
 }) {
-  const { data: productStatuses, isSuccess } = useProductStatusesQuery();
+  const productStatuses = useStatusesValue();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const openHandler = () => setIsModalOpen(true);
@@ -31,7 +31,7 @@ export default function ProductStatus({
         onClick={openHandler}>
         <StatusText>{currentStatus?.type}</StatusText>
       </Button>
-      {isModalOpen && isSuccess && (
+      {isModalOpen && (
         <ProductStatusModal {...{ closeHandler, productStatuses }} />
       )}
     </>

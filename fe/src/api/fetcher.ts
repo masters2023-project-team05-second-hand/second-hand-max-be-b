@@ -21,7 +21,7 @@ fetcher.interceptors.request.use(
   }
 );
 
-// TODO: refresh token이 만료되었을 때, refresh token을 재발급 받고 다시 요청을 보내는 로직 구현 (작동하는지 테스트 필요)
+// TODO: refresh token이 만료되었을 때, refresh token을 재발급 받고 다시 요청 보내기 (현재 작동 안함)
 fetcher.interceptors.response.use(
   (response) => response,
   (error: AxiosError) => {
@@ -46,6 +46,7 @@ fetcher.interceptors.response.use(
 
 const refreshAccessToken = async () => {
   const refreshToken = localStorage.getItem("refreshToken");
+
   if (!refreshToken) {
     return Promise.reject();
   }

@@ -4,17 +4,28 @@ import CategoryList from "@components/Category";
 import TopBar from "@components/TopBar";
 import Button from "@components/common/Buttons/Button";
 import { Error, Loading } from "@components/common/Guide";
-import { Main, Page } from "@styles/common";
+import useAnimation from "@hooks/useAnimation";
+import { slide } from "@styles/animate";
+import { Main, StaticPage } from "@styles/common";
+import { delay } from "@utils/index";
+import { AnimatePresence, motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
+import { SLIDE_TIME } from "store/constants";
+import styled from "styled-components";
 
 export default function Category() {
   const navigate = useNavigate();
-  const moveToPreviousPage = () => navigate(-1);
-
+  const { isAnimating, onLeavePage } = useAnimation();
   const { data, isSuccess, isError, isLoading } = useCategoryQuery();
 
+  const moveToPreviousPage = async () => {
+    onLeavePage();
+    await delay(SLIDE_TIME);
+    navigate(-1);
+  };
+
   return (
-    <Page>
+    <StaticPage>
       <TopBar
         title="카테고리"
         backgroundColor="neutralBackgroundBlur"
@@ -29,11 +40,21 @@ export default function Category() {
         }
         isWithBorder={true}
       />
-      {isSuccess && (
-        <Main>
-          <CategoryList categories={data} />
-        </Main>
-      )}
+      <AnimatePresence>
+        {isAnimating && (
+          <SlideAnimate
+            initial="initial"
+            animate="in"
+            exit="out"
+            variants={slide}>
+            {isSuccess && (
+              <Main>
+                <CategoryList categories={data} />
+              </Main>
+            )}
+          </SlideAnimate>
+        )}
+      </AnimatePresence>
       {isLoading && (
         <Loading
           messages={[
@@ -50,6 +71,8 @@ export default function Category() {
           ]}
         />
       )}
-    </Page>
+    </StaticPage>
   );
 }
+
+const SlideAnimate = styled(motion.div)``;

@@ -1,5 +1,6 @@
 import { patchProduct, postProduct } from "@api/product/index";
 import { useProductDetailQuery } from "@api/product/queries";
+import { productKeys } from "@api/queryKeys";
 import { AddressInfo } from "@api/type";
 import ProductRegisterAddress from "@components/ProductRegister/ProductRegisterAddress";
 import ProductRegisterCategory from "@components/ProductRegister/ProductRegisterCategory";
@@ -18,6 +19,7 @@ import { useToast } from "@hooks/useToast";
 import { ROUTE_PATH } from "@router/constants";
 import { Page } from "@styles/common";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import imageCompression from "browser-image-compression";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAddressListValue, useCurrentAddressIdValue } from "store";
@@ -25,15 +27,18 @@ import { styled } from "styled-components";
 
 export default function ProductRegister() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const { toast } = useToast();
-  const { productId } = useParams();
+
   const addressList = useAddressListValue();
   const currentAddressId = useCurrentAddressIdValue();
+
+  const { productId } = useParams();
+  const numberProductId = Number(productId);
+
   const [selectedAddressId, setSelectedAddressId] = useState<number | null>(
     currentAddressId
   );
-  const queryClient = useQueryClient();
-
   // Todo: 상태 분리하기 & 상태 관리 라이브러리 쓰기
   const [productInfo, setProductInfo] = useState<ProductInfo>({
     images: [],
@@ -48,31 +53,34 @@ export default function ProductRegister() {
       addressList[DEFAULT_SELECTED_ADDRESS_INDEX],
   });
 
-  const { data, isSuccess, isLoading, isError } = useProductDetailQuery(
-    productId!,
-    !!productId
-  );
+  const {
+    data: productDetailInfo,
+    isSuccess,
+    isLoading,
+    isError,
+  } = useProductDetailQuery(numberProductId, !!productId);
 
+  // TODO: 아래 두 Mutation 세부 구현 숨기기 위해 hook으로 분리하기
   const newProductMutation = useMutation(postProduct);
   const editProductMutation = useMutation(patchProduct);
 
   useEffect(() => {
-    if (isSuccess && data) {
+    if (isSuccess && productDetailInfo) {
       setProductInfo((prev) => {
         return {
           ...prev,
-          images: data.images,
-          title: data.product.title,
-          categoryId: data.product.category.id,
-          price: data.product.price?.toString() ?? "",
-          content: data.product.contents,
-          address: data.product.address,
+          images: productDetailInfo.images,
+          title: productDetailInfo.product.title,
+          categoryId: productDetailInfo.product.category.id,
+          price: productDetailInfo.product.price?.toString() ?? "",
+          content: productDetailInfo.product.contents,
+          address: productDetailInfo.product.address,
         };
       });
 
-      setSelectedAddressId(data.product.address.id);
+      setSelectedAddressId(productDetailInfo.product.address.id);
     }
-  }, [isSuccess, data]);
+  }, [isSuccess, productDetailInfo]);
 
   const onPostNewProduct = () => {
     const price = productInfo.price.replace(/,/g, "");
@@ -91,12 +99,10 @@ export default function ProductRegister() {
 
     newProductMutation.mutate(formData, {
       onSuccess: (res) => {
-        navigate(`${ROUTE_PATH.detail}/${res.data.productId}`, {
+        navigate(ROUTE_PATH.detail + `/${res.data.productId}`, {
           state: { prevRoute: ROUTE_PATH.home },
         });
-        queryClient.invalidateQueries({
-          queryKey: ["getProductDetail", productId],
-        });
+        queryClient.invalidateQueries(productKeys.detail(numberProductId));
       },
       onError: () => {
         return (
@@ -131,15 +137,12 @@ export default function ProductRegister() {
     formData.append("price", price);
 
     editProductMutation.mutate(
-      { productId: productId, productInfo: formData },
+      { productId: numberProductId, productInfo: formData },
       {
         onSuccess: () => {
-          navigate(`${ROUTE_PATH.detail}/${productId}`, {
-            state: { prevRoute: ROUTE_PATH.home },
-          });
-          queryClient.invalidateQueries({
-            queryKey: ["getProductDetail", productId],
-          });
+          // Memo: state로 productDetailInfo를 넘겨주기???
+          navigate(ROUTE_PATH.detail + `/${productId}`);
+          queryClient.invalidateQueries(productKeys.detail(numberProductId));
         },
         onError: () => {
           return (
@@ -165,46 +168,50 @@ export default function ProductRegister() {
     }
   };
 
-  const onAddNewImage = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const onAddNewImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    const now = new Date().getTime();
-
-    setProductInfo((prev) => ({
-      ...prev,
-      newImages: prev.newImages
-        ? [...prev.newImages, { id: now, image: file }]
-        : [{ id: now, image: file }],
-    }));
-
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = () => {
-      setProductInfo((prev) => ({
-        ...prev,
-        images: [...prev.images, { id: now, url: reader.result as string }],
-      }));
+    // Memo: option은 상의 후 결정
+    const options = {
+      maxSizeMB: 1,
+      maxWidthOrHeight: 1920,
+      useWebWorker: true,
     };
+
+    try {
+      const compressedFile = await imageCompression(file, options);
+      const now = new Date().getTime();
+
+      const reader = new FileReader();
+      reader.readAsDataURL(compressedFile);
+      reader.onload = () => {
+        setProductInfo((prev) => ({
+          ...prev,
+          newImages: prev.newImages?.length
+            ? [...prev.newImages, { id: now, image: compressedFile }]
+            : [{ id: now, image: compressedFile }],
+          images: [...prev.images, { id: now, url: reader.result as string }],
+        }));
+      };
+    } catch (error) {
+      toast({
+        title: "이미지 업로드 실패",
+        message: "이미지 업로드에 실패했습니다",
+        type: "error",
+      });
+    }
   };
 
   const onRemoveImage = (id: number) => {
-    const isNewImage = productInfo.newImages?.find((image) => image.id === id);
-
-    if (productInfo.newImages?.length === 1) {
-      toast({
-        type: "error",
-        title: "사진 삭제 실패",
-        message: "사진은 한 개 이상 필요합니다.",
-      });
-
-      return;
-    }
+    // Todo: 이미지 없을 때 처리 로직 추가, 상품 삭제시 alert 모달 띄우기
+    const isNewImage = productInfo.newImages?.some((image) => image.id === id);
 
     if (!isNewImage) {
       setProductInfo((prev) => {
         return {
           ...prev,
+          images: prev.images.filter((image) => image.id !== id),
           deletedImageIds: prev.deletedImageIds
             ? [...prev.deletedImageIds, id]
             : [id],
@@ -216,6 +223,7 @@ export default function ProductRegister() {
       return {
         ...prev,
         images: prev.images.filter((image) => image.id !== id),
+        newImages: prev.newImages?.filter((image) => image.id !== id),
       };
     });
   };

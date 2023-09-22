@@ -8,10 +8,18 @@ import {
 } from "@api/type";
 import { PRODUCT_API_PATH } from "./constants";
 
-export const getAddresses = async (page: number = 0, size: number = 10) => {
-  const { data } = await fetcher.get<AddressList>(
-    PRODUCT_API_PATH.addresses(page, size)
-  );
+export const getAddresses = async (
+  page: number = 0,
+  option?: {
+    searchWord?: string;
+    size?: number;
+  }
+) => {
+  const baseUrl = PRODUCT_API_PATH.addresses;
+  const pathVariable = `?page=${page}&size=${option?.size ?? 10}${
+    option?.searchWord && `&search=${option.searchWord}`
+  }`;
+  const { data } = await fetcher.get<AddressList>(baseUrl + pathVariable);
   return data;
 };
 
@@ -22,7 +30,7 @@ export const getCategories = async () => {
   return data;
 };
 
-export const getProductDetail = async (productId: string) => {
+export const getProductDetail = async (productId: number) => {
   const { data } = await fetcher.get<ProductDetailInfo>(
     `${PRODUCT_API_PATH.products}/${productId}`
   );
@@ -48,7 +56,7 @@ export const patchProduct = async ({
   productId,
   productInfo,
 }: {
-  productId: string | undefined;
+  productId: number;
   productInfo: FormData;
 }) => {
   const config = {
@@ -64,7 +72,7 @@ export const patchProduct = async ({
   );
 };
 
-export const deleteProduct = async (productId: string) => {
+export const deleteProduct = async (productId: number) => {
   return await fetcher.delete(`${PRODUCT_API_PATH.products}/${productId}`);
 };
 
@@ -77,7 +85,7 @@ export const patchProductStatus = async ({
   productId,
   statusId,
 }: {
-  productId: string | undefined;
+  productId: number;
   statusId: number;
 }) => {
   return await fetcher.patch(
@@ -94,9 +102,9 @@ export const getProduct = async ({
   cursor = 0,
   size = 10,
 }: {
-  addressId: number | null;
-  categoryId: number | null;
-  cursor: number | undefined;
+  addressId: number;
+  cursor: number;
+  categoryId?: number;
   size?: number;
 }) => {
   const baseUrl = PRODUCT_API_PATH.products;

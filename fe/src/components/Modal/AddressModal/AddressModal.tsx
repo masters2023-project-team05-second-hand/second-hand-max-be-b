@@ -64,10 +64,11 @@ export default function AddressModal({
   const addressIndicatorListHeader = {
     title: "동네 설정",
     closeHandler: () => {
-      !isSameItems(userAddressIDs, currentAddressIDs) &&
-        mutateUserAddresses(currentAddressIDs);
-      currentAddressId !== currentSelectedAddressId &&
-        setCurrentAddressId(currentSelectedAddressId);
+      const isSameAddresses = isSameItems(userAddressIDs, currentAddressIDs);
+      const isSameAddressId = currentAddressId === currentSelectedAddressId;
+
+      !isSameAddresses && mutateUserAddresses(currentAddressIDs);
+      !isSameAddressId && setCurrentAddressId(currentSelectedAddressId);
       closeHandler();
     },
   };

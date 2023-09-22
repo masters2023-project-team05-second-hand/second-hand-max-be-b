@@ -5,6 +5,7 @@ import TopBar from "@components/TopBar";
 import Button from "@components/common/Buttons/Button";
 import MenuIndicator from "@components/common/Menu/MenuIndicator";
 import { ROUTE_PATH } from "@router/constants";
+import { getFormattedAddress } from "@utils/index";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
@@ -37,7 +38,7 @@ export default function ProductListHeader() {
 
     return {
       id: address.id,
-      name: address.name,
+      name: getFormattedAddress(address.name),
       onClick: () => {
         setCurrentAddressId(address.id);
       },
@@ -65,7 +66,7 @@ export default function ProductListHeader() {
         leftBtn={
           <MenuIndicator itemList={addressMenuItems}>
             <Button
-              value={selectedAddress?.name}
+              value={getFormattedAddress(selectedAddress?.name)}
               color="neutralText"
               fontName="availableStrong16"
               leftIcon={<ChevronDownIcon />}

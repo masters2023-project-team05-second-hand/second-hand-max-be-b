@@ -1,4 +1,5 @@
 import { useGetProductListInfiniteQuery } from "@api/product/queries";
+import { productKeys } from "@api/queryKeys";
 import NavigationBar from "@components/NavigationBar";
 import { SubInfo } from "@components/ProductDetail/common.style";
 import ProductListFAB from "@components/ProductList/ProductListFAB";
@@ -21,12 +22,11 @@ export default function ProductList() {
     fetchNextPage,
   } = useGetProductListInfiniteQuery({
     addressId: currentAddressId,
-    categoryId: categoryId,
+    categoryId,
   });
 
-  const ref = useIntersect((entry, observer) => {
-    observer.unobserve(entry.target);
-    if (hasNextPage && !isFetching) {
+  const targetRef = useIntersect(() => {
+    if (hasNextPage) {
       fetchNextPage();
     }
   });
@@ -63,12 +63,19 @@ export default function ProductList() {
           ) : (
             <Products
               productList={productList.pages.map((page) => page.products)}
+              invalidateQueryKey={
+                productKeys.products(currentAddressId, categoryId).queryKey
+              }
             />
           )}
         </>
       )}
       <ProductListFAB />
-      <Target ref={ref} />
+      {isFetching ? (
+        <Loading messages={["상품 목록 로딩 중"]} />
+      ) : (
+        <Target ref={targetRef} />
+      )}
       <NavigationBar />
     </Page>
   );

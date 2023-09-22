@@ -39,4 +39,5 @@ const Title = styled.h1`
 const Contents = styled.p`
   font: ${({ theme: { font } }) => font.displayDefault16};
   color: ${({ theme: { color } }) => color.neutralText};
+  white-space: pre-wrap;
 `;
