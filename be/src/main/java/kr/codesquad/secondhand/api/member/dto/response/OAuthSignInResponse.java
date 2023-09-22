@@ -8,13 +8,16 @@ public class OAuthSignInResponse {
 
     private final String accessToken;
     private final String refreshToken;
+    private final Long expirationTime;
 
-    private OAuthSignInResponse(String accessToken, String refreshToken) {
+    private OAuthSignInResponse(String accessToken, String refreshToken, Long expirationTime) {
         this.accessToken = accessToken;
         this.refreshToken = refreshToken;
+        this.expirationTime = expirationTime;
     }
 
     public static OAuthSignInResponse from(Jwt jwt) {
-        return new OAuthSignInResponse(jwt.getAccessToken(), jwt.getRefreshToken());
+        return new OAuthSignInResponse(jwt.getAccessToken(), jwt.getRefreshToken(),
+                jwt.getRefreshTokenExpirationTime());
     }
 }
