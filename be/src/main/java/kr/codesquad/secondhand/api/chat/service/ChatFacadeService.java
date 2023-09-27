@@ -2,6 +2,7 @@ package kr.codesquad.secondhand.api.chat.service;
 
 import kr.codesquad.secondhand.api.chat.domain.ChatRoom;
 import kr.codesquad.secondhand.api.chat.dto.ChatRoomCreateDto;
+import kr.codesquad.secondhand.api.chat.dto.reponse.ChatRoomExistenceCheckResponse;
 import kr.codesquad.secondhand.api.member.domain.Member;
 import kr.codesquad.secondhand.api.member.service.MemberService;
 import kr.codesquad.secondhand.api.product.domain.Product;
@@ -18,7 +19,7 @@ public class ChatFacadeService {
     private final MemberService memberService;
 
     public ChatRoomCreateDto.Response createChatRoom(Long memberId, Long productId) {
-        Member member = memberService.getMemberReferenceById(memberId); // 없는 경우에 무슨 예외 터지는지 확인
+        Member member = memberService.getMemberReferenceById(memberId);
         Product product = productService.findById(productId);
         ChatRoom chatRoom = chatService.createChatRoom(product, member);
 
@@ -26,4 +27,9 @@ public class ChatFacadeService {
         return new ChatRoomCreateDto.Response(chatRoom.getId());
     }
 
+    public ChatRoomExistenceCheckResponse checkChatRoomExistence(Long memberId, Long productId) {
+        return chatService.findChatRoomByMemberIdAndProductId(memberId, productId)
+                .map(chatRoom -> new ChatRoomExistenceCheckResponse(chatRoom.getId()))
+                .orElse(new ChatRoomExistenceCheckResponse(null));
+    }
 }
