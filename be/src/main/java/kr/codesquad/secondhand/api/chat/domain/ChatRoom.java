@@ -1,16 +1,21 @@
 package kr.codesquad.secondhand.api.chat.domain;
 
+import java.time.Instant;
 import java.util.UUID;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import kr.codesquad.secondhand.api.member.domain.Member;
 import kr.codesquad.secondhand.api.product.domain.Product;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
 
 @Entity
 @Getter
@@ -18,24 +23,38 @@ import lombok.NoArgsConstructor;
 public class ChatRoom {
 
     @Id
-    private String id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private String roomId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id")
     private Product product;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
-    private Member member;
+    @JoinColumn(name = "buyer_id")
+    private Member buyer;
 
-    private ChatRoom(String id, Product product, Member member) {
-        this.id = id;
+    @OneToOne
+    @JoinColumn(name = "last_message_id")
+    private ChatMessage lastMessage;
+
+    @CreationTimestamp
+    private Instant createdTime;
+
+    private ChatRoom(String roomId, Product product, Member buyer) {
+        this.roomId = roomId;
         this.product = product;
-        this.member = member;
+        this.buyer = buyer;
     }
 
     public static ChatRoom create(Product product, Member member) {
         String id = UUID.randomUUID().toString();
         return new ChatRoom(id, product, member);
+    }
+
+    public void updateLastMessage(ChatMessage chatMessage) {
+        this.lastMessage = chatMessage;
     }
 }

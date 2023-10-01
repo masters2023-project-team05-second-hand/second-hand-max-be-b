@@ -26,7 +26,7 @@ public class ChatRoomController {
     public ResponseEntity<ChatRoomCreateDto.Response> createChatRoom(HttpServletRequest httpServletRequest,
                                                                      @Validated @RequestBody ChatRoomCreateDto.Request request) {
         Long memberId = extractMemberId(httpServletRequest);
-        ChatRoomCreateDto.Response response = chatService.createChatRoom(memberId, request.getProductId());
+        ChatRoomCreateDto.Response response = chatService.createChatRoom(memberId, request);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(response);

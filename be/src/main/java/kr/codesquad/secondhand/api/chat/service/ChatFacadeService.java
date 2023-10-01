@@ -9,6 +9,7 @@ import kr.codesquad.secondhand.api.product.domain.Product;
 import kr.codesquad.secondhand.api.product.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -18,18 +19,18 @@ public class ChatFacadeService {
     private final ProductService productService;
     private final MemberService memberService;
 
-    public ChatRoomCreateDto.Response createChatRoom(Long memberId, Long productId) {
+    @Transactional
+    public ChatRoomCreateDto.Response createChatRoom(Long memberId, ChatRoomCreateDto.Request request) {
         Member member = memberService.getMemberReferenceById(memberId);
-        Product product = productService.findById(productId);
-        ChatRoom chatRoom = chatService.createChatRoom(product, member);
+        Product product = productService.findById(request.getProductId());
+        ChatRoom chatRoom = chatService.createChatRoom(product, member, request.getMessage().getContent());
 
-        // TODO request의 첫 메시지 관련 처리 필요
-        return new ChatRoomCreateDto.Response(chatRoom.getId());
+        return new ChatRoomCreateDto.Response(chatRoom.getRoomId());
     }
 
     public ChatRoomExistenceCheckResponse checkChatRoomExistence(Long memberId, Long productId) {
         return chatService.findChatRoomByMemberIdAndProductId(memberId, productId)
-                .map(chatRoom -> new ChatRoomExistenceCheckResponse(chatRoom.getId()))
+                .map(chatRoom -> new ChatRoomExistenceCheckResponse(chatRoom.getRoomId()))
                 .orElse(new ChatRoomExistenceCheckResponse(null));
     }
 }

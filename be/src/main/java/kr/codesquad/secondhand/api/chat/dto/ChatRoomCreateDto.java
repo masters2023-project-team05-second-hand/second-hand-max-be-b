@@ -18,7 +18,7 @@ public class ChatRoomCreateDto {
     }
 
     @Getter
-    private static class MessageDTO {
+    public static class MessageDTO {
 
         @NotNull(message = "생성할 채팅방의 senderId가 비어있습니다.")
         private Long senderId;
