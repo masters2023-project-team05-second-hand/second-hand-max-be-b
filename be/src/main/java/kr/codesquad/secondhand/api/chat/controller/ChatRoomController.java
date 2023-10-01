@@ -2,9 +2,11 @@ package kr.codesquad.secondhand.api.chat.controller;
 
 import static kr.codesquad.secondhand.global.util.HttpAuthorizationUtils.extractMemberId;
 
+import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import kr.codesquad.secondhand.api.chat.dto.ChatRoomCreateDto;
 import kr.codesquad.secondhand.api.chat.dto.reponse.ChatRoomExistenceCheckResponse;
+import kr.codesquad.secondhand.api.chat.dto.reponse.ChatRoomReadResponse;
 import kr.codesquad.secondhand.api.chat.service.ChatFacadeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -37,8 +39,13 @@ public class ChatRoomController {
                                                                                  @PathVariable Long productId) {
         Long memberId = extractMemberId(httpServletRequest);
         ChatRoomExistenceCheckResponse response = chatService.checkChatRoomExistence(memberId, productId);
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(response);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/api/chat-room")
+    public ResponseEntity<List<ChatRoomReadResponse>> readChatRooms(HttpServletRequest httpServletRequest) {
+        Long memberId = extractMemberId(httpServletRequest);
+        List<ChatRoomReadResponse> response = chatService.findAllChatRoomsBy(memberId);
+        return ResponseEntity.ok(response);
     }
 }

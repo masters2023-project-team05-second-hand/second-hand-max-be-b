@@ -1,6 +1,9 @@
 package kr.codesquad.secondhand.api.chat.service;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import kr.codesquad.secondhand.api.chat.domain.ChatMessage;
 import kr.codesquad.secondhand.api.chat.domain.ChatRoom;
 import kr.codesquad.secondhand.api.chat.repository.ChatMessageRepositoryImpl;
@@ -45,5 +48,25 @@ public class ChatService {
 
     public Optional<ChatRoom> findChatRoomByMemberIdAndProductId(Long memberId, Long productId) {
         return chatRoomRepository.findByBuyerIdAndProductId(memberId, productId);
+    }
+
+    public Optional<List<ChatRoom>> findAllChatRoomsBy(Member member) {
+        return chatRoomRepository.findByProductSellerOrBuyer(member, member);
+    }
+
+    /**
+     * @return RoomId에 매핑된 otherMember
+     */
+    public Map<String, Member> findOtherMembers(List<ChatRoom> chatRooms, Member loginMember) {
+        return chatRooms.stream()
+                .collect(Collectors.toUnmodifiableMap(
+                        ChatRoom::getRoomId,
+                        chatRoom -> {
+                            if (chatRoom.getProduct().isSeller(loginMember)) {
+                                return chatRoom.getBuyer();
+                            }
+                            return chatRoom.getProduct().getSeller();
+                        }
+                ));
     }
 }

@@ -1,8 +1,13 @@
 package kr.codesquad.secondhand.api.chat.service;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import kr.codesquad.secondhand.api.chat.domain.ChatRoom;
 import kr.codesquad.secondhand.api.chat.dto.ChatRoomCreateDto;
 import kr.codesquad.secondhand.api.chat.dto.reponse.ChatRoomExistenceCheckResponse;
+import kr.codesquad.secondhand.api.chat.dto.reponse.ChatRoomReadResponse;
 import kr.codesquad.secondhand.api.member.domain.Member;
 import kr.codesquad.secondhand.api.member.service.MemberService;
 import kr.codesquad.secondhand.api.product.domain.Product;
@@ -32,5 +37,18 @@ public class ChatFacadeService {
         return chatService.findChatRoomByMemberIdAndProductId(memberId, productId)
                 .map(chatRoom -> new ChatRoomExistenceCheckResponse(chatRoom.getRoomId()))
                 .orElse(new ChatRoomExistenceCheckResponse(null));
+    }
+
+    @Transactional
+    public List<ChatRoomReadResponse> findAllChatRoomsBy(Long memberId) {
+        Member loginMember = memberService.getMemberReferenceById(memberId);
+        Optional<List<ChatRoom>> chatRooms = chatService.findAllChatRoomsBy(loginMember);
+
+        if (chatRooms.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        Map<String, Member> otherMembers = chatService.findOtherMembers(chatRooms.get(), loginMember);
+        return ChatRoomReadResponse.from(chatRooms.get(), otherMembers);
     }
 }
