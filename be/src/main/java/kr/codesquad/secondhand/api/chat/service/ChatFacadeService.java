@@ -4,9 +4,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import kr.codesquad.secondhand.api.chat.domain.ChatMessage;
 import kr.codesquad.secondhand.api.chat.domain.ChatRoom;
 import kr.codesquad.secondhand.api.chat.dto.ChatRoomCreateDto;
 import kr.codesquad.secondhand.api.chat.dto.reponse.ChatRoomExistenceCheckResponse;
+import kr.codesquad.secondhand.api.chat.dto.reponse.ChatRoomMessagesReadResponse;
 import kr.codesquad.secondhand.api.chat.dto.reponse.ChatRoomReadResponse;
 import kr.codesquad.secondhand.api.member.domain.Member;
 import kr.codesquad.secondhand.api.member.service.MemberService;
@@ -50,5 +52,10 @@ public class ChatFacadeService {
 
         Map<String, Member> otherMembers = chatService.findOtherMembers(chatRooms.get(), loginMember);
         return ChatRoomReadResponse.from(chatRooms.get(), otherMembers);
+    }
+
+    public List<ChatRoomMessagesReadResponse> findChatRoomMessagesBy(String roomId) {
+        List<ChatMessage> messages = chatService.findChatMessagesBy(roomId);
+        return ChatRoomMessagesReadResponse.from(messages);
     }
 }

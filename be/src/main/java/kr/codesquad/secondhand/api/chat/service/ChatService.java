@@ -69,4 +69,8 @@ public class ChatService {
                         }
                 ));
     }
+
+    public List<ChatMessage> findChatMessagesBy(String roomId) {
+        return chatMessageRepository.findAllByRoomId(roomId);
+    }
 }
