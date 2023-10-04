@@ -20,9 +20,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-public class ChatFacadeService {
+public class ChatRoomFacadeService {
 
-    private final ChatService chatService;
+    private final ChatRoomService chatRoomService;
     private final ProductService productService;
     private final MemberService memberService;
 
@@ -30,13 +30,13 @@ public class ChatFacadeService {
     public ChatRoomCreateDto.Response createChatRoom(Long memberId, ChatRoomCreateDto.Request request) {
         Member member = memberService.getMemberReferenceById(memberId);
         Product product = productService.findById(request.getProductId());
-        ChatRoom chatRoom = chatService.createChatRoom(product, member, request.getMessage());
+        ChatRoom chatRoom = chatRoomService.createChatRoom(product, member, request.getMessage());
 
         return new ChatRoomCreateDto.Response(chatRoom.getRoomId());
     }
 
     public ChatRoomExistenceCheckResponse checkChatRoomExistence(Long memberId, Long productId) {
-        return chatService.findChatRoomByMemberIdAndProductId(memberId, productId)
+        return chatRoomService.findChatRoomByMemberIdAndProductId(memberId, productId)
                 .map(chatRoom -> new ChatRoomExistenceCheckResponse(chatRoom.getRoomId()))
                 .orElse(new ChatRoomExistenceCheckResponse(null));
     }
@@ -44,18 +44,23 @@ public class ChatFacadeService {
     @Transactional
     public List<ChatRoomReadResponse> findAllChatRoomsBy(Long memberId) {
         Member loginMember = memberService.getMemberReferenceById(memberId);
-        Optional<List<ChatRoom>> chatRooms = chatService.findAllChatRoomsBy(loginMember);
+        Optional<List<ChatRoom>> chatRooms = chatRoomService.findAllChatRoomsBy(loginMember);
 
         if (chatRooms.isEmpty()) {
             return Collections.emptyList();
         }
 
-        Map<String, Member> otherMembers = chatService.findOtherMembers(chatRooms.get(), loginMember);
+        Map<String, Member> otherMembers = chatRoomService.findOtherMembers(chatRooms.get(), loginMember);
         return ChatRoomReadResponse.from(chatRooms.get(), otherMembers);
     }
 
     public List<ChatRoomMessagesReadResponse> findChatRoomMessagesBy(String roomId) {
-        List<ChatMessage> messages = chatService.findChatMessagesBy(roomId);
+        List<ChatMessage> messages = chatRoomService.findChatMessagesBy(roomId);
         return ChatRoomMessagesReadResponse.from(messages);
+    }
+
+    @Transactional
+    public void deleteChatRoomBy(String roomId) {
+        chatRoomService.deleteChatRoomBy(roomId);
     }
 }

@@ -35,7 +35,8 @@ public class AuthorizationFilter implements Filter {
             "/api/addresses",
             "/api/categories",
             "/api/products*",
-            "/api/statuses"
+            "/api/statuses",
+            "/ws"
     };
 
     private static final String[] POST_WHITE_LIST = new String[]{

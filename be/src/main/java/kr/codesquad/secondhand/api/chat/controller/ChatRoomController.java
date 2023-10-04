@@ -8,11 +8,12 @@ import kr.codesquad.secondhand.api.chat.dto.ChatRoomCreateDto;
 import kr.codesquad.secondhand.api.chat.dto.reponse.ChatRoomExistenceCheckResponse;
 import kr.codesquad.secondhand.api.chat.dto.reponse.ChatRoomMessagesReadResponse;
 import kr.codesquad.secondhand.api.chat.dto.reponse.ChatRoomReadResponse;
-import kr.codesquad.secondhand.api.chat.service.ChatFacadeService;
+import kr.codesquad.secondhand.api.chat.service.ChatRoomFacadeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,13 +25,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class ChatRoomController {
 
-    private final ChatFacadeService chatService;
+    private final ChatRoomFacadeService chatRoomFacadeService;
 
     @PostMapping("/api/chat/room")
     public ResponseEntity<ChatRoomCreateDto.Response> createChatRoom(HttpServletRequest httpServletRequest,
                                                                      @Validated @RequestBody ChatRoomCreateDto.Request request) {
         Long memberId = extractMemberId(httpServletRequest);
-        ChatRoomCreateDto.Response response = chatService.createChatRoom(memberId, request);
+        ChatRoomCreateDto.Response response = chatRoomFacadeService.createChatRoom(memberId, request);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(response);
@@ -40,20 +41,27 @@ public class ChatRoomController {
     public ResponseEntity<ChatRoomExistenceCheckResponse> checkChatRoomExistence(HttpServletRequest httpServletRequest,
                                                                                  @PathVariable Long productId) {
         Long memberId = extractMemberId(httpServletRequest);
-        ChatRoomExistenceCheckResponse response = chatService.checkChatRoomExistence(memberId, productId);
+        ChatRoomExistenceCheckResponse response = chatRoomFacadeService.checkChatRoomExistence(memberId, productId);
         return ResponseEntity.ok(response);
     }
 
     @GetMapping("/api/chat-room")
     public ResponseEntity<List<ChatRoomReadResponse>> readChatRooms(HttpServletRequest httpServletRequest) {
         Long memberId = extractMemberId(httpServletRequest);
-        List<ChatRoomReadResponse> response = chatService.findAllChatRoomsBy(memberId);
+        List<ChatRoomReadResponse> response = chatRoomFacadeService.findAllChatRoomsBy(memberId);
         return ResponseEntity.ok(response);
     }
 
     @GetMapping("/api/chat-room/messages")
     public ResponseEntity<List<ChatRoomMessagesReadResponse>> readChatRoomMessages(@RequestParam String roomId) {
-        List<ChatRoomMessagesReadResponse> response = chatService.findChatRoomMessagesBy(roomId);
+        List<ChatRoomMessagesReadResponse> response = chatRoomFacadeService.findChatRoomMessagesBy(roomId);
         return ResponseEntity.ok(response);
+    }
+
+    @DeleteMapping("/api/chat/room/{roomId}")
+    public ResponseEntity<Void> deleteChatRoom(@PathVariable String roomId) {
+        chatRoomFacadeService.deleteChatRoomBy(roomId);
+        return ResponseEntity.ok()
+                .build();
     }
 }

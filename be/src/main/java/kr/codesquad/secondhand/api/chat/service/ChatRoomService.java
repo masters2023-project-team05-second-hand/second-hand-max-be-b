@@ -15,10 +15,10 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class ChatService {
+public class ChatRoomService {
 
     private final ChatRoomRepositoryImpl chatRoomRepository;
-    private final ChatMessageRepositoryImpl chatMessageRepository;
+    private final ChatMessageRepositoryImpl chatMessageRepository; // TODO chatmessage 관련 로직 ChatMessageService로 이동 필요
 
     public ChatRoom createChatRoom(Product product, Member member, String message) {
         // TODO 채팅방이 이미 존재할 경우, 예외 처리 필요
@@ -40,7 +40,7 @@ public class ChatService {
         return chatMessageRepository.save(chatMessage);
     }
 
-    private void updateLastMessage(String roomId, ChatMessage chatMessage) {
+    public void updateLastMessage(String roomId, ChatMessage chatMessage) {
         // TODO save 후 바로 업데이트가 되지 않아서 save -> find -> update 하고 있는데 쿼리 개선 필요
         ChatRoom chatRoom = chatRoomRepository.findByRoomId(roomId);
         chatRoom.updateLastMessage(chatMessage);
@@ -72,5 +72,9 @@ public class ChatService {
 
     public List<ChatMessage> findChatMessagesBy(String roomId) {
         return chatMessageRepository.findAllByRoomId(roomId);
+    }
+
+    public void deleteChatRoomBy(String roomId) {
+        chatRoomRepository.deleteByRoomId(roomId);
     }
 }
