@@ -30,7 +30,7 @@ public class ChatFacadeService {
     public ChatRoomCreateDto.Response createChatRoom(Long memberId, ChatRoomCreateDto.Request request) {
         Member member = memberService.getMemberReferenceById(memberId);
         Product product = productService.findById(request.getProductId());
-        ChatRoom chatRoom = chatService.createChatRoom(product, member, request.getMessage().getContent());
+        ChatRoom chatRoom = chatService.createChatRoom(product, member, request.getMessage());
 
         return new ChatRoomCreateDto.Response(chatRoom.getRoomId());
     }
