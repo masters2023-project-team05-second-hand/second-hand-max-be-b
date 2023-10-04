@@ -18,7 +18,7 @@ public class AddressController {
 
     @GetMapping("/api/addresses")
     public ResponseEntity<AddressSliceResponse> readAddresses(@RequestParam Integer page, @RequestParam Integer size,
-                                                              @RequestParam(required = false) String search) {
+                                                              @RequestParam(required = false, defaultValue = "") String search) {
         String searchWord = URLDecoder.decode(search, StandardCharsets.UTF_8);
         AddressSliceResponse addressSliceResponse = addressService.findAddresses(page, size, searchWord);
         return ResponseEntity.ok()
