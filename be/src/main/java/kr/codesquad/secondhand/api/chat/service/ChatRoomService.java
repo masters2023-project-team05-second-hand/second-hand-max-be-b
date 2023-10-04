@@ -18,7 +18,7 @@ import org.springframework.stereotype.Service;
 public class ChatRoomService {
 
     private final ChatRoomRepositoryImpl chatRoomRepository;
-    private final ChatMessageRepositoryImpl chatMessageRepository;
+    private final ChatMessageRepositoryImpl chatMessageRepository; // TODO chatmessage 관련 로직 ChatMessageService로 이동 필요
 
     public ChatRoom createChatRoom(Product product, Member member, String message) {
         // TODO 채팅방이 이미 존재할 경우, 예외 처리 필요
