@@ -15,9 +15,9 @@ public class AddressService {
 
     private final AddressRepositoryImpl addressRepository;
 
-    public AddressSliceResponse findAddresses(int page, int size) {
+    public AddressSliceResponse findAddresses(int page, int size, String searchWord) {
         PageRequest pageRequest = PageRequest.of(page, size);
-        Slice<Address> addressSlice = addressRepository.findAllBy(pageRequest);
+        Slice<Address> addressSlice = addressRepository.findAllByNameContaining(pageRequest, searchWord);
         return AddressSliceResponse.of(addressSlice.getContent(), addressSlice.hasNext());
     }
 
