@@ -40,7 +40,7 @@ public class ChatService {
         return chatMessageRepository.save(chatMessage);
     }
 
-    private void updateLastMessage(String roomId, ChatMessage chatMessage) {
+    public void updateLastMessage(String roomId, ChatMessage chatMessage) {
         // TODO save 후 바로 업데이트가 되지 않아서 save -> find -> update 하고 있는데 쿼리 개선 필요
         ChatRoom chatRoom = chatRoomRepository.findByRoomId(roomId);
         chatRoom.updateLastMessage(chatMessage);
