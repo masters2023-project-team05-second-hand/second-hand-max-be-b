@@ -13,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class ChatMessageFacadeService {
 
     private final ChatMessageService chatMessageService;
-    private final ChatService chatService;
+    private final ChatRoomService chatRoomService;
     private final MemberService memberService;
 
     @Transactional
@@ -21,7 +21,7 @@ public class ChatMessageFacadeService {
         Member sender = memberService.getMemberReferenceById(request.getSenderId()); // TODO 헤더 토큰 파싱하는 것으로 개선 필요
         ChatMessage chatMessage = request.toEntity(sender);
 
-        chatService.updateLastMessage(chatMessage.getRoomId(), chatMessage);
+        chatRoomService.updateLastMessage(chatMessage.getRoomId(), chatMessage);
         chatMessageService.sendMessage(chatMessage);
     }
 }

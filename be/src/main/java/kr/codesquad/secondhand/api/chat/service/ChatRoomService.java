@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class ChatService {
+public class ChatRoomService {
 
     private final ChatRoomRepositoryImpl chatRoomRepository;
     private final ChatMessageRepositoryImpl chatMessageRepository;

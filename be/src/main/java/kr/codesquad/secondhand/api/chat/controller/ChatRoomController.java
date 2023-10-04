@@ -8,7 +8,7 @@ import kr.codesquad.secondhand.api.chat.dto.ChatRoomCreateDto;
 import kr.codesquad.secondhand.api.chat.dto.reponse.ChatRoomExistenceCheckResponse;
 import kr.codesquad.secondhand.api.chat.dto.reponse.ChatRoomMessagesReadResponse;
 import kr.codesquad.secondhand.api.chat.dto.reponse.ChatRoomReadResponse;
-import kr.codesquad.secondhand.api.chat.service.ChatFacadeService;
+import kr.codesquad.secondhand.api.chat.service.ChatRoomFacadeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class ChatRoomController {
 
-    private final ChatFacadeService chatService;
+    private final ChatRoomFacadeService chatService;
 
     @PostMapping("/api/chat/room")
     public ResponseEntity<ChatRoomCreateDto.Response> createChatRoom(HttpServletRequest httpServletRequest,
