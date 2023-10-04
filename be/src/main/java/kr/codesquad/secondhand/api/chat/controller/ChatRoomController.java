@@ -5,9 +5,9 @@ import static kr.codesquad.secondhand.global.util.HttpAuthorizationUtils.extract
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import kr.codesquad.secondhand.api.chat.dto.ChatRoomCreateDto;
-import kr.codesquad.secondhand.api.chat.dto.reponse.ChatRoomExistenceCheckResponse;
-import kr.codesquad.secondhand.api.chat.dto.reponse.ChatRoomMessagesReadResponse;
-import kr.codesquad.secondhand.api.chat.dto.reponse.ChatRoomReadResponse;
+import kr.codesquad.secondhand.api.chat.dto.response.ChatRoomExistenceCheckResponse;
+import kr.codesquad.secondhand.api.chat.dto.response.ChatRoomMessagesReadResponse;
+import kr.codesquad.secondhand.api.chat.dto.response.ChatRoomReadResponse;
 import kr.codesquad.secondhand.api.chat.service.ChatRoomFacadeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

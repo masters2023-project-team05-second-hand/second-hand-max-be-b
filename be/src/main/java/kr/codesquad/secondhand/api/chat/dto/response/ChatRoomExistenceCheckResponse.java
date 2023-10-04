@@ -1,4 +1,4 @@
-package kr.codesquad.secondhand.api.chat.dto.reponse;
+package kr.codesquad.secondhand.api.chat.dto.response;
 
 import lombok.Getter;
 
