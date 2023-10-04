@@ -27,7 +27,7 @@ public class ChatRoomController {
 
     private final ChatRoomFacadeService chatRoomFacadeService;
 
-    @PostMapping("/api/chat/room")
+    @PostMapping("/api/chat-room")
     public ResponseEntity<ChatRoomCreateDto.Response> createChatRoom(HttpServletRequest httpServletRequest,
                                                                      @Validated @RequestBody ChatRoomCreateDto.Request request) {
         Long memberId = extractMemberId(httpServletRequest);
@@ -58,7 +58,7 @@ public class ChatRoomController {
         return ResponseEntity.ok(response);
     }
 
-    @DeleteMapping("/api/chat/room/{roomId}")
+    @DeleteMapping("/api/chat-room/{roomId}")
     public ResponseEntity<Void> deleteChatRoom(@PathVariable String roomId) {
         chatRoomFacadeService.deleteChatRoomBy(roomId);
         return ResponseEntity.ok()
