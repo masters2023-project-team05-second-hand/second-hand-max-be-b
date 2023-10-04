@@ -62,5 +62,6 @@ public class ChatRoomFacadeService {
     @Transactional
     public void deleteChatRoomBy(String roomId) {
         chatRoomService.deleteChatRoomBy(roomId);
+        // TODO 채팅방 나갈 때 메세지도 삭제 필요(2명 다 갔을 때만?, 정책 논의 필요)
     }
 }

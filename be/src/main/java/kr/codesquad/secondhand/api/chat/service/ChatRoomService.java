@@ -75,7 +75,6 @@ public class ChatRoomService {
     }
 
     public void deleteChatRoomBy(String roomId) {
-        // 메시지 삭제 필
         chatRoomRepository.deleteByRoomId(roomId);
     }
 }
