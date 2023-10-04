@@ -50,8 +50,8 @@ public class ChatRoomService {
         return chatRoomRepository.findByBuyerIdAndProductId(memberId, productId);
     }
 
-    public Optional<List<ChatRoom>> findAllChatRoomsBy(Member member) {
-        return chatRoomRepository.findByProductSellerOrBuyer(member, member);
+    public Optional<List<ChatRoom>> findAllChatRoomsBy(Long memberId, Long productId) {
+        return chatRoomRepository.findChatRoomsBy(memberId, productId);
     }
 
     /**
@@ -75,6 +75,7 @@ public class ChatRoomService {
     }
 
     public void deleteChatRoomBy(String roomId) {
+        // 메시지 삭제 필
         chatRoomRepository.deleteByRoomId(roomId);
     }
 }

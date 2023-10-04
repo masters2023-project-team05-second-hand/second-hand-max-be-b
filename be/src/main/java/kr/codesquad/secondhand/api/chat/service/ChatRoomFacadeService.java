@@ -42,9 +42,9 @@ public class ChatRoomFacadeService {
     }
 
     @Transactional
-    public List<ChatRoomReadResponse> findAllChatRoomsBy(Long memberId) {
+    public List<ChatRoomReadResponse> findAllChatRoomsBy(Long memberId, Long productId) {
         Member loginMember = memberService.getMemberReferenceById(memberId);
-        Optional<List<ChatRoom>> chatRooms = chatRoomService.findAllChatRoomsBy(loginMember);
+        Optional<List<ChatRoom>> chatRooms = chatRoomService.findAllChatRoomsBy(memberId, productId);
 
         if (chatRooms.isEmpty()) {
             return Collections.emptyList();

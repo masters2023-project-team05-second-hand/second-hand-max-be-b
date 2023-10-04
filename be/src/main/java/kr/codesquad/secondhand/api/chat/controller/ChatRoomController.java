@@ -46,9 +46,10 @@ public class ChatRoomController {
     }
 
     @GetMapping("/api/chat-room")
-    public ResponseEntity<List<ChatRoomReadResponse>> readChatRooms(HttpServletRequest httpServletRequest) {
+    public ResponseEntity<List<ChatRoomReadResponse>> readChatRooms(HttpServletRequest httpServletRequest,
+                                                                    @RequestParam(required = false, defaultValue = "0") Long productId) {
         Long memberId = extractMemberId(httpServletRequest);
-        List<ChatRoomReadResponse> response = chatRoomFacadeService.findAllChatRoomsBy(memberId);
+        List<ChatRoomReadResponse> response = chatRoomFacadeService.findAllChatRoomsBy(memberId, productId);
         return ResponseEntity.ok(response);
     }
 
