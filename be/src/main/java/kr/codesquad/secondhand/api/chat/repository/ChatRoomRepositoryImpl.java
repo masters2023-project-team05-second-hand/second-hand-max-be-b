@@ -21,5 +21,7 @@ public interface ChatRoomRepositoryImpl extends JpaRepository<ChatRoom, String> 
             + "AND (chatRoom.product.seller.id = :memberId OR chatRoom.buyer.id = :memberId)")
     Optional<List<ChatRoom>> findChatRoomsBy(@Param("memberId") Long memberId, @Param("productId") Long productId);
 
+    int countChatRoomsByProductId(Long productId);
+
     void deleteByRoomId(String roomId);
 }
