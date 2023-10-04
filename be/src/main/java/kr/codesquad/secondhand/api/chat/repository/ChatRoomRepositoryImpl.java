@@ -13,4 +13,6 @@ public interface ChatRoomRepositoryImpl extends JpaRepository<ChatRoom, String> 
     ChatRoom findByRoomId(String roomId);
 
     Optional<List<ChatRoom>> findByProductSellerOrBuyer(Member seller, Member buyer);
+
+    void deleteByRoomId(String roomId);
 }

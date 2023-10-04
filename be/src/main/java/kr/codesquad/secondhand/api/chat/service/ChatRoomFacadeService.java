@@ -58,4 +58,9 @@ public class ChatRoomFacadeService {
         List<ChatMessage> messages = chatRoomService.findChatMessagesBy(roomId);
         return ChatRoomMessagesReadResponse.from(messages);
     }
+
+    @Transactional
+    public void deleteChatRoomBy(String roomId) {
+        chatRoomService.deleteChatRoomBy(roomId);
+    }
 }
