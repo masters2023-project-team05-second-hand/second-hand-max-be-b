@@ -32,6 +32,14 @@ public class HttpAuthorizationUtils {
         }
     }
 
+    public static String extractAccessToken(String authorizationCode) throws TokenNotFoundException {
+        try {
+            return authorizationCode.substring(BEARER_TOKEN_PREFIX_LENGTH);
+        } catch (StringIndexOutOfBoundsException e) {
+            throw new TokenNotFoundException();
+        }
+    }
+
     public static boolean containsBearerToken(HttpServletRequest httpServletRequest) {
         String authorization = httpServletRequest.getHeader(HttpHeaders.AUTHORIZATION);
         return authorization != null && authorization.startsWith(TOKEN_PREFIX);
