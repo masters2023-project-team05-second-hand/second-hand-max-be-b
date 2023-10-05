@@ -1,4 +1,4 @@
-package kr.codesquad.secondhand.api.chat.dto.reponse;
+package kr.codesquad.secondhand.api.chat.dto.response;
 
 import java.net.URL;
 import java.time.Instant;
@@ -15,11 +15,16 @@ import lombok.Getter;
 @Getter
 public class ChatRoomReadResponse {
 
-    private final ChatRoomDto chatRoom;
+    private final String roomId;
+    private final MemberProfileResponse otherMember;
+    private final MessageDto message;
     private final ProductDto product;
+    // TODO 안 읽은 메시지 개수
 
     private ChatRoomReadResponse(ChatRoom chatRoom, Member otherMember) {
-        this.chatRoom = ChatRoomDto.from(chatRoom, otherMember);
+        this.roomId = chatRoom.getRoomId();
+        this.otherMember = MemberProfileResponse.from(otherMember);
+        this.message = MessageDto.from(chatRoom);
         this.product = ProductDto.from(chatRoom.getProduct());
     }
 
@@ -30,26 +35,6 @@ public class ChatRoomReadResponse {
                     return new ChatRoomReadResponse(chatRoom, otherMember);
                 })
                 .collect(Collectors.toList());
-    }
-
-    @Getter
-    private static class ChatRoomDto {
-
-        private final MemberProfileResponse otherMember;
-        private final MessageDto message;
-        // TODO 안 읽은 메시지 개수
-
-        private ChatRoomDto(MemberProfileResponse otherMember, MessageDto message) {
-            this.otherMember = otherMember;
-            this.message = message;
-        }
-
-        private static ChatRoomDto from(ChatRoom chatRoom, Member otherMember) {
-            return new ChatRoomDto(
-                    MemberProfileResponse.from(otherMember),
-                    MessageDto.from(chatRoom)
-            );
-        }
     }
 
     @Getter

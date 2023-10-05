@@ -5,9 +5,9 @@ import static kr.codesquad.secondhand.global.util.HttpAuthorizationUtils.extract
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import kr.codesquad.secondhand.api.chat.dto.ChatRoomCreateDto;
-import kr.codesquad.secondhand.api.chat.dto.reponse.ChatRoomExistenceCheckResponse;
-import kr.codesquad.secondhand.api.chat.dto.reponse.ChatRoomMessagesReadResponse;
-import kr.codesquad.secondhand.api.chat.dto.reponse.ChatRoomReadResponse;
+import kr.codesquad.secondhand.api.chat.dto.response.ChatRoomExistenceCheckResponse;
+import kr.codesquad.secondhand.api.chat.dto.response.ChatRoomMessagesReadResponse;
+import kr.codesquad.secondhand.api.chat.dto.response.ChatRoomReadResponse;
 import kr.codesquad.secondhand.api.chat.service.ChatRoomFacadeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -27,7 +27,7 @@ public class ChatRoomController {
 
     private final ChatRoomFacadeService chatRoomFacadeService;
 
-    @PostMapping("/api/chat/room")
+    @PostMapping("/api/chat-room")
     public ResponseEntity<ChatRoomCreateDto.Response> createChatRoom(HttpServletRequest httpServletRequest,
                                                                      @Validated @RequestBody ChatRoomCreateDto.Request request) {
         Long memberId = extractMemberId(httpServletRequest);
@@ -46,9 +46,10 @@ public class ChatRoomController {
     }
 
     @GetMapping("/api/chat-room")
-    public ResponseEntity<List<ChatRoomReadResponse>> readChatRooms(HttpServletRequest httpServletRequest) {
+    public ResponseEntity<List<ChatRoomReadResponse>> readChatRooms(HttpServletRequest httpServletRequest,
+                                                                    @RequestParam(required = false, defaultValue = "0") Long productId) {
         Long memberId = extractMemberId(httpServletRequest);
-        List<ChatRoomReadResponse> response = chatRoomFacadeService.findAllChatRoomsBy(memberId);
+        List<ChatRoomReadResponse> response = chatRoomFacadeService.findAllChatRoomsBy(memberId, productId);
         return ResponseEntity.ok(response);
     }
 
@@ -58,7 +59,7 @@ public class ChatRoomController {
         return ResponseEntity.ok(response);
     }
 
-    @DeleteMapping("/api/chat/room/{roomId}")
+    @DeleteMapping("/api/chat-room/{roomId}")
     public ResponseEntity<Void> deleteChatRoom(@PathVariable String roomId) {
         chatRoomFacadeService.deleteChatRoomBy(roomId);
         return ResponseEntity.ok()

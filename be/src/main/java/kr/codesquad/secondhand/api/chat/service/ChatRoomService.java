@@ -46,12 +46,16 @@ public class ChatRoomService {
         chatRoom.updateLastMessage(chatMessage);
     }
 
+    public int countChatRoomsBy(Long productId) {
+        return chatRoomRepository.countChatRoomsByProductId(productId);
+    }
+
     public Optional<ChatRoom> findChatRoomByMemberIdAndProductId(Long memberId, Long productId) {
         return chatRoomRepository.findByBuyerIdAndProductId(memberId, productId);
     }
 
-    public Optional<List<ChatRoom>> findAllChatRoomsBy(Member member) {
-        return chatRoomRepository.findByProductSellerOrBuyer(member, member);
+    public Optional<List<ChatRoom>> findAllChatRoomsBy(Long memberId, Long productId) {
+        return chatRoomRepository.findChatRoomsBy(memberId, productId);
     }
 
     /**
