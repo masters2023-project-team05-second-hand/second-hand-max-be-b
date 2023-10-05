@@ -6,6 +6,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import kr.codesquad.secondhand.api.chat.domain.ChatMessage;
 import kr.codesquad.secondhand.api.chat.domain.ChatRoom;
+import kr.codesquad.secondhand.api.chat.exception.ChatRoomExistsException;
 import kr.codesquad.secondhand.api.chat.repository.ChatMessageRepositoryImpl;
 import kr.codesquad.secondhand.api.chat.repository.ChatRoomRepositoryImpl;
 import kr.codesquad.secondhand.api.member.domain.Member;
@@ -21,7 +22,10 @@ public class ChatRoomService {
     private final ChatMessageRepositoryImpl chatMessageRepository; // TODO chatmessage 관련 로직 ChatMessageService로 이동 필요
 
     public ChatRoom createChatRoom(Product product, Member member, String message) {
-        // TODO 채팅방이 이미 존재할 경우, 예외 처리 필요
+        if (chatRoomRepository.existsByBuyerIdAndProductId(member.getId(), product.getId())) {
+            throw new ChatRoomExistsException();
+        }
+
         ChatRoom chatRoom = saveChatRoom(product, member);
         ChatMessage chatMessage = saveChatMessage(message, member, chatRoom.getRoomId());
         updateLastMessage(chatRoom.getRoomId(), chatMessage);
