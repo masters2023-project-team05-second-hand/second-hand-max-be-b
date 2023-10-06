@@ -3,11 +3,11 @@ oauth2:
     github:
       client-id: Iv1.cf29a87e489d2a82
       client-secret: ENC(GeOo8HDFHjjqfSTqGvGBbv4ydRWcb/vCvV0CYkG0LCCSvGpHLt9jQAcq4I+je0vrd9Ahdmf/55w=)
-      redirect-uri: http://3.34.90.97/auth/github
+      redirect-uri: http://gajinny.site/auth/github
     kakao:
       client-id: bfea12117cfbf4ba08a81770fcb696a4
       client-secret: ENC(BXk6vmKBJ4D2DuhF2FXaU6p4wmJcecJsW8g8EPQmCrr68BUF8iFTYVRH0wWJUmN9)
-      redirect-uri: http://3.34.90.97/auth/kakao
+      redirect-uri: http://gajinny.site/auth/kakao
   provider:
     github:
       token-request-uri: https://github.com/login/oauth/access_token
