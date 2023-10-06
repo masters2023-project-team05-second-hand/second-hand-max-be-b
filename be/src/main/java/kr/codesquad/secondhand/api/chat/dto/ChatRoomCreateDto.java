@@ -1,5 +1,6 @@
 package kr.codesquad.secondhand.api.chat.dto;
 
+import java.time.Instant;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import lombok.Getter;
@@ -20,9 +21,11 @@ public class ChatRoomCreateDto {
     public static class Response {
 
         private final String roomId;
+        private final Instant sentTime;
 
-        public Response(String roomId) {
+        public Response(String roomId, Instant sentTime) {
             this.roomId = roomId;
+            this.sentTime = sentTime;
         }
     }
 }

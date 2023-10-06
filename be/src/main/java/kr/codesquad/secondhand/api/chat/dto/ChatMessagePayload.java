@@ -1,5 +1,6 @@
 package kr.codesquad.secondhand.api.chat.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.Instant;
 import kr.codesquad.secondhand.api.chat.domain.ChatMessage;
 import kr.codesquad.secondhand.api.member.domain.Member;
@@ -10,11 +11,12 @@ public class ChatMessagePayload {
     @Getter
     public static class Request {
 
-        private String roomId;
-        private Long senderId;
+        @JsonProperty("Authorization")
+        private String authorization;
+
         private String message;
 
-        public ChatMessage toEntity(Member sender) {
+        public ChatMessage toEntity(String roomId, Member sender) {
             return new ChatMessage(roomId, sender, message);
         }
     }

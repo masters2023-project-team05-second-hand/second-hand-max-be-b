@@ -1,5 +1,6 @@
 package kr.codesquad.secondhand.api.chat.service;
 
+import java.time.Instant;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -31,8 +32,8 @@ public class ChatRoomFacadeService {
         Member member = memberService.getMemberReferenceById(memberId);
         Product product = productService.findById(request.getProductId());
         ChatRoom chatRoom = chatRoomService.createChatRoom(product, member, request.getMessage());
-
-        return new ChatRoomCreateDto.Response(chatRoom.getRoomId());
+        Instant sentTime = chatRoom.getLastMessage().getSentTime();
+        return new ChatRoomCreateDto.Response(chatRoom.getRoomId(), sentTime);
     }
 
     public ChatRoomExistenceCheckResponse checkChatRoomExistence(Long memberId, Long productId) {
