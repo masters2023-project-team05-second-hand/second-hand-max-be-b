@@ -3,6 +3,7 @@ package kr.codesquad.secondhand.api.product.service;
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import kr.codesquad.secondhand.api.address.domain.Address;
 import kr.codesquad.secondhand.api.address.service.AddressService;
 import kr.codesquad.secondhand.api.category.domain.Category;
@@ -104,7 +105,11 @@ public class ProductFacadeService {
 
         List<Product> products = productSlices.getContent();
         Boolean hasNext = productSlices.hasNext();
-        Map<Long, ProductStats> productStats = statService.findProductsStats(products);
+        Map<Long, ProductStats> productStats = products.stream()
+                .collect(Collectors.toUnmodifiableMap(
+                        product -> product.getId(),
+                        product -> readProductStats(product.getId()))
+                );
 
         return ProductSlicesResponse.of(products, productStats, hasNext);
     }
