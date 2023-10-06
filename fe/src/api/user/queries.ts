@@ -86,7 +86,6 @@ export const useUserLikeCategories = () => {
   return useQuery({
     ...userKeys.wishlistCategory,
     queryFn: getUserWishlistCategory,
-    staleTime: Infinity,
   });
 };
 
