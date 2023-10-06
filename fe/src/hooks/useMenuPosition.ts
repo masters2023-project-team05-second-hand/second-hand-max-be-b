@@ -20,13 +20,13 @@ export default function useMenuPosition(): ReturnType {
     const refPositionInfo = ref.current?.getBoundingClientRect();
 
     const halfOfX = window.innerWidth / 2;
-    const HALF_OF_PAGE = WIDTH.page / 2;
+    const halfOfPage = WIDTH.page / 2;
 
     const clickX = e.clientX;
     const clickY = e.clientY;
 
-    const left = halfOfX - HALF_OF_PAGE + WIDTH.menuMarginX;
-    const right = halfOfX - HALF_OF_PAGE + WIDTH.menuMarginX;
+    const left = halfOfX - halfOfPage + WIDTH.menuMarginX;
+    const right = halfOfX - halfOfPage + WIDTH.menuMarginX;
     const top = refPositionInfo!.top + HEIGHT.menuMarginY;
     const bottom =
       window.innerHeight -

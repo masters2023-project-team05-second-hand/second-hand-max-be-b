@@ -1,16 +1,16 @@
 import styled from "styled-components";
 
-export default function ChatBubble({
+export default function ChatMessage({
   isMine,
   content,
 }: {
   isMine: boolean;
   content: string;
 }) {
-  return <Bubble $isMine={isMine}>{content}</Bubble>;
+  return <Message $isMine={isMine}>{content}</Message>;
 }
 
-const Bubble = styled.div<{ $isMine: boolean }>`
+const Message = styled.div<{ $isMine: boolean }>`
   color: ${({ $isMine, theme: { color } }) =>
     $isMine ? color.accentText : color.neutralText};
   background-color: ${({ $isMine, theme: { color } }) =>

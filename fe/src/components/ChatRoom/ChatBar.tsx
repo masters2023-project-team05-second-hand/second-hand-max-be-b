@@ -3,12 +3,24 @@ import { useState } from "react";
 import { styled } from "styled-components";
 import Button from "../common/Buttons/Button";
 
-export default function ChatBar() {
+export default function ChatBar({
+  onMessageSubmit,
+}: {
+  onMessageSubmit: (content: string) => void;
+}) {
   const [message, setMessage] = useState("");
 
-  const onSendMessage = () => {
-    // TODO: api 나오면 메세지 보내는 기능 추가
-    console.log(message);
+  const sendMessage = () => {
+    onMessageSubmit(message);
+    setMessage("");
+  };
+
+  const onEnterPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.nativeEvent.isComposing) {
+      return;
+    }
+
+    e.key === "Enter" && !!message && sendMessage();
   };
 
   return (
@@ -17,6 +29,8 @@ export default function ChatBar() {
         placeholder="내용을 입력하세요"
         value={message}
         onChange={(e) => setMessage(e.target.value)}
+        onKeyDown={onEnterPress}
+        autoFocus
       />
       <Button
         size={{ width: 32, height: 32 }}
@@ -24,7 +38,8 @@ export default function ChatBar() {
         leftIcon={<SendIcon />}
         color="accentText"
         backgroundColor="accentPrimary"
-        onClick={onSendMessage}
+        onClick={sendMessage}
+        disabled={!message}
       />
     </StyledChatBar>
   );

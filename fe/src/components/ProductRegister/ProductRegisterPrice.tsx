@@ -7,7 +7,7 @@ export default function ProductRegisterPrice({
   onChange,
 }: {
   price?: string;
-  onChange: (price: string) => void;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }) {
   return (
     <Price>
@@ -16,9 +16,8 @@ export default function ProductRegisterPrice({
         className="price"
         placeholder={PLACE_HOLDER.price}
         value={price ? getFormattedPrice(price) : price}
-        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-          onChange(getFormattedPrice(e.target.value))
-        }
+        name="price"
+        onChange={(e: React.ChangeEvent<HTMLInputElement>) => onChange(e)}
       />
     </Price>
   );

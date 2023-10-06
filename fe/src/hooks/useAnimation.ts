@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 type AnimationReturnType = {
   isAnimating: boolean;
@@ -6,11 +6,7 @@ type AnimationReturnType = {
 };
 
 export default function useAnimation(): AnimationReturnType {
-  const [isAnimating, setIsAnimating] = useState(false);
-
-  useEffect(() => {
-    setIsAnimating(true);
-  }, []);
+  const [isAnimating, setIsAnimating] = useState(true);
 
   const onLeavePage = () => {
     setIsAnimating(false);

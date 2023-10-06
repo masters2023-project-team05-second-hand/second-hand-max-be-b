@@ -2,16 +2,16 @@ import { MutableRefObject, useRef } from "react";
 
 type AutoHeightReturnType<T extends HTMLElement> = {
   ref: MutableRefObject<T | null>;
-  onChange: (text: string) => void;
+  onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
 };
 
 export default function useAutoHeight<T extends HTMLElement>(
-  changeHandler: (text: string) => void
+  changeHandler: (e: React.ChangeEvent<HTMLTextAreaElement>) => void
 ): AutoHeightReturnType<T> {
   const ref = useRef<T>(null);
 
-  const onChange = (text: string) => {
-    changeHandler(text);
+  const onChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    changeHandler(e);
 
     if (ref.current) {
       ref.current.style.height = "auto";

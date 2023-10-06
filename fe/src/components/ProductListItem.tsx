@@ -1,22 +1,23 @@
+import {
+  useDeleteProductQuery,
+  useMutateProductStatus,
+} from "@api/product/queries";
 import { ProductItem } from "@api/type";
 import { ReactComponent as HeartIcon } from "@assets/icon/heart.svg";
 import { ReactComponent as MessageIcon } from "@assets/icon/message.svg";
 import ProductStatus from "@components/ProductStatus";
 import { ROUTE_PATH } from "@router/constants";
+import { TextDefault, TextWeak } from "@styles/common";
+import { getLastWord } from "@utils/index";
 import { convertPastTimestamp } from "@utils/time";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useMemberValue, useStatusesValue } from "store";
 import { styled } from "styled-components";
 import ProductMoreButton from "./ProductMoreButton";
-import { TextBold, TextDefault, TextWeak } from "@styles/common";
-import { useState } from "react";
-import {
-  useDeleteProductQuery,
-  useMutateProductStatus,
-} from "@api/product/queries";
 import Alert from "./common/Alert/Alert";
 import { MenuItemInfo } from "./common/Menu/type";
-import { getFormattedAddress } from "@utils/index";
+import PriceText from "./common/PriceText";
 
 type ProductListItemProps = {
   productItem: ProductItem;
@@ -41,7 +42,7 @@ export default function ProductListItem({
   });
 
   const onProductClick = () => {
-    navigate(ROUTE_PATH.detail + `/${productItem.productId}`);
+    navigate(`${ROUTE_PATH.detail}/${productItem.productId}`);
   };
 
   const getProductStatusList = (): MenuItemInfo[] => {
@@ -64,7 +65,6 @@ export default function ProductListItem({
   const closeDeleteAlert = () => setIsDeleteAlertOpen(false);
 
   const isSeller = productItem.sellerId === memberId;
-  const productPrice = productItem.price?.toLocaleString("ko-KR");
 
   return (
     <>
@@ -84,9 +84,7 @@ export default function ProductListItem({
                 )}
               </div>
               <div className="info-middle">
-                <TextWeak>
-                  {getFormattedAddress(productItem.addressName)}
-                </TextWeak>
+                <TextWeak>{getLastWord(productItem.addressName)}</TextWeak>
                 <TextWeak>・</TextWeak>
                 <TextWeak>
                   {convertPastTimestamp(productItem.createdTime)}
@@ -94,9 +92,7 @@ export default function ProductListItem({
               </div>
               <div className="info-bottom">
                 <ProductStatus id={productItem.statusId} />
-                <TextBold>
-                  {productPrice ? `${productPrice} 원` : "가격미정"}
-                </TextBold>
+                <PriceText productPrice={productItem.price} />
               </div>
             </div>
             <div className="info-history">

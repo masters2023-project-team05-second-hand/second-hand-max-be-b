@@ -1,3 +1,5 @@
+import { Chat } from "@components/ChatRoom/DailyChat";
+
 export const isSameItems = (a: number[], b: number[]) => {
   const setA = new Set(a);
   const setB = new Set(b);
@@ -31,15 +33,15 @@ export function delay(time: number) {
   return new Promise((resolve) => setTimeout(resolve, time));
 }
 
-export function getFormattedAddress(addressName: string | undefined) {
-  if (!addressName) {
+export function getLastWord(string: string | undefined) {
+  if (!string) {
     return "";
   }
 
-  const splittedAddress = addressName.split(" ");
-  const dong = splittedAddress[splittedAddress.length - 1];
+  const splittedString = string.split(" ");
+  const lastWord = splittedString[splittedString.length - 1];
 
-  return dong;
+  return lastWord;
 }
 
 export const checkTokenExpiration = () => {
@@ -48,4 +50,29 @@ export const checkTokenExpiration = () => {
     !!expirationTime && Date.now() < parseInt(expirationTime, 10);
 
   return isValidToken;
+};
+
+// TODO: 백엔드에 response format 변경 요청 후 삭제 예정
+export const groupChatsByDate = (messages: Chat[]) => {
+  const groupedChats = new Map<string, Chat[]>();
+
+  messages.forEach((chat: Chat) => {
+    const dateKey = chat.sentTime.split("T")[0];
+
+    if (!groupedChats.get(dateKey)) {
+      groupedChats.set(dateKey, []);
+    }
+
+    groupedChats.get(dateKey)?.push(chat);
+  });
+
+  const result: { date: string; chats: Chat[] }[] = [];
+  groupedChats.forEach((chats, date) => {
+    result.push({
+      date,
+      chats,
+    });
+  });
+
+  return result;
 };

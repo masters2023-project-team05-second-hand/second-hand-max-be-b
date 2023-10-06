@@ -1,6 +1,4 @@
-import { patchProduct, postProduct } from "@api/product/index";
 import { useProductDetailQuery } from "@api/product/queries";
-import { productKeys } from "@api/queryKeys";
 import { AddressInfo } from "@api/type";
 import ProductRegisterAddress from "@components/ProductRegister/ProductRegisterAddress";
 import ProductRegisterCategory from "@components/ProductRegister/ProductRegisterCategory";
@@ -13,34 +11,23 @@ import {
   DEFAULT_CATEGORY_ID,
   DEFAULT_SELECTED_ADDRESS_INDEX,
 } from "@components/ProductRegister/constants";
-import { ProductInfo } from "@components/ProductRegister/type";
+import { ProductRegisterInfo } from "@components/ProductRegister/type";
 import { Error, Loading } from "@components/common/Guide";
-import { useToast } from "@hooks/useToast";
-import { ROUTE_PATH } from "@router/constants";
 import { Page } from "@styles/common";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import imageCompression from "browser-image-compression";
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { useAddressListValue, useCurrentAddressIdValue } from "store";
 import { styled } from "styled-components";
 
 export default function ProductRegister() {
-  const navigate = useNavigate();
-  const queryClient = useQueryClient();
-  const { toast } = useToast();
-
-  const addressList = useAddressListValue();
-  const currentAddressId = useCurrentAddressIdValue();
-
   const { productId } = useParams();
   const numberProductId = Number(productId);
-
+  const addressList = useAddressListValue();
+  const currentAddressId = useCurrentAddressIdValue();
   const [selectedAddressId, setSelectedAddressId] = useState<number | null>(
     currentAddressId
   );
-  // Todo: 상태 분리하기 & 상태 관리 라이브러리 쓰기
-  const [productInfo, setProductInfo] = useState<ProductInfo>({
+  const [productInfo, setProductInfo] = useState<ProductRegisterInfo>({
     images: [],
     newImages: [],
     deletedImageIds: [],
@@ -60,10 +47,6 @@ export default function ProductRegister() {
     isError,
   } = useProductDetailQuery(numberProductId, !!productId);
 
-  // TODO: 아래 두 Mutation 세부 구현 숨기기 위해 hook으로 분리하기
-  const newProductMutation = useMutation(postProduct);
-  const editProductMutation = useMutation(patchProduct);
-
   useEffect(() => {
     if (isSuccess && productDetailInfo) {
       setProductInfo((prev) => {
@@ -82,129 +65,25 @@ export default function ProductRegister() {
     }
   }, [isSuccess, productDetailInfo]);
 
-  const onPostNewProduct = () => {
-    const price = productInfo.price.replace(/,/g, "");
-
-    const formData = new FormData();
-
-    productInfo.newImages?.forEach((image) => {
-      formData.append("images", image.image);
-    });
-
-    formData.append("title", productInfo.title);
-    formData.append("content", productInfo.content);
-    formData.append("categoryId", JSON.stringify(productInfo.categoryId));
-    formData.append("addressId", JSON.stringify(productInfo.address.id));
-    formData.append("price", price);
-
-    newProductMutation.mutate(formData, {
-      onSuccess: (res) => {
-        navigate(ROUTE_PATH.detail + `/${res.data.productId}`, {
-          state: { prevRoute: ROUTE_PATH.home },
-        });
-        queryClient.invalidateQueries(productKeys.detail(numberProductId));
-      },
-      onError: () => {
-        return (
-          <Error
-            messages={[
-              "새로운 상품 등록에 실패했어요.",
-              "잠시 후 다시 시도해주세요.",
-            ]}
-          />
-        );
-      },
-    });
-  };
-
-  const onPatchProduct = () => {
-    const price = productInfo.price.replace(/,/g, "");
-
-    const formData = new FormData();
-
-    productInfo.newImages?.forEach((image) => {
-      formData.append("newImages", image.image);
-    });
-
-    if (productInfo.deletedImageIds?.length) {
-      formData.append("deletedImageIds", productInfo.deletedImageIds?.join());
-    }
-
-    formData.append("title", productInfo.title);
-    formData.append("content", productInfo.content);
-    formData.append("categoryId", JSON.stringify(productInfo.categoryId));
-    formData.append("addressId", JSON.stringify(productInfo.address.id));
-    formData.append("price", price);
-
-    editProductMutation.mutate(
-      { productId: numberProductId, productInfo: formData },
-      {
-        onSuccess: () => {
-          // Memo: state로 productDetailInfo를 넘겨주기???
-          navigate(ROUTE_PATH.detail + `/${productId}`);
-          queryClient.invalidateQueries(productKeys.detail(numberProductId));
-        },
-        onError: () => {
-          return (
-            <Error
-              messages={[
-                "상품 수정에 실패했어요.",
-                "잠시 후 다시 시도해주세요.",
-              ]}
-            />
-          );
-        },
-      }
-    );
-  };
-
-  const onSubmitProduct = () => {
-    const isNewProduct = !productId;
-
-    if (isNewProduct) {
-      onPostNewProduct();
-    } else {
-      onPatchProduct();
-    }
-  };
-
-  const onAddNewImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    // Memo: option은 상의 후 결정
-    const options = {
-      maxSizeMB: 1,
-      maxWidthOrHeight: 1920,
-      useWebWorker: true,
-    };
-
-    try {
-      const compressedFile = await imageCompression(file, options);
-      const now = new Date().getTime();
-
-      const reader = new FileReader();
-      reader.readAsDataURL(compressedFile);
-      reader.onload = () => {
-        setProductInfo((prev) => ({
-          ...prev,
-          newImages: prev.newImages?.length
-            ? [...prev.newImages, { id: now, image: compressedFile }]
-            : [{ id: now, image: compressedFile }],
-          images: [...prev.images, { id: now, url: reader.result as string }],
-        }));
-      };
-    } catch (error) {
-      toast({
-        title: "이미지 업로드 실패",
-        message: "이미지 업로드에 실패했습니다",
-        type: "error",
-      });
-    }
+  const onAddNewImage = ({
+    id,
+    newImage,
+    imageUrl,
+  }: {
+    id: number;
+    newImage: File;
+    imageUrl: string;
+  }) => {
+    setProductInfo((prev) => ({
+      ...prev,
+      newImages: prev.newImages?.length
+        ? [...prev.newImages, { id: id, image: newImage }]
+        : [{ id: id, image: newImage }],
+      images: [...prev.images, { id: id, url: imageUrl }],
+    }));
   };
 
   const onRemoveImage = (id: number) => {
-    // Todo: 이미지 없을 때 처리 로직 추가, 상품 삭제시 alert 모달 띄우기
     const isNewImage = productInfo.newImages?.some((image) => image.id === id);
 
     if (!isNewImage) {
@@ -228,10 +107,14 @@ export default function ProductRegister() {
     });
   };
 
-  const onChangeTitle = (newTitle: string) => {
+  const onChangeText = (
+    e:
+      | React.ChangeEvent<HTMLInputElement>
+      | React.ChangeEvent<HTMLTextAreaElement>
+  ) => {
     setProductInfo((prev) => ({
       ...prev,
-      title: newTitle,
+      [e.target.name]: e.target.value,
     }));
   };
 
@@ -239,20 +122,6 @@ export default function ProductRegister() {
     setProductInfo((prev) => ({
       ...prev,
       categoryId,
-    }));
-  };
-
-  const onChangePrice = (price: string) => {
-    setProductInfo((prev) => ({
-      ...prev,
-      price: price,
-    }));
-  };
-
-  const onChangeContent = (content: string) => {
-    setProductInfo((prev) => ({
-      ...prev,
-      content: content,
     }));
   };
 
@@ -288,10 +157,7 @@ export default function ProductRegister() {
         />
       ) : (
         <>
-          <ProductRegisterHeader
-            productInfo={productInfo}
-            onSubmit={onSubmitProduct}
-          />
+          <ProductRegisterHeader productInfo={productInfo} />
           <Main>
             <ProductRegisterImage
               images={productInfo.images}
@@ -301,7 +167,7 @@ export default function ProductRegister() {
             <div className="product-info">
               <ProductRegisterTitle
                 title={productInfo.title}
-                onChange={onChangeTitle}
+                onChange={onChangeText}
               />
               {productInfo.title && (
                 <ProductRegisterCategory
@@ -312,12 +178,12 @@ export default function ProductRegister() {
             </div>
             <ProductRegisterPrice
               price={productInfo.price}
-              onChange={onChangePrice}
+              onChange={onChangeText}
             />
             <ProductRegisterContent
               content={productInfo.content}
               address={productInfo.address}
-              onChange={onChangeContent}
+              onChange={onChangeText}
             />
           </Main>
           <ProductRegisterAddress

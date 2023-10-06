@@ -20,7 +20,7 @@ export type ProductNewImage = {
   image: File;
 };
 
-export type ProductInfo = {
+export type ProductRegisterInfo = {
   images: ProductImageType[];
   newImages?: ProductNewImage[];
   deletedImageIds?: number[];

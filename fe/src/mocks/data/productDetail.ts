@@ -1,6 +1,6 @@
 export const productDetail = {
   product: {
-    seller: { id: 1, nickname: "나판매자ㅋ" },
+    seller: { id: 5, nickname: "나판매자ㅋ", profileImgUrl: "" },
     category: {
       id: 7,
       name: "가구/인테리어",

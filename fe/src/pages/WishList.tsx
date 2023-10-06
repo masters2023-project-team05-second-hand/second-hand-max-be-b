@@ -8,6 +8,7 @@ import { SubInfo } from "@components/ProductDetail/common.style";
 import Products from "@components/ProductList/Products";
 import TopBar from "@components/TopBar";
 import { Error, Loading } from "@components/common/Guide";
+import { LoadingSpinner } from "@components/common/LoadingSpinner";
 import { TabButtons } from "@components/common/TabButtons";
 import useDrag from "@hooks/useDrag";
 import { useIntersect } from "@hooks/useIntersect";
@@ -89,11 +90,7 @@ export default function WishList() {
                 userKeys.wishlistProduct(activeTabId).queryKey
               }
             />
-            {isFetching ? (
-              <Loading messages={["상품 목록 로딩 중"]} />
-            ) : (
-              <Target ref={targetRef} />
-            )}
+            {isFetching ? <LoadingSpinner /> : <Target ref={targetRef} />}
           </PageContent>
         ))}
       <NavigationBar />

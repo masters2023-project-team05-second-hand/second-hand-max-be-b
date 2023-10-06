@@ -6,16 +6,15 @@ export default function ProductRegisterTitle({
   onChange,
 }: {
   title?: string;
-  onChange: (title: string) => void;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }) {
   return (
     <Title
       type="text"
       placeholder={PLACE_HOLDER.title}
+      name="title"
       value={title}
-      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-        onChange(e.target.value)
-      }
+      onChange={(e: React.ChangeEvent<HTMLInputElement>) => onChange(e)}
     />
   );
 }

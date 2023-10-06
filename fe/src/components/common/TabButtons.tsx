@@ -41,7 +41,6 @@ export const TabButtons = React.forwardRef<HTMLUListElement, TabButtonsProps>(
 const StyledTabButtons = styled.ul`
   display: flex;
   gap: 4px;
-  width: 100%;
   overflow-x: scroll;
   height: 2rem;
   margin: 1rem 1rem 0.5rem;

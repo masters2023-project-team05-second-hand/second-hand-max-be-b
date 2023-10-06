@@ -6,6 +6,7 @@ import ProductListFAB from "@components/ProductList/ProductListFAB";
 import ProductListHeader from "@components/ProductList/ProductListHeader";
 import Products from "@components/ProductList/Products";
 import { Error, Loading } from "@components/common/Guide";
+import { LoadingSpinner } from "@components/common/LoadingSpinner";
 import { useIntersect } from "@hooks/useIntersect";
 import { Main, Page, Target } from "@styles/common";
 import { useCurrentAddressIdValue, useCurrentCategoryIdValue } from "store";
@@ -71,11 +72,7 @@ export default function ProductList() {
         </>
       )}
       <ProductListFAB />
-      {isFetching ? (
-        <Loading messages={["상품 목록 로딩 중"]} />
-      ) : (
-        <Target ref={targetRef} />
-      )}
+      {isFetching ? <LoadingSpinner /> : <Target ref={targetRef} />}
       <NavigationBar />
     </Page>
   );

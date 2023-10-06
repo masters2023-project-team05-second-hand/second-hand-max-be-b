@@ -21,7 +21,7 @@ export default function ProductMoreButton({
     {
       name: "게시글 수정",
       onClick: () => {
-        navigate(ROUTE_PATH.edit + `/${productId}`);
+        navigate(`${ROUTE_PATH.edit}/${productId}`);
       },
     },
     ...statusListItems,

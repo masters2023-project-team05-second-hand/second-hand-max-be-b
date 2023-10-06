@@ -2,16 +2,16 @@ import {
   useDeleteProductQuery,
   useProductDetailQuery,
 } from "@api/product/queries";
-import BackButton from "@components/common/Buttons/BackButton";
-import ChatButton from "@components/ProductDetail/Buttons/ChatButton";
+import ChatButton from "@components/ProductDetail/Buttons/ChatButton/ChatButton";
 import MoreButton from "@components/ProductDetail/Buttons/MoreButton";
 import ProductLikeButton from "@components/ProductDetail/Buttons/ProductLikeButton";
 import ProductContents from "@components/ProductDetail/ProductContents/ProductContents";
 import ProductImageList from "@components/ProductDetail/ProductImageList";
 import TopBar from "@components/TopBar";
+import BackButton from "@components/common/Buttons/BackButton";
+import PriceText from "@components/common/PriceText";
 import useAnimation from "@hooks/useAnimation";
-import useScroll from "@hooks/useScroll";
-import { useToast } from "@hooks/useToast";
+import useWatchScroll from "@hooks/useWatchScroll";
 import { ROUTE_PATH } from "@router/constants";
 import { slide } from "@styles/animate";
 import { BottomBar, Page } from "@styles/common";
@@ -24,8 +24,7 @@ import styled from "styled-components";
 
 export default function ProductDetail() {
   const member = useMemberValue();
-  const { scrollY, ref } = useScroll();
-  const { toast } = useToast();
+  const { scrollY, ref } = useWatchScroll();
   const navigate = useNavigate();
   const location = useLocation();
   const { isAnimating, onLeavePage } = useAnimation();
@@ -35,36 +34,6 @@ export default function ProductDetail() {
 
   const { data: productDetailInfo, isSuccess: isProductDetailSuccess } =
     useProductDetailQuery(numberProductId, !!productId);
-
-  const showNoChatPartner = () => {
-    toast({
-      type: "info",
-      title: "상품 상세 목록 조회 완료",
-      message: "채팅한 이웃이 없습니다",
-    });
-  };
-
-  const goChatPage = () => {
-    // TODO: 채팅 목록 조회 api 나오면 수정
-    if (isSeller) {
-      navigate(ROUTE_PATH.chat);
-    } else {
-      navigate(ROUTE_PATH.chat);
-    }
-  };
-
-  const onClickChat = () => {
-    if (!isProductDetailSuccess) {
-      return;
-    }
-
-    if (isSeller && !!productDetailInfo.stats.chatCount) {
-      showNoChatPartner();
-      return;
-    }
-
-    goChatPage();
-  };
 
   const goBack = () => {
     navigate(location.state?.prevRoute ?? -1);
@@ -79,7 +48,7 @@ export default function ProductDetail() {
   const onClickEdit = async () => {
     onLeavePage();
     await delay(SLIDE_TIME);
-    navigate(ROUTE_PATH.edit + `/${productId}`);
+    navigate(`${ROUTE_PATH.edit}/${productId}`);
   };
 
   const { onDeleteProduct } = useDeleteProductQuery({
@@ -89,8 +58,6 @@ export default function ProductDetail() {
 
   const isScroll = !!scrollY && scrollY > 0;
   const isSeller = member.id === productDetailInfo?.product.seller.id;
-  const productPrice =
-    productDetailInfo?.product.price?.toLocaleString("ko-KR");
 
   return (
     <Page ref={ref}>
@@ -126,15 +93,25 @@ export default function ProductDetail() {
         <ButtonContainer>
           <LeftWrapper>
             <ProductLikeButton />
-            {isProductDetailSuccess && (
-              <span>{productPrice ? `${productPrice} 원` : "가격미정"}</span>
+            {productDetailInfo && (
+              <PriceText productPrice={productDetailInfo.product.price} />
             )}
           </LeftWrapper>
-          <ChatButton
-            onClick={onClickChat}
-            isSeller={isSeller}
-            chatCount={productDetailInfo?.stats.chatCount}
-          />
+          {productDetailInfo && (
+            <ChatButton
+              isSeller={isSeller}
+              chatInfo={{
+                product: {
+                  productId: numberProductId,
+                  title: productDetailInfo.product.title,
+                  price: productDetailInfo.product.price,
+                  thumbnailUrl: productDetailInfo.images[0].url,
+                },
+                seller: productDetailInfo.product.seller,
+                chatCount: productDetailInfo.stats.chatCount,
+              }}
+            />
+          )}
         </ButtonContainer>
       </BottomBar>
     </Page>

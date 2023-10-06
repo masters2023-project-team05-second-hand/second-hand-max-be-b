@@ -30,10 +30,6 @@ export type ProductDetailInfo = {
   product: ProductInfo;
   images: ProductImages[];
   stats: ProductStats;
-  statuses: {
-    id: number;
-    type: string;
-  }[];
 };
 
 export type ProductStats = {
@@ -42,11 +38,14 @@ export type ProductStats = {
   viewCount: number;
 };
 
+export type SellerInfo = {
+  id: number;
+  nickname: string;
+  profileImgUrl: string;
+};
+
 export type ProductInfo = {
-  seller: {
-    id: number;
-    nickname: string;
-  };
+  seller: SellerInfo;
   category: CategoryInfo;
   address: AddressInfo;
   title: string;
@@ -112,4 +111,45 @@ export type ProductItem = {
 export type ProductList = {
   products: ProductItem[];
   hasNext: boolean;
+};
+
+export type ChatMessage = {
+  senderId: number;
+  content: string;
+  sentTime: string;
+};
+
+export type ChatItem = {
+  roomId: string;
+  otherMember: ChatItemPartner;
+  message: ChatItemMessage;
+  unreadMessageCount: number;
+  product: ChatItemProduct;
+};
+
+export type ChatItemPartner = {
+  id: number;
+  nickname: string;
+  profileImgUrl: string;
+};
+
+export type ChatItemMessage = {
+  lastMessage: string;
+  lastSentTime: string;
+};
+
+export type ChatItemProduct = {
+  productId: number;
+  title: string;
+  thumbnailUrl: string;
+  price: number;
+};
+
+export type ChatRoomLocationState = {
+  product: ChatItemProduct;
+  partner: {
+    id: number;
+    nickname: string;
+    profileImgUrl: string;
+  };
 };

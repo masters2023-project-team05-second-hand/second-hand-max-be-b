@@ -25,7 +25,8 @@
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.15.0",
     "styled-components": "^6.0.5",
-    "swiper": "^10.2.0"
+    "swiper": "^10.2.0",
+    "@stomp/stompjs": "^7.0.0"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.22.10",

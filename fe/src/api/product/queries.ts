@@ -12,9 +12,13 @@ import {
   getProduct,
   getProductDetail,
   getStatuses,
+  patchProduct,
   patchProductStatus,
+  postProduct,
 } from ".";
 import { productKeys } from "./../queryKeys";
+import { useNavigate } from "react-router-dom";
+import { ROUTE_PATH } from "@router/constants";
 
 export const useAddressesInfiniteQuery = (option?: {
   searchWord?: string;
@@ -139,6 +143,54 @@ export const useGetProductListInfiniteQuery = ({
       return lastPage.hasNext
         ? lastPage.products[lastPage.products.length - 1].productId
         : undefined;
+    },
+  });
+};
+
+export const useMutateNewProduct = () => {
+  const navigate = useNavigate();
+  const { toast } = useToast();
+
+  return useMutation(postProduct, {
+    onSuccess: (res) => {
+      navigate(`${ROUTE_PATH.detail}/${res.data.productId}`, {
+        state: { prevRoute: ROUTE_PATH.home },
+      });
+    },
+    onError: () => {
+      toast({
+        type: "error",
+        title: "상품 등록 실패",
+        message: "상품 등록에 실패했습니다. 잠시 후 다시 시도해주세요.",
+      });
+    },
+  });
+};
+
+export const useMutatePatchProduct = ({
+  productId,
+  invalidateQueryKey,
+}: {
+  productId: number;
+  invalidateQueryKey?: readonly unknown[];
+}) => {
+  const queryClient = useQueryClient();
+  const navigate = useNavigate();
+  const { toast } = useToast();
+
+  return useMutation(patchProduct, {
+    onSuccess: () => {
+      navigate(`${ROUTE_PATH.detail}/${productId}`, {
+        state: { prevRoute: ROUTE_PATH.home },
+      });
+      queryClient.invalidateQueries(invalidateQueryKey);
+    },
+    onError: () => {
+      toast({
+        type: "error",
+        title: "상품 수정 실패",
+        message: "상품 수정에 실패했습니다. 잠시 후 다시 시도해주세요.",
+      });
     },
   });
 };

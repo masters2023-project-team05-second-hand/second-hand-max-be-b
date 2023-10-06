@@ -3,6 +3,7 @@ export const ROUTE_PATH = {
   sales: "/sales",
   wish: "/wish",
   chat: "/chat",
+  chatting: "/chatting",
   account: "/account",
   auth: {
     index: "/auth/:provider",

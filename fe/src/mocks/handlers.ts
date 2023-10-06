@@ -1,3 +1,4 @@
+import { CHAT_API_PATH } from "@api/chat/constants";
 import { PRODUCT_API_PATH } from "@api/product/constants";
 import { USER_API_PATH } from "@api/user/constants";
 import { AddressInfo, Member, Tokens } from "api/type";
@@ -315,6 +316,31 @@ export const handlers = [
       return res(ctx.status(200));
     }
   ),
+
+  rest.post(CHAT_API_PATH.chatroom, async (req, res, ctx) => {
+    const { productId, message } = await req.json<{
+      productId: number;
+      message: {
+        senderId: number;
+        content: string;
+      };
+    }>();
+
+    if (!productId || !message) {
+      return res(
+        ctx.status(400),
+        ctx.json({
+          message: "잘못된 요청입니다.",
+        })
+      );
+    }
+    return res(
+      ctx.status(200),
+      ctx.json<{ roomId: number }>({
+        roomId: 1,
+      })
+    );
+  }),
 ];
 
 let mockIsWished = true;
