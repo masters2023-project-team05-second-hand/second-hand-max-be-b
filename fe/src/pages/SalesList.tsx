@@ -1,30 +1,31 @@
-import { useProductStatusesQuery } from "@api/product/queries";
+import { userKeys } from "@api/queryKeys";
 import { useUserSalesInfiniteQuery } from "@api/user/queries";
 import NavigationBar from "@components/NavigationBar";
 import { SubInfo } from "@components/ProductDetail/common.style";
 import Products from "@components/ProductList/Products";
 import TopBar from "@components/TopBar";
+import { Error, Loading } from "@components/common/Guide";
+import { LoadingSpinner } from "@components/common/LoadingSpinner";
 import { TabButtons } from "@components/common/TabButtons";
 import { useIntersect } from "@hooks/useIntersect";
 import { Main, Page, PageContent, Target } from "@styles/common";
 import { useState } from "react";
+import { useStatusesValue } from "store";
 import { DEFAULT_TAB } from "store/constants";
 
 export default function SalesList() {
+  const productStatuses = useStatusesValue();
   const [activeTabId, setActiveTabId] = useState(DEFAULT_TAB.id);
-  const { data: productStatuses, isSuccess: isGetStatusesSuccess } =
-    useProductStatusesQuery();
   const {
     data: salesProducts,
-    isSuccess: isSalesProductsSuccess,
+    status,
     hasNextPage,
     isFetching,
     fetchNextPage,
-  } = useUserSalesInfiniteQuery(activeTabId);
+  } = useUserSalesInfiniteQuery(productStatuses, activeTabId);
 
-  const ref = useIntersect((entry, observer) => {
-    observer.unobserve(entry.target);
-    if (hasNextPage && !isFetching) {
+  const targetRef = useIntersect(() => {
+    if (hasNextPage) {
       fetchNextPage();
     }
   });
@@ -42,14 +43,30 @@ export default function SalesList() {
         isWithBorder={true}
       />
       <PageContent>
-        {isGetStatusesSuccess && (
+        {status === "loading" && (
+          <Loading
+            messages={[
+              "상품 목록을 불러오는 중입니다.",
+              "새로고침을 하지 마세요!",
+            ]}
+          />
+        )}
+        {status === "error" && (
+          <Error
+            messages={[
+              "상품 목록을 불러오는데 실패했어요.",
+              "잠시 후 다시 시도해주세요.",
+            ]}
+          />
+        )}
+        {!!productStatuses.length && (
           <TabButtons
             activeTabId={activeTabId}
             tabList={[DEFAULT_TAB, ...productStatuses]}
             onTabClick={onTabClick}
           />
         )}
-        {isSalesProductsSuccess && (
+        {status === "success" && (
           <>
             {isEmpty ? (
               <>
@@ -60,11 +77,12 @@ export default function SalesList() {
             ) : (
               <Products
                 productList={salesProducts.pages.map((page) => page.products)}
+                invalidateQueryKey={userKeys.salesProduct(activeTabId).queryKey}
               />
             )}
           </>
         )}
-        <Target ref={ref} />
+        {isFetching ? <LoadingSpinner /> : <Target ref={targetRef} />}
       </PageContent>
       <NavigationBar />
     </Page>

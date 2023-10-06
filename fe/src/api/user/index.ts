@@ -1,6 +1,6 @@
 import { fetcher } from "@api/fetcher";
-import { AddressInfo, Member, ProductList, Tokens } from "@api/type";
-import { ENTIRE_STATUS_ID, USER_API_PATH } from "./constants";
+import { AddressInfo, Member, ProductList, Status, Tokens } from "@api/type";
+import { USER_API_PATH } from "./constants";
 
 export const postSocialLogin = async (
   provider: "kakao" | "github",
@@ -62,7 +62,7 @@ export const patchNickname = async (newNickname: string) => {
   return await fetcher.patch(USER_API_PATH.nickname, { newNickname });
 };
 
-export const getProductLikeStatus = async (productId: string) => {
+export const getProductLikeStatus = async (productId: number) => {
   const path = `${USER_API_PATH.wishlist}/${productId}`;
 
   const { data } = await fetcher.get<{ isWished: boolean }>(path);
@@ -105,17 +105,21 @@ export const getUserWishlistProduct = async ({
 };
 
 export const getUserSalesProduct = async ({
+  statuses,
   statusId,
   page = 0,
   size = 10,
 }: {
+  statuses: Status[];
   statusId: number;
   page: number;
   size: number;
 }) => {
+  const entireStatusId = statuses.map((status) => status.id);
+
   const { data } = await fetcher.get<ProductList>(
     `${USER_API_PATH.sales}?statusId=${
-      statusId ? statusId : ENTIRE_STATUS_ID
+      statusId ? statusId : entireStatusId
     }&page=${page}&size=${size}`
   );
   return data;

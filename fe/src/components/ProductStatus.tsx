@@ -1,5 +1,5 @@
-import { useProductStatusesQuery } from "@api/product/queries";
-import { IS_RESERVATION_ID, IS_SELLING_ID } from "store/constants";
+import { useStatusesValue } from "store";
+import { RESERVATION_ID, SELLING_ID } from "store/constants";
 import { styled } from "styled-components";
 
 type ProductStatusProps = {
@@ -7,12 +7,16 @@ type ProductStatusProps = {
 };
 
 export default function ProductStatus({ id }: ProductStatusProps) {
-  const { data, isSuccess } = useProductStatusesQuery();
+  const productStatuses = useStatusesValue();
 
-  const statusName = isSuccess && data.find((item) => item.id === id)?.type;
-  const isSelling = id === IS_SELLING_ID;
+  const statusType = productStatuses?.find((status) => status.id === id)?.type;
+  const isSelling = id === SELLING_ID;
 
-  return <>{!isSelling && <Status $statusId={id}>{statusName}</Status>}</>;
+  return (
+    <>
+      {!isSelling && statusType && <Status $statusId={id}>{statusType}</Status>}
+    </>
+  );
 }
 
 const Status = styled.div<{ $statusId: number }>`
@@ -20,7 +24,7 @@ const Status = styled.div<{ $statusId: number }>`
   padding: 3px 6px;
   border-radius: ${({ theme: { radius } }) => radius[8]};
   background-color: ${({ theme: { color }, $statusId }) =>
-    $statusId === IS_RESERVATION_ID
+    $statusId === RESERVATION_ID
       ? color.accentSecondary
       : color.neutralBorderStrong};
   color: ${({ theme: { color } }) => color.accentText};

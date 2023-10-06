@@ -20,5 +20,3 @@ export const USER_API_PATH = {
 
 export const KAKAO_LOGIN_URL = `https://kauth.kakao.com/oauth/authorize?client_id=${VITE_OAUTH_KAKAO_CLIENT_ID}&redirect_uri=${VITE_APP_API_URL}${ROUTE_PATH.auth.kakao}&response_type=code`;
 export const GITHUB_LOGIN_URL = `https://github.com/login/oauth/authorize?client_id=${VITE_OAUTH_GITHUB_CLIENT_ID}&redirect_uri=${VITE_APP_API_URL}${ROUTE_PATH.auth.github}`;
-
-export const ENTIRE_STATUS_ID = [1, 2, 3];

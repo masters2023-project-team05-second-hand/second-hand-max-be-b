@@ -1,10 +1,12 @@
 import { useGetProductListInfiniteQuery } from "@api/product/queries";
+import { productKeys } from "@api/queryKeys";
 import NavigationBar from "@components/NavigationBar";
 import { SubInfo } from "@components/ProductDetail/common.style";
 import ProductListFAB from "@components/ProductList/ProductListFAB";
 import ProductListHeader from "@components/ProductList/ProductListHeader";
 import Products from "@components/ProductList/Products";
 import { Error, Loading } from "@components/common/Guide";
+import { LoadingSpinner } from "@components/common/LoadingSpinner";
 import { useIntersect } from "@hooks/useIntersect";
 import { Main, Page, Target } from "@styles/common";
 import { useCurrentAddressIdValue, useCurrentCategoryIdValue } from "store";
@@ -21,12 +23,11 @@ export default function ProductList() {
     fetchNextPage,
   } = useGetProductListInfiniteQuery({
     addressId: currentAddressId,
-    categoryId: categoryId,
+    categoryId,
   });
 
-  const ref = useIntersect((entry, observer) => {
-    observer.unobserve(entry.target);
-    if (hasNextPage && !isFetching) {
+  const targetRef = useIntersect(() => {
+    if (hasNextPage) {
       fetchNextPage();
     }
   });
@@ -63,12 +64,15 @@ export default function ProductList() {
           ) : (
             <Products
               productList={productList.pages.map((page) => page.products)}
+              invalidateQueryKey={
+                productKeys.products(currentAddressId, categoryId).queryKey
+              }
             />
           )}
         </>
       )}
       <ProductListFAB />
-      <Target ref={ref} />
+      {isFetching ? <LoadingSpinner /> : <Target ref={targetRef} />}
       <NavigationBar />
     </Page>
   );

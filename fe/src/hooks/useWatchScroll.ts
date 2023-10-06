@@ -5,7 +5,7 @@ type ScrollReturnType = {
   ref: MutableRefObject<HTMLDivElement | null>;
 };
 
-export default function useScroll(): ScrollReturnType {
+export default function useWatchScroll(): ScrollReturnType {
   const [scrollY, setScrollY] = useState<number>(0);
   const ref = useRef<HTMLDivElement>(null);
 

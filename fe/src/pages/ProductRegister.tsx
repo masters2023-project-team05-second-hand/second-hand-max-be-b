@@ -1,4 +1,3 @@
-import { patchProduct, postProduct } from "@api/product/index";
 import { useProductDetailQuery } from "@api/product/queries";
 import { AddressInfo } from "@api/type";
 import ProductRegisterAddress from "@components/ProductRegister/ProductRegisterAddress";
@@ -12,30 +11,23 @@ import {
   DEFAULT_CATEGORY_ID,
   DEFAULT_SELECTED_ADDRESS_INDEX,
 } from "@components/ProductRegister/constants";
-import { ProductInfo } from "@components/ProductRegister/type";
+import { ProductRegisterInfo } from "@components/ProductRegister/type";
 import { Error, Loading } from "@components/common/Guide";
-import { useToast } from "@hooks/useToast";
-import { ROUTE_PATH } from "@router/constants";
 import { Page } from "@styles/common";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { useAddressListValue, useCurrentAddressIdValue } from "store";
 import { styled } from "styled-components";
 
 export default function ProductRegister() {
-  const navigate = useNavigate();
-  const { toast } = useToast();
   const { productId } = useParams();
+  const numberProductId = Number(productId);
   const addressList = useAddressListValue();
   const currentAddressId = useCurrentAddressIdValue();
   const [selectedAddressId, setSelectedAddressId] = useState<number | null>(
     currentAddressId
   );
-  const queryClient = useQueryClient();
-
-  // Todo: 상태 분리하기 & 상태 관리 라이브러리 쓰기
-  const [productInfo, setProductInfo] = useState<ProductInfo>({
+  const [productInfo, setProductInfo] = useState<ProductRegisterInfo>({
     images: [],
     newImages: [],
     deletedImageIds: [],
@@ -48,163 +40,57 @@ export default function ProductRegister() {
       addressList[DEFAULT_SELECTED_ADDRESS_INDEX],
   });
 
-  const { data, isSuccess, isLoading, isError } = useProductDetailQuery(
-    productId!,
-    !!productId
-  );
-
-  const newProductMutation = useMutation(postProduct);
-  const editProductMutation = useMutation(patchProduct);
+  const {
+    data: productDetailInfo,
+    isSuccess,
+    isLoading,
+    isError,
+  } = useProductDetailQuery(numberProductId, !!productId);
 
   useEffect(() => {
-    if (isSuccess && data) {
+    if (isSuccess && productDetailInfo) {
       setProductInfo((prev) => {
         return {
           ...prev,
-          images: data.images,
-          title: data.product.title,
-          categoryId: data.product.category.id,
-          price: data.product.price?.toString() ?? "",
-          content: data.product.contents,
-          address: data.product.address,
+          images: productDetailInfo.images,
+          title: productDetailInfo.product.title,
+          categoryId: productDetailInfo.product.category.id,
+          price: productDetailInfo.product.price?.toString() ?? "",
+          content: productDetailInfo.product.contents,
+          address: productDetailInfo.product.address,
         };
       });
 
-      setSelectedAddressId(data.product.address.id);
+      setSelectedAddressId(productDetailInfo.product.address.id);
     }
-  }, [isSuccess, data]);
+  }, [isSuccess, productDetailInfo]);
 
-  const onPostNewProduct = () => {
-    const price = productInfo.price.replace(/,/g, "");
-
-    const formData = new FormData();
-
-    productInfo.newImages?.forEach((image) => {
-      formData.append("images", image.image);
-    });
-
-    formData.append("title", productInfo.title);
-    formData.append("content", productInfo.content);
-    formData.append("categoryId", JSON.stringify(productInfo.categoryId));
-    formData.append("addressId", JSON.stringify(productInfo.address.id));
-    formData.append("price", price);
-
-    newProductMutation.mutate(formData, {
-      onSuccess: (res) => {
-        navigate(`${ROUTE_PATH.detail}/${res.data.productId}`, {
-          state: { prevRoute: ROUTE_PATH.home },
-        });
-        queryClient.invalidateQueries({
-          queryKey: ["getProductDetail", productId],
-        });
-      },
-      onError: () => {
-        return (
-          <Error
-            messages={[
-              "새로운 상품 등록에 실패했어요.",
-              "잠시 후 다시 시도해주세요.",
-            ]}
-          />
-        );
-      },
-    });
-  };
-
-  const onPatchProduct = () => {
-    const price = productInfo.price.replace(/,/g, "");
-
-    const formData = new FormData();
-
-    productInfo.newImages?.forEach((image) => {
-      formData.append("newImages", image.image);
-    });
-
-    if (productInfo.deletedImageIds?.length) {
-      formData.append("deletedImageIds", productInfo.deletedImageIds?.join());
-    }
-
-    formData.append("title", productInfo.title);
-    formData.append("content", productInfo.content);
-    formData.append("categoryId", JSON.stringify(productInfo.categoryId));
-    formData.append("addressId", JSON.stringify(productInfo.address.id));
-    formData.append("price", price);
-
-    editProductMutation.mutate(
-      { productId: productId, productInfo: formData },
-      {
-        onSuccess: () => {
-          navigate(`${ROUTE_PATH.detail}/${productId}`, {
-            state: { prevRoute: ROUTE_PATH.home },
-          });
-          queryClient.invalidateQueries({
-            queryKey: ["getProductDetail", productId],
-          });
-        },
-        onError: () => {
-          return (
-            <Error
-              messages={[
-                "상품 수정에 실패했어요.",
-                "잠시 후 다시 시도해주세요.",
-              ]}
-            />
-          );
-        },
-      }
-    );
-  };
-
-  const onSubmitProduct = () => {
-    const isNewProduct = !productId;
-
-    if (isNewProduct) {
-      onPostNewProduct();
-    } else {
-      onPatchProduct();
-    }
-  };
-
-  const onAddNewImage = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    const now = new Date().getTime();
-
+  const onAddNewImage = ({
+    id,
+    newImage,
+    imageUrl,
+  }: {
+    id: number;
+    newImage: File;
+    imageUrl: string;
+  }) => {
     setProductInfo((prev) => ({
       ...prev,
-      newImages: prev.newImages
-        ? [...prev.newImages, { id: now, image: file }]
-        : [{ id: now, image: file }],
+      newImages: prev.newImages?.length
+        ? [...prev.newImages, { id: id, image: newImage }]
+        : [{ id: id, image: newImage }],
+      images: [...prev.images, { id: id, url: imageUrl }],
     }));
-
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = () => {
-      setProductInfo((prev) => ({
-        ...prev,
-        images: [...prev.images, { id: now, url: reader.result as string }],
-      }));
-    };
   };
 
   const onRemoveImage = (id: number) => {
-    const isNewImage = productInfo.newImages?.find((image) => image.id === id);
-
-    if (productInfo.newImages?.length === 1) {
-      toast({
-        type: "error",
-        title: "사진 삭제 실패",
-        message: "사진은 한 개 이상 필요합니다.",
-      });
-
-      return;
-    }
+    const isNewImage = productInfo.newImages?.some((image) => image.id === id);
 
     if (!isNewImage) {
       setProductInfo((prev) => {
         return {
           ...prev,
+          images: prev.images.filter((image) => image.id !== id),
           deletedImageIds: prev.deletedImageIds
             ? [...prev.deletedImageIds, id]
             : [id],
@@ -216,14 +102,19 @@ export default function ProductRegister() {
       return {
         ...prev,
         images: prev.images.filter((image) => image.id !== id),
+        newImages: prev.newImages?.filter((image) => image.id !== id),
       };
     });
   };
 
-  const onChangeTitle = (newTitle: string) => {
+  const onChangeText = (
+    e:
+      | React.ChangeEvent<HTMLInputElement>
+      | React.ChangeEvent<HTMLTextAreaElement>
+  ) => {
     setProductInfo((prev) => ({
       ...prev,
-      title: newTitle,
+      [e.target.name]: e.target.value,
     }));
   };
 
@@ -231,20 +122,6 @@ export default function ProductRegister() {
     setProductInfo((prev) => ({
       ...prev,
       categoryId,
-    }));
-  };
-
-  const onChangePrice = (price: string) => {
-    setProductInfo((prev) => ({
-      ...prev,
-      price: price,
-    }));
-  };
-
-  const onChangeContent = (content: string) => {
-    setProductInfo((prev) => ({
-      ...prev,
-      content: content,
     }));
   };
 
@@ -280,10 +157,7 @@ export default function ProductRegister() {
         />
       ) : (
         <>
-          <ProductRegisterHeader
-            productInfo={productInfo}
-            onSubmit={onSubmitProduct}
-          />
+          <ProductRegisterHeader productInfo={productInfo} />
           <Main>
             <ProductRegisterImage
               images={productInfo.images}
@@ -293,7 +167,7 @@ export default function ProductRegister() {
             <div className="product-info">
               <ProductRegisterTitle
                 title={productInfo.title}
-                onChange={onChangeTitle}
+                onChange={onChangeText}
               />
               {productInfo.title && (
                 <ProductRegisterCategory
@@ -304,12 +178,12 @@ export default function ProductRegister() {
             </div>
             <ProductRegisterPrice
               price={productInfo.price}
-              onChange={onChangePrice}
+              onChange={onChangeText}
             />
             <ProductRegisterContent
               content={productInfo.content}
               address={productInfo.address}
-              onChange={onChangeContent}
+              onChange={onChangeText}
             />
           </Main>
           <ProductRegisterAddress

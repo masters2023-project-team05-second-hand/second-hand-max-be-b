@@ -12,13 +12,21 @@ import {
   getProduct,
   getProductDetail,
   getStatuses,
+  patchProduct,
   patchProductStatus,
+  postProduct,
 } from ".";
+import { productKeys } from "./../queryKeys";
+import { useNavigate } from "react-router-dom";
+import { ROUTE_PATH } from "@router/constants";
 
-export const useAddressesInfiniteQuery = (option?: { size: number }) => {
+export const useAddressesInfiniteQuery = (option?: {
+  searchWord?: string;
+  size?: number;
+}) => {
   return useInfiniteQuery({
-    queryKey: ["addresses"],
-    queryFn: ({ pageParam }) => getAddresses(pageParam, option?.size),
+    ...productKeys.addresses(option?.searchWord),
+    queryFn: ({ pageParam }) => getAddresses(pageParam, option),
     getNextPageParam: (lastPage, allPages) =>
       lastPage.hasNext ? allPages.length : undefined,
   });
@@ -26,15 +34,15 @@ export const useAddressesInfiniteQuery = (option?: { size: number }) => {
 
 export const useCategoryQuery = () => {
   return useQuery({
-    queryKey: ["getCategories"],
+    ...productKeys.categories,
     queryFn: getCategories,
     staleTime: Infinity,
   });
 };
 
-export const useProductDetailQuery = (id: string, enabled: boolean) => {
+export const useProductDetailQuery = (id: number, enabled: boolean) => {
   return useQuery({
-    queryKey: ["getProductDetail", id],
+    ...productKeys.detail(id),
     queryFn: () => getProductDetail(id),
     enabled,
     staleTime: Infinity,
@@ -46,9 +54,9 @@ export const useDeleteProductQuery = ({
   onSuccess,
   invalidateQueryKey,
 }: {
-  productId: string;
+  productId: number;
   onSuccess?: () => void;
-  invalidateQueryKey?: string[];
+  invalidateQueryKey?: readonly unknown[];
 }) => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -81,7 +89,7 @@ export const useDeleteProductQuery = ({
 
 export const useProductStatusesQuery = () => {
   return useQuery({
-    queryKey: ["getStatuses"],
+    ...productKeys.statuses,
     queryFn: () => getStatuses(),
     staleTime: Infinity,
   });
@@ -92,7 +100,7 @@ export const useMutateProductStatus = ({
   invalidateQueryKey,
 }: {
   onSettled?: () => void;
-  invalidateQueryKey?: string[];
+  invalidateQueryKey?: readonly unknown[];
 }) => {
   const queryClient = useQueryClient();
   const { toast } = useToast();
@@ -104,7 +112,8 @@ export const useMutateProductStatus = ({
         title: "상태 변경 완료",
         message: "상태 변경이 완료되었습니다.",
       });
-      queryClient.invalidateQueries({ queryKey: invalidateQueryKey });
+      invalidateQueryKey &&
+        queryClient.invalidateQueries({ queryKey: invalidateQueryKey });
     },
     onError: () => {
       toast({
@@ -122,18 +131,66 @@ export const useGetProductListInfiniteQuery = ({
   categoryId,
   size,
 }: {
-  addressId: number | null;
-  categoryId: number | null;
+  addressId: number;
+  categoryId?: number;
   size?: number;
 }) => {
   return useInfiniteQuery({
-    queryKey: ["getProduct", addressId, categoryId, size],
+    ...productKeys.products(addressId, categoryId, size),
     queryFn: ({ pageParam }) =>
       getProduct({ addressId, categoryId, cursor: pageParam, size }),
     getNextPageParam: (lastPage) => {
       return lastPage.hasNext
         ? lastPage.products[lastPage.products.length - 1].productId
         : undefined;
+    },
+  });
+};
+
+export const useMutateNewProduct = () => {
+  const navigate = useNavigate();
+  const { toast } = useToast();
+
+  return useMutation(postProduct, {
+    onSuccess: (res) => {
+      navigate(`${ROUTE_PATH.detail}/${res.data.productId}`, {
+        state: { prevRoute: ROUTE_PATH.home },
+      });
+    },
+    onError: () => {
+      toast({
+        type: "error",
+        title: "상품 등록 실패",
+        message: "상품 등록에 실패했습니다. 잠시 후 다시 시도해주세요.",
+      });
+    },
+  });
+};
+
+export const useMutatePatchProduct = ({
+  productId,
+  invalidateQueryKey,
+}: {
+  productId: number;
+  invalidateQueryKey?: readonly unknown[];
+}) => {
+  const queryClient = useQueryClient();
+  const navigate = useNavigate();
+  const { toast } = useToast();
+
+  return useMutation(patchProduct, {
+    onSuccess: () => {
+      navigate(`${ROUTE_PATH.detail}/${productId}`, {
+        state: { prevRoute: ROUTE_PATH.home },
+      });
+      queryClient.invalidateQueries(invalidateQueryKey);
+    },
+    onError: () => {
+      toast({
+        type: "error",
+        title: "상품 수정 실패",
+        message: "상품 수정에 실패했습니다. 잠시 후 다시 시도해주세요.",
+      });
     },
   });
 };

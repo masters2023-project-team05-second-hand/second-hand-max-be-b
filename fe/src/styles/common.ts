@@ -1,7 +1,6 @@
 import styled from "styled-components";
 import { HEIGHT, WIDTH } from "./constants";
 
-// 참고: scroll을 Page에서 제어하고 있어서 min-height 하단바의 높이만큼 빼줘야 끝까지 스크롤 가능
 export const Page = styled.div`
   position: relative;
   margin: 0 auto;
@@ -15,6 +14,10 @@ export const Page = styled.div`
   &::-webkit-scrollbar {
     display: none;
   }
+`;
+
+export const StaticPage = styled(Page)`
+  height: 100vh;
 `;
 
 export const Main = styled.main`
@@ -61,4 +64,24 @@ export const Target = styled.div`
 
 export const PageContent = styled.div`
   max-width: 100%;
+`;
+
+export const TextDefault = styled.span`
+  display: block;
+  max-width: 200px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: ${({ theme: { color } }) => color.neutralText};
+  font: ${({ theme: { font } }) => font.displayDefault16};
+`;
+
+export const TextWeak = styled.span`
+  color: ${({ theme: { color } }) => color.neutralTextWeak};
+  font: ${({ theme: { font } }) => font.displayDefault12};
+`;
+
+export const TextBold = styled.span`
+  color: ${({ theme: { color } }) => color.neutralTextStrong};
+  font: ${({ theme: { font } }) => font.displayStrong16};
 `;

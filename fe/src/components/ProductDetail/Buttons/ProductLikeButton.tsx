@@ -9,10 +9,12 @@ import { debounce } from "lodash";
 import { useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 
-export default function LikeButton() {
+export default function ProductLikeButton() {
   const { productId } = useParams();
+  const numberProductId = Number(productId);
+
   const { data: userProductLike, isSuccess: isGetProductLikeSuccess } =
-    useGetProductLikeQuery(productId!);
+    useGetProductLikeQuery(numberProductId);
 
   const initialIsLiked = useMemo(
     () => userProductLike?.isWished,
@@ -24,7 +26,7 @@ export default function LikeButton() {
   const rollbackLike = () => setIsLiked(initialIsLiked);
 
   const { mutate: mutateLike } = useMutateProductLike({
-    productId: productId!,
+    productId: numberProductId,
     onError: rollbackLike,
   });
 

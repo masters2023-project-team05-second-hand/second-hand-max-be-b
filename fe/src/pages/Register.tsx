@@ -4,11 +4,12 @@ import TopBar from "@components/TopBar";
 import UserAccount from "@components/UserAccount";
 import Button from "@components/common/Buttons/Button";
 import { ROUTE_PATH } from "@router/constants";
-import { Main, Page } from "@styles/common";
-import { useState } from "react";
+import { Main, StaticPage } from "@styles/common";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAddressListValue } from "store";
 
+// 주소가 있는 유저는 접근할 수 없는 페이지
 export default function Register() {
   const addresses = useAddressListValue();
 
@@ -18,8 +19,14 @@ export default function Register() {
   const openAddressModal = () => setIsAddressModalOpen(true);
   const closeAddressModal = () => setIsAddressModalOpen(false);
 
+  useEffect(() => {
+    if (addresses.length > 0) {
+      navigate(ROUTE_PATH.home);
+    }
+  }, [addresses, navigate]);
+
   return (
-    <Page>
+    <StaticPage>
       <TopBar
         title="회원가입"
         backgroundColor="neutralBackgroundBlur"
@@ -49,6 +56,6 @@ export default function Register() {
           <AddressModal closeHandler={closeAddressModal} />
         )}
       </Main>
-    </Page>
+    </StaticPage>
   );
 }

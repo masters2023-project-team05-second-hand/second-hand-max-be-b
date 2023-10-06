@@ -15,14 +15,14 @@ export default function MenuIndicator({
     setIsMenuOpen((prev) => !prev);
   };
 
+  const onClickMenuIndicator = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    calcPosition(e);
+    toggleModal();
+  };
+
   return (
-    <div
-      ref={ref}
-      onClick={(e) => {
-        e.stopPropagation();
-        calcPosition(e);
-        toggleModal();
-      }}>
+    <div ref={ref} onClick={onClickMenuIndicator}>
       {props.children}
       {isMenuOpen && (
         <Menu

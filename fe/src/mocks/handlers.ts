@@ -1,3 +1,4 @@
+import { CHAT_API_PATH } from "@api/chat/constants";
 import { PRODUCT_API_PATH } from "@api/product/constants";
 import { USER_API_PATH } from "@api/user/constants";
 import { AddressInfo, Member, Tokens } from "api/type";
@@ -27,6 +28,7 @@ export const handlers = [
             "eyJhbGciOiJIUzI1NiJ9.eyJtZW1iZXJJZCI6MSwiZXhwIjoxNjkxOTIyNjAzfQ.vCxUGMiv9bnb4JQGwk6NVx6kHi5hG80tDxafIvrfKbA",
           refreshToken:
             "eyJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2OTcxMDMwMDN9.FgoFySrenum985OrDzwwtaEhu1Iz7IVJtz5M6H8lzX8",
+          expirationTime: 1795346952938,
         },
       })
     );
@@ -51,6 +53,7 @@ export const handlers = [
           "eyJhbGciOiJIUzI1NiJ9.eyJtZW1iZXJJZCI6MSwiZXhwIjoxNjkxOTIyNjAzfQ.vCxUGMiv9bnb4JQGwk6NVx6kHi5hG80tDxafIvrfKbA",
         refreshToken:
           "eyJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2OTcxMDMwMDN9.FgoFySrenum985OrDzwwtaEhu1Iz7IVJtz5M6H8lzX8",
+        expirationTime: 1795346952938,
       })
     );
   }),
@@ -90,14 +93,14 @@ export const handlers = [
     return res(
       ctx.status(200),
       ctx.json([
-        {
-          id: 1,
-          address: "역삼1동",
-        },
-        {
-          id: 5,
-          address: "역삼5동",
-        },
+        // {
+        //   id: 1,
+        //   address: "역삼1동",
+        // },
+        // {
+        //   id: 5,
+        //   address: "역삼5동",
+        // },
       ])
     );
   }),
@@ -157,11 +160,11 @@ export const handlers = [
       ctx.json<AddressInfo[]>([
         {
           id: 1,
-          name: "역삼 1동",
+          name: "역삼1동",
         },
         {
           id: 5,
-          name: "역삼 5동",
+          name: "역삼5동",
         },
       ])
     );
@@ -170,12 +173,32 @@ export const handlers = [
   rest.get("/api/addresses", (req, res, ctx) => {
     const page = req.url.searchParams.get("page");
     const size = req.url.searchParams.get("size");
+    const search = req.url.searchParams.get("search");
 
     if (!page || !size) {
       return res(
         ctx.status(400),
         ctx.json({
           message: "잘못된 요청입니다.",
+        })
+      );
+    }
+
+    if (search) {
+      return res(
+        ctx.status(200),
+        ctx.json({
+          addresses: [
+            {
+              id: 11234124,
+              name: "청담1동",
+            },
+            {
+              id: 5124124,
+              name: "청담2동",
+            },
+          ],
+          hasNext: false,
         })
       );
     }
@@ -293,6 +316,31 @@ export const handlers = [
       return res(ctx.status(200));
     }
   ),
+
+  rest.post(CHAT_API_PATH.chatroom, async (req, res, ctx) => {
+    const { productId, message } = await req.json<{
+      productId: number;
+      message: {
+        senderId: number;
+        content: string;
+      };
+    }>();
+
+    if (!productId || !message) {
+      return res(
+        ctx.status(400),
+        ctx.json({
+          message: "잘못된 요청입니다.",
+        })
+      );
+    }
+    return res(
+      ctx.status(200),
+      ctx.json<{ roomId: number }>({
+        roomId: 1,
+      })
+    );
+  }),
 ];
 
 let mockIsWished = true;

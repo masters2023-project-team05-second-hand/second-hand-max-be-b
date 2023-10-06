@@ -1,4 +1,5 @@
 import { useMutateProductStatus } from "@api/product/queries";
+import { productKeys } from "@api/queryKeys";
 import { Status } from "@api/type";
 import { useParams } from "react-router-dom";
 import { ListItem, ListPanel } from "../Modal.style";
@@ -11,10 +12,11 @@ export default function ProductStatusContent({
   closeHandler: () => void;
 }) {
   const { productId } = useParams();
+  const numberProductId = Number(productId);
 
   const { mutate: mutateProductStatus } = useMutateProductStatus({
     onSettled: closeHandler,
-    invalidateQueryKey: ["getProductDetail", productId!],
+    invalidateQueryKey: productKeys.detail(numberProductId).queryKey,
   });
 
   return (
@@ -24,7 +26,7 @@ export default function ProductStatusContent({
           key={id}
           $active={false}
           onClick={() =>
-            mutateProductStatus({ productId: productId, statusId: id })
+            mutateProductStatus({ productId: numberProductId, statusId: id })
           }>
           <span>{type}</span>
         </ListItem>

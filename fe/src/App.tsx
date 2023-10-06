@@ -1,5 +1,7 @@
 import gajiBackground from "@assets/image/gaji.png";
 import Toaster from "@components/common/Toaster";
+import GlobalStateProvider from "@router/GlobalStateProvider";
+import UserProvider from "@router/UserProvider";
 import { router } from "@router/router";
 import GlobalStyle from "@styles/GlobalStyle";
 import { theme } from "@styles/designSystem";
@@ -8,7 +10,13 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { RouterProvider } from "react-router-dom";
 import styled, { ThemeProvider } from "styled-components";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
 export default function App() {
   return (
@@ -17,6 +25,8 @@ export default function App() {
       <QueryClientProvider client={queryClient}>
         <ReactQueryDevtools initialIsOpen={false} />
         <StyledApp>
+          <UserProvider />
+          <GlobalStateProvider />
           <RouterProvider router={router} />
         </StyledApp>
       </QueryClientProvider>

@@ -1,30 +1,33 @@
 import { useCallback, useEffect, useRef } from "react";
 
 export const useIntersect = (
-  onIntersect: (
-    entry: IntersectionObserverEntry,
-    observer: IntersectionObserver
-  ) => void,
+  callback: () => void,
   options?: IntersectionObserverInit
 ) => {
   const ref = useRef<HTMLDivElement>(null);
-  const callback = useCallback(
+  const intersectionObserverCallback = useCallback(
     (entries: IntersectionObserverEntry[], observer: IntersectionObserver) => {
       entries.forEach((entry) => {
-        if (entry.isIntersecting) onIntersect(entry, observer);
+        if (entry.isIntersecting) {
+          observer.unobserve(entry.target);
+          callback();
+        }
       });
     },
-    [onIntersect]
+    [callback]
   );
 
   useEffect(() => {
     if (!ref.current) return;
 
-    const observer = new IntersectionObserver(callback, options);
+    const observer = new IntersectionObserver(
+      intersectionObserverCallback,
+      options
+    );
     observer.observe(ref.current);
 
     return () => observer.disconnect();
-  }, [ref, options, callback]);
+  }, [ref, options, intersectionObserverCallback]);
 
   return ref;
 };

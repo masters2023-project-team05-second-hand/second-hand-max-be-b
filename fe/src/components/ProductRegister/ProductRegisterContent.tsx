@@ -3,6 +3,7 @@ import { styled } from "styled-components";
 import { PLACE_HOLDER } from "./constants";
 import { AddressInfo } from "@api/type";
 import useAutoHeight from "@hooks/useAutoHeight";
+import { getLastWord } from "@utils/index";
 
 export default function ProductRegisterContent({
   content,
@@ -11,7 +12,7 @@ export default function ProductRegisterContent({
 }: {
   content?: string;
   address?: AddressInfo;
-  onChange: (content: string) => void;
+  onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
 }) {
   const { ref: textAreaRef, onChange: onContentChange } =
     useAutoHeight<HTMLTextAreaElement>(onChange);
@@ -19,11 +20,12 @@ export default function ProductRegisterContent({
   return (
     <Content
       placeholder={PLACE_HOLDER.content(
-        address?.name ?? PLACE_HOLDER.defaultPlace
+        getLastWord(address?.name) ?? PLACE_HOLDER.defaultPlace
       )}
       value={content}
+      name="content"
       onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
-        onContentChange(e.target.value)
+        onContentChange(e)
       }
       ref={textAreaRef}
     />

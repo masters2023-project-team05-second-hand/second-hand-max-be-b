@@ -1,3 +1,4 @@
+import { userKeys } from "@api/queryKeys";
 import {
   useUserLikeCategories,
   useUserWishlistInfiniteQuery,
@@ -7,6 +8,7 @@ import { SubInfo } from "@components/ProductDetail/common.style";
 import Products from "@components/ProductList/Products";
 import TopBar from "@components/TopBar";
 import { Error, Loading } from "@components/common/Guide";
+import { LoadingSpinner } from "@components/common/LoadingSpinner";
 import { TabButtons } from "@components/common/TabButtons";
 import useDrag from "@hooks/useDrag";
 import { useIntersect } from "@hooks/useIntersect";
@@ -32,9 +34,8 @@ export default function WishList() {
     setActiveTabId(tabId);
   };
 
-  const targetRef = useIntersect((entry, observer) => {
-    observer.unobserve(entry.target);
-    if (hasNextPage && !isFetching) {
+  const targetRef = useIntersect(() => {
+    if (hasNextPage) {
       fetchNextPage();
     }
   });
@@ -85,8 +86,11 @@ export default function WishList() {
             )}
             <Products
               productList={categoryProducts.pages.map((page) => page.products)}
+              invalidateQueryKey={
+                userKeys.wishlistProduct(activeTabId).queryKey
+              }
             />
-            <Target ref={targetRef} />
+            {isFetching ? <LoadingSpinner /> : <Target ref={targetRef} />}
           </PageContent>
         ))}
       <NavigationBar />
