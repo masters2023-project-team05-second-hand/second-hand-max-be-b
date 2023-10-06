@@ -52,7 +52,6 @@ export const useGetChatDetailQuery = (roomId: string) => {
   return useQuery({
     ...chatKeys.chatDetail(roomId),
     queryFn: () => getChatDetail(roomId),
-    staleTime: Infinity,
     enabled: !!roomId,
   });
 };
