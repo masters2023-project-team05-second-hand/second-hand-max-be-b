@@ -75,4 +75,8 @@ public class Product {
     public void updateStatus(ProductStatus productStatus) {
         this.statusId = productStatus.getId();
     }
+
+    public boolean isSeller(Member member) {
+        return seller.getId().equals(member.getId());
+    }
 }

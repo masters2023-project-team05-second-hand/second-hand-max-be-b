@@ -6,6 +6,7 @@ import java.util.Map;
 import kr.codesquad.secondhand.api.address.domain.Address;
 import kr.codesquad.secondhand.api.address.service.AddressService;
 import kr.codesquad.secondhand.api.category.domain.Category;
+import kr.codesquad.secondhand.api.chat.service.ChatRoomService;
 import kr.codesquad.secondhand.api.image.service.ImageService;
 import kr.codesquad.secondhand.api.member.domain.Member;
 import kr.codesquad.secondhand.api.member.service.MemberService;
@@ -37,6 +38,7 @@ public class ProductFacadeService {
     private final AddressService addressService;
     private final MemberService memberService;
     private final StatService statService;
+    private final ChatRoomService chatRoomService;
 
     @Transactional
     public ProductCreateResponse saveProduct(Long memberId, ProductCreateRequest productCreateRequest) {
@@ -75,10 +77,18 @@ public class ProductFacadeService {
         return ProductReadResponse.of(
                 productService.findById(productId),
                 imageService.findAllByProductId(productId),
-                statService.findProductStats(productId),
+                readProductStats(productId),
                 Category.from(productService.findById(productId).getCategoryId()),
                 productService.findById(productId).getAddress()
         );
+    }
+
+    // TODO setter로 임시처리한 로직 개선 필요
+    private ProductStats readProductStats(Long productId) {
+        ProductStats productStats = statService.findProductStats(productId);
+        int chatCount = chatRoomService.countChatRoomsBy(productId);
+        productStats.setChatCount(chatCount);
+        return productStats;
     }
 
     public List<ProductStatusesInfoResponse> readProductStatuses() {

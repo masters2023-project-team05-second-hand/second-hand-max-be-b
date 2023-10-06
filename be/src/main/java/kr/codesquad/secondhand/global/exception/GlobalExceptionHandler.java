@@ -3,6 +3,7 @@ package kr.codesquad.secondhand.global.exception;
 import java.util.List;
 import java.util.stream.Collectors;
 import kr.codesquad.secondhand.api.category.exception.CategoryException;
+import kr.codesquad.secondhand.api.chat.exception.ChatRoomException;
 import kr.codesquad.secondhand.api.member.exception.MemberException;
 import kr.codesquad.secondhand.api.oauth.exception.OAuthException;
 import lombok.extern.slf4j.Slf4j;
@@ -90,4 +91,11 @@ public class GlobalExceptionHandler {
         return new ErrorResponseEntity(e.getMessage());
     }
 
+    @ExceptionHandler(ChatRoomException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponseEntity handleChatRoomException(ChatRoomException e) {
+        log.error(e.getMessage());
+        e.printStackTrace();
+        return new ErrorResponseEntity(e.getMessage());
+    }
 }
