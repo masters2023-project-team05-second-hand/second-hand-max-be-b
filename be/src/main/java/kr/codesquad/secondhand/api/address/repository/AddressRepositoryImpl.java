@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface AddressRepositoryImpl extends JpaRepository<Address, Long> {
 
-    Slice<Address> findAllBy(Pageable pageable);
+    Slice<Address> findAllByNameContaining(Pageable pageable, String name);
 
     Address getReferenceById(Long id);
 }

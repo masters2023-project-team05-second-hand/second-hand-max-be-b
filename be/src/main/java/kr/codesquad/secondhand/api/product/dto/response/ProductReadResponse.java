@@ -122,14 +122,16 @@ public class ProductReadResponse {
 
         private final Long id;
         private final String nickname;
+        private final String profileImgURL;
 
-        public SellerResponse(Long id, String nickname) {
+        public SellerResponse(Long id, String nickname, String profileImgURL) {
             this.id = id;
             this.nickname = nickname;
+            this.profileImgURL = profileImgURL;
         }
 
         private static SellerResponse from(Member member) {
-            return new SellerResponse(member.getId(), member.getNickname());
+            return new SellerResponse(member.getId(), member.getNickname(), member.getProfileImgUrl());
         }
     }
 }
